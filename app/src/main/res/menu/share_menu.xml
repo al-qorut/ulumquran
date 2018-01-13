@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+      android:id="@+id/cab_favorite"
+      android:icon="@drawable/ic_favorite"
+      android:title="@string/bookmark_ayah"/>
+  <item
+      android:id="@+id/cab_share_ayah_text"
+      android:icon="@drawable/ic_share"
+      android:title="@string/share_ayah_text"/>
+  <item
+      android:id="@+id/cab_copy_ayah"
+      android:icon="@drawable/ic_copy"
+      android:title="@string/copy_ayah"/>
+  <item
+      android:id="@+id/cab_play"
+      android:icon="@drawable/ic_play"
+      android:title="@string/play_from_here"/>
+  <item
+      android:id="@+id/cab_tema"
+      android:icon="@drawable/ic_translation"
+      android:title="@string/translate"/>
+</menu>

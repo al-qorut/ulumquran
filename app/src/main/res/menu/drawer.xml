@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_item_jump"
+            android:checked="true"
+            android:icon="@drawable/ic_translation"
+            android:title="@string/nav_item_tema" />
+        <item
+            android:id="@+id/navigation_item_update"
+            android:checked="true"
+            android:icon="@drawable/ic_download"
+            android:title="@string/nav_item_update" />
+        <item
+            android:id="@+id/navigation_item_keluar"
+            android:checked="true"
+            android:icon="@android:drawable/ic_lock_power_off"
+            android:title="@string/nav_item_keluar" />
+    </group>
+
+    <item android:title="@string/nav_sub_menu">
+        <menu>
+            <!--<item
+                android:id="@+id/navigation_item_registrasi"
+                android:icon="@drawable/ic_tag"
+                android:title="@string/nav_sub_menu_registrasi" />
+            <item
+                android:id="@+id/navigation_item_help"
+                android:icon="@android:drawable/ic_menu_help"
+                android:title="@string/nav_sub_menu_help" /> -->
+            <item
+                android:id="@+id/navigation_item_settings"
+                android:icon="@drawable/ic_action_settings"
+                android:title="@string/nav_item_setting" />
+            <item
+                android:icon="@drawable/ic_share"
+                android:title="@string/nav_sub_menu_share" />
+            <item
+                android:icon="@android:drawable/star_off"
+                android:title="@string/nav_sub_menu_rate" />
+            <item
+                android:icon="@drawable/ic_emoticon"
+                android:title="@string/nav_sub_menu_about" />
+        </menu>
+    </item>
+
+</menu>

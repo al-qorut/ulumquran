@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/**
+ * Copyright (C) Vik Sintus Projects
+ *
+ * Segala kelebihan dan kekurangan di luar tanggung jawab pembuat.
+ * Di larang memakai kode ini untuk kepentingan komersial tanpa ijin.
+ * Silahkan di pakai untuk kepentingan belajar.
+ * vik.sintus@gmail.com
+ * http://belajar-android-indonesia.blogspot.com
+ * Unless required by applicable law or agreed to in writing, this software
+ * is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ */
+-->
+<!-- ini utk tampilan layar utama-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/panel_background_color"
+    android:fitsSystemWindows="true">
+    <TextView
+        android:id="@+id/tulisanMuncul"
+        android:textColor="?android:textColorPrimary"
+        android:textSize="17dp"
+        android:text=""
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    <ListView
+        android:id="@+id/barisDemiBaris"
+        android:layout_width="fill_parent"
+        android:listSelector="@color/panel_background_color"
+        android:cacheColorHint="@android:color/transparent"
+        android:layout_height="0dp"
+        android:divider="@null"
+
+        android:dividerHeight="10dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

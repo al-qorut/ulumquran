@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+                
+    <PreferenceCategory
+            android:title="@string/display_quran">
+        <ListPreference
+                android:key="huruf"
+                android:title="@string/font"
+                android:summary="@string/type_font"
+                android:entries="@array/tampil_huruf"
+                android:entryValues="@array/nama_huruf"
+                android:dialogTitle="Silahkan Pilih" />
+        <smk.adzikro.indextemaquran.setting.SeekBarPreference
+            android:defaultValue="16"
+            android:key="@string/prefs_translation_text_size"
+            android:summary="@string/font_size"
+            android:max="40"
+            android:persistent="true"
+            android:title="@string/prefs_translation_text_title"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:summary="@string/display_latin"
+            android:title="@string/text_latin"
+            android:key="latintextdisplay"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:title="@string/translate_show"
+            android:key="text_terjemah_display"/>
+        <Preference
+            android:key="list_translate"
+            android:title="@string/translate"
+            android:summary="@string/translate_manage"
+            android:dependency="text_terjemah_display"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:title="@string/display_tafsir"
+            android:key="text_tafsir_display"/>
+        <Preference
+            android:key="list_tafsir"
+            android:title="@string/tafsir"
+            android:summary="@string/tafsir_manage"
+            android:dependency="text_tafsir_display"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:title="@string/display_lafdzi"
+            android:key="text_lafdzi_display"/>
+        <ListPreference
+            android:key="list_lafdzi"
+            android:title="@string/lafdzi"
+            android:summary="@string/lafdzi_manage"
+            android:dependency="text_lafdzi_display"
+            android:entries="@array/lafdzi_display"
+            android:entryValues="@array/lafdzi"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="STYLE TAMPILAN MUSHAF">
+        <CheckBoxPreference
+            android:title="Mode Mushaf"
+            android:summary="Mode quran image"
+            android:key="mode_view"
+            android:defaultValue="false"/>
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="TAFSIR Al-Qur'an"
+        android:summary="Tafsir-tafsir ini bukan milik developer">
+
+    </PreferenceCategory>
+</PreferenceScreen>

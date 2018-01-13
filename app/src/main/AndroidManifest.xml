@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="smk.adzikro.indextemaquran">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="com.android.vending.BILLING"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <uses-sdk tools:overrideLibrary="timber.log"/>
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:largeHeap="true"
+        android:name=".QuranApplication"
+        android:theme="@style/AppTheme.NoActionBar">
+           <activity android:name=".activities.MainActivity">
+
+        </activity>
+        <activity android:name=".activities.InstalasiActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.CariAyatQuran"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/data_untuk_pencarian" />
+        </activity>
+        <provider
+            android:name=".provider.PenghubungData"
+            android:authorities="smk.adzikro.indextemaquran.provider.PenghubungData" />
+        <!-- mengarahkan ke aktivitas cari agar aplikasi menghidupkan kegiatan pencarian. -->
+        <meta-data
+            android:name="android.app.default_searchable"
+            android:value=".CariAyatQuran" />
+        <activity android:name=".activities.TampilanKata"/>
+        <activity android:name=".activities.ActivityUlum"/>
+        <activity android:name=".activities.UlumQuranActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout"
+            />
+        <activity android:name=".activities.settings"/>
+        <activity android:name=".activities.ActivityIAP"/>
+        <activity android:name=".activities.ActivityUpdate"/>
+        <service
+            android:enabled="true"
+            android:name=".services.QuranDownloadService"/>
+        <activity android:name=".activities.ActivityQuranSource"/>
+    </application>
+
+</manifest>

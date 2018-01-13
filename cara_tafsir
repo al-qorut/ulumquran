@@ -1,0 +1,4 @@
+1. PagerActivity ~ manggi halaman ~ generate Fragmen
+2. QuranPageAdapter adapter ~ memanggil Fragment
+3. TranslationFragment ~ tampilkan TransalationView ~ ambil data dari database(TranlationTask)
+4. TranslationTask ~ mengambil data dan tampilkan di TranslationView

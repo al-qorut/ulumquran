@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <string-array name="install">
+            <item>"Index Al-Qur'an"</item><!--0-->
+            <item>Terjemah Lafdziyah</item><!--1-->
+            <item>Tafsir Adz-Dzikro</item><!--2-->
+            <item>"Index Tema Al-Qur'an"</item><!--3-->
+            <item>"Terjemah Bahasa Inggris"</item><!--4-->
+            <item>Tafsir Jalalain</item><!--5-->
+            <item>Tafsir Ibnu Katsir</item><!--6-->
+            <item>"I'rab, Sharf dan Balaghah Al Qur'an"</item><!--7-->
+            <item>"Ulum Al Qur'an"</item><!--8-->
+            <item>"Image Qur'an"</item><!--9-->
+            <item>"Image Qur'an Tazwij"</item><!--10-->
+        </string-array>
+    <string-array name="info_install">
+        <item>"Mengindex..Data Qur'an dan Terjemah Bahasa Indonesia"</item>
+        <item>"Mengindex..Terjemah Lafdziyah"</item>
+        <item>"Mengindex..Tafsir Adz-Dzikro"</item>
+        <item>"Mengindex..Tema Al-Qur'an"</item>
+        <item>"Mengindex..Terjemah Al-Qur'an Bahasa Inggris"</item>
+        <item>"Mengindex..Tafsir Jalalain"</item>
+        <item>"Mengindex..Tafsir Ibnu Katsir"</item>
+        <item>"Mengindex..I'rab, Sharf dan Balaghah Al-Qur'an"</item>
+        <item>"Mengindex..Ulum Al-Qur'an"</item>
+        <item>"Download Image Qur'an"</item>
+        <item>"Download Image Qur'an Tazwij"</item>
+    </string-array>
+</resources>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C)Sintus Projects-->
+
+
+<!-- ini utk layar hasil pencarian kata dan arti-nya.
+ -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:background="@color/panel_background_color"
+    android:descendantFocusability="beforeDescendants">
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="15dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingRight="15dp"
+        android:background="@drawable/card_background"
+        android:descendantFocusability="afterDescendants"
+        android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/kolomKata"
+        style="@android:style/TextAppearance.Large"
+        android:layout_width="match_parent"
+        android:textColor="@color/primary_text"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/kolomArtinya"
+        style="@android:style/TextAppearance.Small"
+        android:textStyle="italic"
+        android:layout_width="match_parent"
+        android:textColor="@color/primary_text"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/kolomAlamatnya"
+        style="@android:style/TextAppearance.Small"
+        android:layout_below="@+id/kolomArtinya"
+        android:textColor="@color/primary_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+        <WebView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:id="@+id/aksi"/>
+</LinearLayout>
+</FrameLayout>

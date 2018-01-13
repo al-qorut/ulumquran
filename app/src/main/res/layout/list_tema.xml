@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_margin="2dp"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:text="1"
+        android:textColor="@color/sura_details_color"
+        android:id="@+id/nomor"
+        android:textSize="16sp"/>
+
+<ImageView
+    android:layout_width="42dp"
+    android:layout_height="42dp"
+    android:id="@+id/gbtema"
+    android:layout_gravity="center"
+    android:src="@drawable/rowfolder"/>
+<TextView
+    android:layout_margin="2dp"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:layout_gravity="center"
+    android:textColor="@color/sura_details_color"
+    android:gravity="center"
+    android:textAlignment="textStart"
+    android:text="Ini Tampilan Tema"
+    android:id="@+id/txtTema"
+    android:textSize="16sp"/>
+</LinearLayout>

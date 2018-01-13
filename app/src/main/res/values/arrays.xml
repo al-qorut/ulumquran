@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tampil_huruf">
+        <item>Quran</item>
+        <item>Rasm Utsmani</item>
+        <item>Al Qalam Quran Majeed 2</item>
+    </string-array>
+
+    <string-array name="aksi">
+        <item>Terjemah Indonesia</item> <!--0-->
+        <item>Terjemah English</item> <!--1-->
+        <item>Terjemah Lafdziyah</item><!--2-->
+        <item>Tafsir Adz-Dzikro</item><!--3-->
+        <item>Tafsir Jalalain</item><!--4-->
+        <item>Tafsir Ibnu Katsir</item><!--5-->
+        <item>"I'rab Al Qur'an"</item><!--6-->
+        <item>"Sharf Al Qur'an"</item><!--7-->
+        <item>"Balaghah Al Qur'an"</item><!--8-->
+    </string-array>
+
+    <string-array name="nama_huruf">
+        <item>quran.ttf</item>
+        <item>uthmanic_hafs_ver09.otf</item>
+        <item>qalam.ttf</item>
+    </string-array>
+    <string-array name="lafdzi">
+        <item>id</item>
+        <item>en</item>
+        <item>bn</item>
+    </string-array>
+    <string-array name="lafdzi_display">
+        <item>Indonesian/Malaysian</item>
+        <item>English</item>
+        <item>বাংলা</item>
+    </string-array>
+</resources>

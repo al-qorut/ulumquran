@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright (C)Vik Sintus Projects -->
+<!-- utk tampilan layar kata2 yang -->
+<!-- keluar saat ketik pada kotak cari -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/page_background"
+    android:layout_height="match_parent">
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_background"
+    android:padding="5dp">
+    <TextView
+        android:id="@+id/kolomKata"
+        android:textSize="20dp"
+        android:textColor="?android:textColorPrimary"
+        android:layout_width="wrap_content"
+        android:lineSpacingExtra="2dp"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/kolomArtinya"
+        android:textSize="14dp"
+        android:textColor="?android:textColorSecondary"
+        android:textStyle="italic"
+        android:paddingTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/kolomAlamatnya"
+        android:textSize="12dp"
+        android:textColor="?android:textColorSecondary"
+        android:paddingTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+</ScrollView>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:background="@color/panel_background_color">
+    <SearchView
+        android:id="@+id/cari_tema"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Cari Tema.."/>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:background="@color/panel_background_color"
+    android:orientation="horizontal"
+    android:layout_height="40dp">
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/cari_tema"
+        android:background="@color/panel_background_color"
+        android:id="@+id/textParentTema"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_menu_rotate"
+        android:textSize="14sp"/>
+   <TextView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:textColor="@color/sura_details_color"
+       android:gravity="center"
+       android:layout_gravity="center"
+       android:id="@+id/infoTema"/>
+</LinearLayout>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/list_tema"
+        android:fastScrollEnabled="true"
+        android:layout_weight="1"/>
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/banner_ad_unit_id" />
+</LinearLayout>

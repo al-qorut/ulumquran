@@ -1,0 +1,137 @@
+"AsyncTask #1@4991" prio=5 waiting
+  java.lang.Thread.State: WAITING
+	 blocks AsyncTask #1@4991
+	  at java.lang.Object.wait(Object.java:-1)
+	  at java.lang.Thread.parkFor$(Thread.java:1220)
+	  - locked <0x1492> (a java.lang.Object)
+	  at sun.misc.Unsafe.park(Unsafe.java:299)
+	  at java.util.concurrent.locks.LockSupport.park(LockSupport.java:158)
+	  at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2013)
+	  at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:410)
+	  at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1038)
+	  at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1098)
+	  at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:588)
+	  at java.lang.Thread.run(Thread.java:818)
+
+"FinalizerDaemon@5261" daemon prio=5 waiting
+  java.lang.Thread.State: WAITING
+	 blocks FinalizerDaemon@5261
+	  at java.lang.Object.wait(Object.java:-1)
+	  at java.lang.Object.wait(Object.java:423)
+	  at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:101)
+	  - locked <0x1491> (a java.lang.ref.ReferenceQueue)
+	  at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:72)
+	  at java.lang.Daemons$FinalizerDaemon.run(Daemons.java:185)
+	  at java.lang.Thread.run(Thread.java:818)
+
+"main@3973" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	  at android.os.MessageQueue.nativePollOnce(MessageQueue.java:-1)
+	  at android.os.MessageQueue.next(MessageQueue.java:323)
+	  at android.os.Looper.loop(Looper.java:135)
+	  at android.app.ActivityThread.main(ActivityThread.java:5417)
+	  at java.lang.reflect.Method.invoke(Method.java:-1)
+	  at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)
+	  at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)
+
+"CleanupReference@5217" daemon prio=5 waiting
+  java.lang.Thread.State: WAITING
+	 blocks CleanupReference@5217
+	  at java.lang.Object.wait(Object.java:-1)
+	  at java.lang.Object.wait(Object.java:423)
+	  at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:101)
+	  - locked <0x1493> (a java.lang.ref.ReferenceQueue)
+	  at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:72)
+	  at org.chromium.content.common.CleanupReference$1.run(CleanupReference.java:50)
+
+"FinalizerWatchdogDaemon@5259" daemon prio=5 waiting
+  java.lang.Thread.State: WAITING
+	 blocks FinalizerWatchdogDaemon@5259
+	  at java.lang.Object.wait(Object.java:-1)
+	  at java.lang.Daemons$FinalizerWatchdogDaemon.waitForObject(Daemons.java:255)
+	  - locked <0x1490> (a java.lang.Daemons$FinalizerWatchdogDaemon)
+	  at java.lang.Daemons$FinalizerWatchdogDaemon.run(Daemons.java:227)
+	  at java.lang.Thread.run(Thread.java:818)
+
+"ReferenceQueueDaemon@5258" daemon prio=5 waiting
+  java.lang.Thread.State: WAITING
+	 blocks ReferenceQueueDaemon@5258
+	  at java.lang.Object.wait(Object.java:-1)
+	  at java.lang.Daemons$ReferenceQueueDaemon.run(Daemons.java:147)
+	  - locked <0xbda> (a java.lang.Class)
+	  at java.lang.Thread.run(Thread.java:818)
+
+"Thread-32@4090" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	  at android.net.LocalSocketImpl.accept(LocalSocketImpl.java:-1)
+	  at android.net.LocalSocketImpl.accept(LocalSocketImpl.java:331)
+	  at android.net.LocalServerSocket.accept(LocalServerSocket.java:90)
+	  at com.android.tools.fd.runtime.Server$SocketServerThread.run(Server.java:150)
+	  at java.lang.Thread.run(Thread.java:818)
+
+"HeapTaskDaemon@5260" daemon prio=5 waiting for monitor entry
+  java.lang.Thread.State: BLOCKED
+	  at dalvik.system.VMRuntime.runHeapTasks(VMRuntime.java:-1)
+	  at java.lang.Daemons$HeapTaskDaemon.run(Daemons.java:355)
+	  at java.lang.Thread.run(Thread.java:818)
+
+"Signal Catcher@5257" daemon prio=5 waiting
+  java.lang.Thread.State: WAITING
+	 Incompatible thread state: thread not suspended
+
+"Binder_1@5262" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"Binder_2@5263" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"RenderThread@4605" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"hwuiTask1@4869" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"Binder_3@4942" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"Chrome_DBThread@5087" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"Chrome_FileThread@5088" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"Chrome_FileUserBlockingThread@5089" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"Chrome_ProcessLauncherThread@5090" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"Chrome_CacheThread@5091" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"Chrome_IOThread@5092" prio=9 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"Thread-50@5093" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"Thread-51@5098" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+
+"Thread-52@5165" prio=5 runnable
+  java.lang.Thread.State: RUNNABLE
+	 Incompatible thread state: thread not suspended
+

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/nav_quran"
+        android:title="@string/navb_quran"
+        app:showAsAction="withText"
+        android:icon="@drawable/ic_goto_quran"/>
+    <item android:id="@+id/nav_ulum"
+        android:title="@string/navb_ulum"
+        app:showAsAction="withText"
+        android:icon="@drawable/ic_menu_back"/>
+    <item android:id="@+id/nav_tema"
+        android:title="@string/navb_tema"
+        app:showAsAction="withText"
+        android:icon="@drawable/ic_image"/>
+    <item android:id="@+id/nav_book"
+        android:title="@string/navb_book"
+        app:showAsAction="withText"
+        android:icon="@drawable/ic_ab_search"/>
+</menu>
