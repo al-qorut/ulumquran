@@ -3,21 +3,59 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
 	app:layout_behavior="@string/appbar_scrolling_view_behavior"
 	android:orientation="vertical">
+	<RelativeLayout
+		android:id="@+id/gotos"
+		android:background="@drawable/shape"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<Spinner
+			android:layout_alignParentLeft="true"
+			android:layout_width="wrap_content"
+			android:layout_height="@dimen/toolbar_height"
+			android:layout_centerVertical="true"
+			android:id="@+id/list_nama_surat"
+			android:entries="@array/nama_surat_id"/>
+		<Spinner
+			android:layout_toRightOf="@+id/list_nama_surat"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:id="@+id/list_ayat"
+			android:layout_gravity="center"
+			android:gravity="center"/>
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_alignParentEnd="true"
+			android:layout_alignParentRight="true"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:layout_marginRight="@dimen/activity_horizontal_margin"
+			android:id="@+id/goto_quran"
+			android:background="?attr/selectableItemBackgroundBorderless"
+			android:clickable="true"
+			android:src="@drawable/ic_goto_quran"/>
+	</RelativeLayout>
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/toolbar_height"
+		android:id="@+id/last_opened"
+		android:gravity="center"
+		android:visibility="visible"
+		android:layout_gravity="center"
+		android:background="?attr/selectableItemBackgroundBorderless"
+		android:clickable="true"
+		android:textSize="16sp"
+		android:textColor="@color/rada_transafaran"
+		android:text="@string/terakhir_dibuka"
+		tools:text="Surat Al Baqoroh ayat 200"/>
 
-	<android.support.v7.widget.RecyclerView
-		android:id="@+id/recycler_view"
-	    android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:divider="@null"
-		android:textDirection="rtl"
-		android:dividerHeight="0dp"
-		android:fastScrollEnabled="true"/>
-	<TextView android:id="@+id/text"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:gravity="center_horizontal|center_vertical"
-	    android:text="@string/index_loading"
-	    android:visibility="gone" />
+	<RelativeLayout
+		android:layout_below="@id/gotos"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginBottom="@dimen/toolbar_height"
+		android:id="@+id/container"></RelativeLayout>
 </LinearLayout>

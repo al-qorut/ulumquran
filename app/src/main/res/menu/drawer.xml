@@ -10,8 +10,8 @@
         <item
             android:id="@+id/navigation_item_update"
             android:checked="true"
-            android:icon="@drawable/ic_download"
-            android:title="@string/nav_item_update" />
+            android:icon="@drawable/ic_action_expand"
+            android:title="@string/nav_item_ads" />
         <item
             android:id="@+id/navigation_item_keluar"
             android:checked="true"

@@ -2,6 +2,7 @@ package smk.adzikro.indextemaquran.util;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,7 +17,14 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -29,10 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import smk.adzikro.indextemaquran.R;
+import smk.adzikro.indextemaquran.adapter.TemaListAdapter;
 import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
 import smk.adzikro.indextemaquran.constans.Constants;
 import smk.adzikro.indextemaquran.constans.QuranFileConstants;
 import smk.adzikro.indextemaquran.db.QuranDataLocal;
+import smk.adzikro.indextemaquran.object.Ayah;
 import smk.adzikro.indextemaquran.object.QuranSource;
 import smk.adzikro.indextemaquran.object.VerseRange;
 import smk.adzikro.indextemaquran.services.QuranDownloadService;
@@ -50,7 +60,7 @@ public class Fungsi {
 
     public static String getAyahWithoutBasmallah(int sura, int ayah, String ayahText) {
         // note that ayahText.startsWith check is always true for now - but it's explicitly here so
-        // that if we update quran.ar.db one day to fix this issue and older clients get a new copy of
+        // that if we update quran.ar one day to fix this issue and older clients get a new copy of
         // the database, their code continues to work as before.
         if (ayah == 1 && sura != 9 && sura != 1 && ayahText.startsWith(AR_BASMALLAH)) {
             return ayahText.substring(AR_BASMALLAH.length() + 1);
@@ -219,7 +229,6 @@ public class Fungsi {
     }
 
     public static String PATH_DATABASE(){
-
         return Environment.getExternalStorageDirectory()
                 .getAbsolutePath().toString()+"/.adzikro/indexQuran/databases/";
     }
@@ -253,28 +262,34 @@ public class Fungsi {
         return Environment.getExternalStorageDirectory()
                 .getAbsolutePath().toString()+"/quran_android/width_320/";
     }
-    public static void ShowMessage(Context context, String judul, String isi) {
+    public static void showMessage(Context context, String judul, String isi) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(judul);
         builder.setMessage(isi)
                 .setCancelable(false)
-                .setPositiveButton("Ok ", new
-                        DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,
-                                                int id) {
-                                dialog.cancel();
-                            }
-                        }).show();
+                .setPositiveButton("Ok ", (dialog, id) -> dialog.cancel()).show();
 
     }
-    public static String getTafsirAdzikro(){
-        return PATH_DATABASE()+ Constants.TAFSIR_ADZIKRO;
-    }
-    public static String getTafsirIbnuKatsir(){
-        return PATH_DATABASE()+Constants.TAFSIR_IBNU_KATSIR;
-    }
-    public static String getTafsirLafdzi(){
-        return PATH_DATABASE()+Constants.TERJEMAH_LAFDZI;
+    public static void ShowMessage(Context context, List<Ayah> data, String title) {
+        Activity activity = (Activity) context;
+        Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.layout_ayat_tema);
+        dialog.setTitle(title);
+        RecyclerView recyclerView = dialog.findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(new TemaListAdapter(context, data));
+        ImageView button = dialog.findViewById(R.id.exit);
+        String text = ShareUtil.getShareTextFromAyah(context, data);
+        button.setOnClickListener(view -> dialog.dismiss());
+        ImageView copy = dialog.findViewById(R.id.copy);
+        copy.setOnClickListener(view ->
+                ShareUtil.copyToClipboard(activity, text));
+        ImageView share = dialog.findViewById(R.id.share);
+        share.setOnClickListener(view ->
+                ShareUtil.shareViaIntent(activity, text, R.string.app_name));
+
+        dialog.show();
     }
     public static String getKunci() {
         Encryption sokAcak = Encryption.getDefault("!!Al-Qorut", "Salto", new byte[16]);
@@ -304,85 +319,16 @@ public class Fungsi {
         editor.commit();
     }
 
-   public static Boolean getBaru(Context context){
-       SharedPreferences set = context.getSharedPreferences(SETTING, context.MODE_PRIVATE);
-       Boolean mimiti = set.getBoolean("pertama", true);
-       return mimiti;
-   }
-    public static Boolean getTafsirIbnuKastir(Context context){
-        SharedPreferences set = context.getSharedPreferences(SETTING, context.MODE_PRIVATE);
-        Boolean tafsir = set.getBoolean("tafsir_ibnu_katsir", false);
-        return tafsir;
-    }
-    public static Boolean getTafsirIrab(Context context){
-        SharedPreferences set = context.getSharedPreferences(SETTING, context.MODE_PRIVATE);
-        Boolean tafsir = set.getBoolean("tafsir_irab_quran", false);
-        return tafsir;
-    }
-    public static Boolean getTafsirSharf(Context context){
-        SharedPreferences set = context.getSharedPreferences(SETTING, context.MODE_PRIVATE);
-        Boolean tafsir = set.getBoolean("tafsir_sharf_quran", false);
-        return tafsir;
-    }
-    public static Boolean getTafsirBalagha(Context context){
-        SharedPreferences set = context.getSharedPreferences(SETTING, context.MODE_PRIVATE);
-        Boolean tafsir = set.getBoolean("tafsir_balagha_quran", false);
-        return tafsir;
-    }
-
-    public static String getNamaPengguna(Context context){
-        SharedPreferences set = context.getSharedPreferences(SETTING, context.MODE_PRIVATE);
-        String nama= set.getString("namapengguna", "free");
-        return nama;
-    }
-
-    public static void setNamaPengguna(Context context, String nama){
-        SharedPreferences.Editor editor = context.getSharedPreferences(SETTING, context.MODE_PRIVATE).edit();
-        editor.putString("namapengguna", nama);
-        editor.commit();
-    }
-  public static void setBaru(Context context, Boolean baru){
-      SharedPreferences.Editor editor = context.getSharedPreferences(SETTING, context.MODE_PRIVATE).edit();
-      editor.putBoolean("pertama", baru);
-      editor.commit();
-  }
-    public static void setLastAksi(Context context, int aksi){
-        SharedPreferences.Editor editor = context.getSharedPreferences(SETTING, context.MODE_PRIVATE).edit();
-        editor.putInt("aksi", aksi);
-        editor.commit();
-    }
-    public static void setLastPage(Context context, int page){
-        SharedPreferences.Editor editor = context.getSharedPreferences(SETTING, context.MODE_PRIVATE).edit();
-        editor.putInt("page", page);
-        editor.commit();
-    }
-    public static int getLastAksi(Context context){
-        SharedPreferences set = context.getSharedPreferences(SETTING, context.MODE_PRIVATE);
-        int aksi = set.getInt("aksi", 0);
-        return aksi;
-    }
-    public static int getLastPage(Context context){
-        SharedPreferences set = context.getSharedPreferences(SETTING, context.MODE_PRIVATE);
-        int aksi = set.getInt("page", 1);
-        return aksi;
-    }
-
   public static Typeface getHurufArab(Context context){
       final Typeface face;
       SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
       final String  value = sharedPreferences.getString("huruf", null);
       if (value == null) {
-          face = Typeface.createFromAsset(context.getAssets(), "font/quran.ttf");
+          face = Typeface.createFromAsset(context.getAssets(), "font/qalam.ttf");
       } else {
           face = Typeface.createFromAsset(context.getAssets(), "font/" + value);
       }
       return face;
-  }
-
-  public static int getSizeHuruf(Context context){
-      SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-      final int sizeHuruf = sharedPreferences.getInt("size", 18);
-      return sizeHuruf;
   }
 
   public static Boolean getModeView(Context context){
@@ -390,216 +336,16 @@ public class Fungsi {
       Boolean mode_terjemah = sharedPreferences.getBoolean("mode_view", false);
       return mode_terjemah;
   }
-    public static Boolean getRegAwal(Context context){
+    public static void setModeView(Context context, boolean mode){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        Boolean mode_terjemah = sharedPreferences.getBoolean("regAwal", true);
-        return mode_terjemah;
-    }
-    public static void setRegAwal(Context context, boolean aksi){
-        SharedPreferences.Editor editor = context.getSharedPreferences(SETTING, context.MODE_PRIVATE).edit();
-        editor.putBoolean("regAwal", aksi);
-        editor.commit();
-    }
-public static void showInfo(Context context, CharSequence info){
-    Toast.makeText(context, info,Toast.LENGTH_LONG).show();
-}
-    public static void setInetTersedia(Context context,Boolean ada){
-        SharedPreferences.Editor editor = context.getSharedPreferences(SETTING, context.MODE_PRIVATE).edit();
-        editor.putBoolean("internet", ada);
-        editor.commit();
+        sharedPreferences.edit().putBoolean("mode_view", mode).apply();
     }
 
-
-    public static Boolean getInetTersedia(Context context){
-        SharedPreferences set = context.getSharedPreferences(SETTING, context.MODE_PRIVATE);
-        Boolean ada= set.getBoolean("internet", false);
-        return ada;
-    }
-
-    public static String getNamaAksi(Context context,int aksi){
-        if (aksi==12){
-            return "Tadarrus Mode Mushaf";
-        }else if(aksi==11){
-            return "Tadarrus Mode Text";
-        }else{
-            return context.getResources().getStringArray(R.array.aksi)[aksi];
-
-        }
-    }
 
   public static final String AR_BASMALLAH = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ";
 
-    public static String getQuery(Integer[] mAyahBounds){
-      int minSura = mAyahBounds[0];
-      int maxSura = mAyahBounds[2];
-      String COL_SURA = "ALQURAN.surat";
-      String COL_AYAH = "ALQURAN.ayat";
-      String minAyah = String.valueOf(mAyahBounds[1]);
-      String maxAyah = String.valueOf(mAyahBounds[3]);
-
-      StringBuilder whereQuery = new StringBuilder();
-      whereQuery.append("(");
-
-      if (minSura == maxSura) {
-          whereQuery.append(COL_SURA)
-                  .append("=").append(minSura)
-                  .append(" and ").append(COL_AYAH)
-                  .append(">=").append(minAyah)
-                  .append(" and ").append(COL_AYAH)
-                  .append("<=").append(maxAyah);
-      } else {
-    //      Log.e (TAG,"sura = minSura and ayah >= minAyah)");
-          whereQuery.append("(").append(COL_SURA).append("=")
-                  .append(minSura).append(" and ")
-                  .append(COL_AYAH).append(">=").append(minAyah).append(")");
-      //    Log.e("Hasil Query1 = ",String.valueOf(whereQuery));
-          whereQuery.append(" or ");
-      //    Log.e("Hasil Query2 = ",String.valueOf(whereQuery));
-          // (sura = maxSura and ayah <= maxAyah)
-          whereQuery.append("(").append(COL_SURA).append("=")
-                  .append(maxSura).append(" and ")
-                  .append(COL_AYAH).append("<=").append(maxAyah).append(")");
-       //   Log.e("Hasil Query3 = ",String.valueOf(whereQuery));
-          whereQuery.append(" or ");
-        //  Log.e("Hasil Query4 = ",String.valueOf(whereQuery));
-          // (sura > minSura and sura < maxSura)
-          whereQuery.append("(").append(COL_SURA).append(">")
-                  .append(minSura).append(" and ")
-                  .append(COL_SURA).append("<")
-                  .append(maxSura).append(")");
-        //  Log.e("Hasil Query5 = ",String.valueOf(whereQuery));
-      }
-
-      whereQuery.append(")");
-      return String.valueOf(whereQuery);
-  }
-    public static String getQueryTafsir(Integer[] mAyahBounds){
-        int minSura = mAyahBounds[0];
-        int maxSura = mAyahBounds[2];
-        String COL_SURA = "surat";
-        String COL_AYAH = "ayat";
-        String minAyah = String.valueOf(mAyahBounds[1]);
-        String maxAyah = String.valueOf(mAyahBounds[3]);
-
-        StringBuilder whereQuery = new StringBuilder();
-        whereQuery.append("(");
-
-        if (minSura == maxSura) {
-            whereQuery.append(COL_SURA)
-                    .append("=").append(minSura)
-                    .append(" and ").append(COL_AYAH)
-                    .append(">=").append(minAyah)
-                    .append(" and ").append(COL_AYAH)
-                    .append("<=").append(maxAyah);
-        } else {
-            //      Log.e (TAG,"sura = minSura and ayah >= minAyah)");
-            whereQuery.append("(").append(COL_SURA).append("=")
-                    .append(minSura).append(" and ")
-                    .append(COL_AYAH).append(">=").append(minAyah).append(")");
-            //    Log.e("Hasil Query1 = ",String.valueOf(whereQuery));
-            whereQuery.append(" or ");
-            //    Log.e("Hasil Query2 = ",String.valueOf(whereQuery));
-            // (sura = maxSura and ayah <= maxAyah)
-            whereQuery.append("(").append(COL_SURA).append("=")
-                    .append(maxSura).append(" and ")
-                    .append(COL_AYAH).append("<=").append(maxAyah).append(")");
-            //   Log.e("Hasil Query3 = ",String.valueOf(whereQuery));
-            whereQuery.append(" or ");
-            //  Log.e("Hasil Query4 = ",String.valueOf(whereQuery));
-            // (sura > minSura and sura < maxSura)
-            whereQuery.append("(").append(COL_SURA).append(">")
-                    .append(minSura).append(" and ")
-                    .append(COL_SURA).append("<")
-                    .append(maxSura).append(")");
-            //  Log.e("Hasil Query5 = ",String.valueOf(whereQuery));
-        }
-
-        whereQuery.append(")");
-        return String.valueOf(whereQuery);
-    }
-    public static String getQueryWhere(VerseRange verses){
-        String COL_SURA="sura";
-        String COL_AYAH="ayah";
-        StringBuilder whereQuery = new StringBuilder();
-        whereQuery.append("(");
-
-        if (verses.startSura == verses.endingSura) {
-            whereQuery.append(COL_SURA)
-                    .append("=").append(verses.startSura)
-                    .append(" and ").append(COL_AYAH)
-                    .append(">=").append(verses.startAyah)
-                    .append(" and ").append(COL_AYAH)
-                    .append("<=").append(verses.endingAyah);
-        } else {
-            // (sura = minSura and ayah >= minAyah)
-            whereQuery.append("(").append(COL_SURA).append("=")
-                    .append(verses.startSura).append(" and ")
-                    .append(COL_AYAH).append(">=").append(verses.startAyah).append(")");
-
-            whereQuery.append(" or ");
-
-            // (sura = maxSura and ayah <= maxAyah)
-            whereQuery.append("(").append(COL_SURA).append("=")
-                    .append(verses.endingSura).append(" and ")
-                    .append(COL_AYAH).append("<=").append(verses.endingAyah).append(")");
-
-            whereQuery.append(" or ");
-
-            // (sura > minSura and sura < maxSura)
-            whereQuery.append("(").append(COL_SURA).append(">")
-                    .append(verses.startSura).append(" and ")
-                    .append(COL_SURA).append("<")
-                    .append(verses.endingSura).append(")");
-        }
-
-        whereQuery.append(")");
-        return String.valueOf(whereQuery);
-    }
 
 
-public static void setSuratAyatLast(Context context, int surat, int ayat){
-    SharedPreferences.Editor editor = context.getSharedPreferences(SETTING, context.MODE_PRIVATE).edit();
-    editor.putInt("surat", surat);
-    editor.putInt("ayat", ayat);
-    editor.commit();
-}
-
-    public static void setLastPageTerjemah(Context context, int pageTerjemah){
-        SharedPreferences.Editor editor = context.getSharedPreferences(SETTING, context.MODE_PRIVATE).edit();
-        editor.putInt("pageTerjemah", pageTerjemah);
-        editor.commit();
-    }
-    public static int getLastPageTerjemah(Context context){
-        SharedPreferences set = context.getSharedPreferences(SETTING, context.MODE_PRIVATE);
-        int aksi = set.getInt("pageTerjemah", 0);
-        return aksi;
-    }
-public static Integer[] getSuratAyatlast(Context context){
-    Integer[] bound=new Integer[2];
-    SharedPreferences set = context.getSharedPreferences(SETTING, context.MODE_PRIVATE);
-    bound[0] = set.getInt("surat", 0);
-    bound[1] = set.getInt("ayat", 0);
-    return bound;
-}
-
-public static int getIdAyatAwal(int page){
-    return page*20;
-}
-
-
-public static Integer[] getShowAyat(int surat, int ayat){
-    Integer[] bounds = new Integer[2];
-    int idAyat=BaseQuranInfo.getAyahId(surat,ayat);
-    bounds[0]=idAyat/20; //ayat berada pada halaman ke
-    int d;
-    if(idAyat<20){
-        d=idAyat-1;}else{
-        d=idAyat % 20;
-    }
-    bounds[1] = d; //index ayat pada halaman
-
-    return bounds;
-}
 public static Boolean getVersiInet(String email) {
     Boolean hasil=false;
     try {

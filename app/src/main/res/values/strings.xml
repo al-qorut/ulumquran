@@ -49,6 +49,7 @@
 
     <!-- ketika pencarian gagal -->
     <string name="tak_ada_hasil">Tak ada \"%s\" dalam database</string>
+    <string name="terakhir_dibuka">Continue Reading  %s </string>
 
     <string name="banner_ad_unit_id">ca-app-pub-3624492980147085/6635820455</string>
     <string name="title_activity_tema">"Tema Al-Qur'an"</string>
@@ -84,11 +85,10 @@
 
     <string name="canceling">Batal&#8230;</string>
     <string name="juz2_description">Juz\' %1$s</string>
-    <string name="page_description">Hal. %1$s, Juz\' %2$s</string>
+    <string name="page_description">Page. %1$s, Juz\' %2$s</string>
     <string name="ayat">﴾%s﴿</string>
     <string name="highlighting_database">Required Files</string>
     <string name="timing_database">Required Files</string>
-    <string name="infinity" translatable="false">&#8734;</string>
     <!-- sura metainfo -->
     <string name="makki">Makkiyah</string>
     <string name="madani">Madaniyah</string>
@@ -157,13 +157,7 @@
     </string>
     <string name="app_id">1038751793192</string>
     <string name="title_activity_main2">Main2Activity</string>
-    <string name="bookmark_ayah">Bookmark</string>
-    <string name="share_ayah">Share</string>
-    <string name="tag_ayah">Tag</string>
-    <string name="share_ayah_text">Share</string>
-    <string name="copy_ayah">Copy</string>
-    <string name="translation_ayah">Terjemahkan</string>
-    <string name="play_from_here">Play</string>
+
     <string name="download_retry">try Download</string>
     <string name="menu_about">About Us</string>
     <string name="menu_other_apps">Other apps</string>
@@ -185,7 +179,6 @@
     <string name="gotoPage">Go to page</string>
     <string name="cancel">Cancel</string>
     <string name="prefs_translation_text_title">Translation text size</string>
-    <string translatable="false" name="prefs_translation_text_size">translationTextSize</string>
     <string name="infak_iklan">Infak dengan klik iklan : \n\nSupaya Iklan tidak tampil terus \n1. Upgrade ke versi Ikhlas \n2. klik iklan yang tampil sampai membuka link iklan tersebut, terserah mau mengikuti atau tidak apa yang diinginkan iklan, kemudian tutup kembali\n3. Dengan mengklik iklan membuka seluruh tafsir yang dimiliki   \nLanjutkan ?</string>
     <string name="klik_iklan">Untuk menampilkan isi Tafsir ==> Klik menu ~ Tampilkan Tafsir</string>
     <string name="tampilkan_tafsir">Menampilkan seluruh tafsir yang tersedia ?\nUntuk menampilkan klik iklan yang tampil sampai membuka link iklan tersebut, terserah mau mengikuti atau tidak apa yang diinginkan iklan, kemudian tutup kembali</string>
@@ -250,4 +243,61 @@
     <string name="display_lafdzi">Translate Word by word</string>
     <string name="lafdzi">Word by word Language</string>
     <string name="lafdzi_manage">Indonesian, English</string>
+
+    <!-- long press -->
+    <string name="bookmark_ayah">Bookmark this Ayah</string>
+    <string name="tag_ayah">Tag this Ayah</string>
+    <string name="share_ayah">Share Ayah Link</string>
+    <string name="share_ayah_text">Share Ayah Text</string>
+    <string name="translation_ayah">Ayah Translation/Tafseer</string>
+    <string name="play_from_here">Play from Here</string>
+    <string name="via_string">via @UlumQuran</string>
+    <string name="search_key">Press the search key to look up a verse</string>
+    <string name="copy_ayah">Copy Ayah</string>
+    <string name="ayah_copied_popup">Ayah Copied</string>
+    <string name="info_detail_ayat">Info Detail ayah</string>
+    <string name="put_notes">Put Notes for ayah</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="notes">Notes</string>
+
+    <!-- ayah action panel -->
+    <string name="play_from">From</string>
+    <string name="play_to">To</string>
+    <string name="play_restrict_range">Only play the above verses</string>
+    <string name="play_verses_range">Play set of verses:</string>
+    <string name="play_each_verse">Play each verse:</string>
+    <string name="play_apply">Apply</string>
+    <string name="play_apply_and_play">Apply and Play</string>
+    <string name="previous">Previous</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="next">Next</string>
+    <!-- Dialog -->
+    <string name="confirm">Confirm</string>
+    <string name="polder_bookmark">Polder Bookmark</string>
+    <string name="put_polder">Polder Bookmark</string>
+
+
+    <string name="thema_quran">Tema Al-Qur\'an</string>
+    <string name="active_translation">Translation For Thema</string>
+    <string name="sum_active_translation">Translation Quran Thema</string>
+
+    <!-- Search messages -->
+    <string name="found_in_sura">Found in Sura %1$s, Ayah %2$d</string>
+    <string name="no_results">No results found for \"%s\"</string>
+    <string name="no_arabic_search_available">You have not downloaded the Arabic search pack. Please download it and try your search again.</string>
+    <string name="get_arabic_search_db">Get Arabic Search Database</string>
+    <string name="search_data">Search Data</string>
+    <plurals name="search_results">
+        <item quantity="one">One result for \"%1$s\": </item>
+        <item quantity="other">%2$d results for \"%1$s\": </item>
+    </plurals>
+    <string name="quranSearchType">Verses of the Quran</string>
+    <string name="finish">Finish</string>
+    <string name="help_ads">This ad help free education</string>
+    <string name="remove_ads">Remove Ads</string>
+    <string name="nav_item_ads">Show Ads</string>
+    <string name="upgrade">Remove Ads Rp. 13.000 /Month</string>
+
 </resources>

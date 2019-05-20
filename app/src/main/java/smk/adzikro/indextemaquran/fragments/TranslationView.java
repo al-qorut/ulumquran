@@ -31,7 +31,7 @@ public class TranslationView extends FrameLayout implements View.OnClickListener
   private final TranslationAdapter translationAdapter;
   private final AyahToolBar ayahToolBar;
 
-  private String[] translations;
+  private List<String> translations;
   private QuranInfo selectedAyah;
   private OnClickListener onClickListener;
   private OnTranslationActionListener onTranslationActionListener;
@@ -77,52 +77,11 @@ public class TranslationView extends FrameLayout implements View.OnClickListener
   }
   public void setData(List<TranslationViewRow> rows ){
     translationAdapter.setData(rows);
+   // this.translations = rows.
     translationAdapter.notifyDataSetChanged();
     translationAdapter.refresh(QuranSettings.getInstance(getContext()));
   }
-  public void setVerses(@NonNull String[] translations, @NonNull List<QuranInfo> verses) {
-    this.translations = translations;
 
-    List<TranslationViewRow> rows = new ArrayList<>();
-    int currentSura = -1;
-    boolean wantTranslationHeaders = translations.length > 1;
-    for (int i = 0, size = verses.size(); i < size; i++) {
-      QuranInfo verse = verses.get(i);
-      int sura = verse.sura;
-      if (sura != currentSura) {
-        rows.add(new TranslationViewRow(TranslationViewRow.Type.SURA_HEADER, verse));
-        currentSura = sura;
-      }
-
-      if (verse.ayah == 1 && sura != 1 && sura != 9) {
-        rows.add(new TranslationViewRow(TranslationViewRow.Type.BASMALLAH, verse));
-      }
-
-      rows.add(new TranslationViewRow(TranslationViewRow.Type.VERSE_NUMBER, verse));
-
-      if (verse.arabicText != null) {
-        rows.add(new TranslationViewRow(TranslationViewRow.Type.QURAN_TEXT, verse));
-      }
-
-      // added this to guard against a crash that happened when verse.texts was empty
-      int verseTexts = verse.texts.size();
-      for (int j = 0; j < translations.length; j++) {
-        String text = verseTexts > j ? verse.texts.get(j) : "";
-        if (!TextUtils.isEmpty(text)) {
-          if (wantTranslationHeaders) {
-            rows.add(
-                new TranslationViewRow(TranslationViewRow.Type.TRANSLATOR, verse, translations[j]));
-          }
-          rows.add(new TranslationViewRow(TranslationViewRow.Type.TAFSIR_LATIN, verse, text));
-        }
-      }
-
-      rows.add(new TranslationViewRow(TranslationViewRow.Type.SPACER, verse));
-    }
-
-    translationAdapter.setData(rows);
-    translationAdapter.notifyDataSetChanged();
-  }
 
   public void refresh(@NonNull QuranSettings quranSettings) {
     translationAdapter.refresh(quranSettings);

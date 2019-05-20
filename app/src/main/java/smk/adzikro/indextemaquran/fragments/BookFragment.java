@@ -1,203 +1,127 @@
 package smk.adzikro.indextemaquran.fragments;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
-import smk.adzikro.indextemaquran.db.BookmarkHelper;
-import smk.adzikro.indextemaquran.util.Fungsi;
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import smk.adzikro.indextemaquran.activities.MainActivity;
-import smk.adzikro.indextemaquran.db.QuranDatabase;
-import smk.adzikro.indextemaquran.adapter.QuranListAdapter;
-import smk.adzikro.indextemaquran.object.QuranRow;
-import smk.adzikro.indextemaquran.setting.QuranSettings;
+import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
+import smk.adzikro.indextemaquran.interfaces.BookList;
+import smk.adzikro.indextemaquran.interfaces.BookPresenter;
+import smk.adzikro.indextemaquran.object.Ayah;
+import smk.adzikro.indextemaquran.object.Books;
 import smk.adzikro.indextemaquran.R;
+import smk.adzikro.indextemaquran.widgets.IconTreeItemHolder;
 
 
-public class BookFragment extends Fragment implements
-        QuranListAdapter.QuranTouchListener {
+public class BookFragment extends Fragment
+implements BookPresenter.View{
 
+    private ViewGroup containerView;
+    private TreeNode root;
+    private AndroidTreeView tView;
+    private BookList presenter;
 
-
-    public static BookFragment newInstance(){
-        return new BookFragment();
-    }
-
-
-    private RecyclerView mRecyclerView;
-    private BookmarkHelper bookmarkHelper=null;
-    QuranListAdapter adapter;
-    QuranSettings settings;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.quran_list, container, false);
-
+        final View view = inflater.inflate(R.layout.fragment_bookmark, container, false);
         final Context context = getActivity();
-
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        bookmarkHelper = new BookmarkHelper(getContext());
-        settings = QuranSettings.getInstance(getContext());
-        loadData();
-
+        containerView = (ViewGroup) view.findViewById(R.id.container);
+        presenter = new BookList();
+        presenter.subscribe(this,0);
+        root = TreeNode.root();
+        tView = new AndroidTreeView(getActivity(), root);
+        tView.setDefaultAnimation(true);
+        tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
+        tView.setDefaultViewHolder(IconTreeItemHolder.class);
+        tView.setDefaultNodeClickListener(nodeClickListener);
+        tView.setDefaultNodeLongClickListener(nodeLongClickListener);
+    //    containerView.addView(tView.getView());
+        if(savedInstanceState!=null){
+            String state = savedInstanceState.getString("tFragment");
+            if (!TextUtils.isEmpty(state)) {
+              //  tView.restoreState(state);
+            }
+        }
         return view;
     }
-    public void loadData(){
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                adapter = new QuranListAdapter(getContext(), mRecyclerView, getBookList(), true);
-                adapter.setQuranTouchListener(BookFragment.this);
-                mRecyclerView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mRecyclerView.setAdapter(adapter);
-                    }
-                });
-            }
-        };
-        new Thread(runnable).start();
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString("tFragment", tView.getSaveState());
+        super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onResume() {
-        final Activity activity = getActivity();
-        QuranSettings settings = QuranSettings.getInstance(activity);
-        if(bookmarkHelper==null){
-            bookmarkHelper = new BookmarkHelper(getContext());
+    public Context getAppContext() {
+        return getContext();
+    }
+    private List<String> folder(List<Books>books){
+        List<String> list = new ArrayList<>();
+        for (int i=0; i<books.size();i++){
+            list.add(books.get(i).folder);
         }
-        loadData();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB &&
-                settings.isArabicNames()) {
-            updateScrollBarPositionHoneycomb();
-        }
-
+        Set<String> hs = new HashSet<>();
+        hs.addAll(list);
+        list.clear();
+        list.addAll(hs);
+        return list;
+    }
+    @Override
+    public void onResume(){
         super.onResume();
     }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void updateScrollBarPositionHoneycomb() {
-        mRecyclerView.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
-    }
-    public String getAyahWithoutBasmallah(int sura, int ayah, String ayahText) {
-        // note that ayahText.startsWith check is always true for now - but it's explicitly here so
-        // that if we update quran.ar.db one day to fix this issue and older clients get a new copy of
-        // the database, their code continues to work as before.
-        if (ayah == 1 && sura != 9 && sura != 1 && ayahText.startsWith(Fungsi.AR_BASMALLAH)) {
-            return ayahText.substring(Fungsi.AR_BASMALLAH.length() + 1);
-        }
-        return ayahText;
-    }
-    private String getTextAyat(int surat, int ayat){
-        SQLiteDatabase db = QuranDatabase.open(getContext());
-        Cursor cursor = null;
-        cursor = db.rawQuery("select arab from ALQURAN where ayat="+ayat+" and surat="+surat,null);
-        String text ="";
-        if(cursor!=null && cursor.moveToFirst()) {
-            text = cursor.getString(cursor.getColumnIndex("arab"));
-            text = getAyahWithoutBasmallah(surat, ayat, text);
-        }
-        cursor.close();
-        db.close();
-        String[] kata = TextUtils.split(text, " ");
-        String textAyat="";
-        switch (kata.length){
-            case 0:
-                textAyat="";
-                break;
-            case 1:
-                textAyat= kata[0];
-                break;
-            case 2:
-                textAyat= kata[0]+" "+kata[1];
-                break;
-            case 3:
-                textAyat =kata[0]+" "+kata[1]+" "+kata[2];
-                break;
-            default:
-                textAyat =kata[0]+" "+kata[1]+" "+kata[2]+" "+kata[3];
-                break;
-        }
-        return textAyat;
-    }
-    private QuranRow[] getBookList() {
-        int pos = 0;
-        int sura = 1;
-        //((MainActivity)getContext()).getListAksi();//
-        String[] aks = getResources().getStringArray(R.array.aksi);
-        String[] aksi = new String[aks.length+1];
-        aksi[0]= "Current Page (Tadarrus)";
-        for (int i=0;i<aks.length;i++){
-            aksi[i+1]= aks[i];
-        }
-        int jumlahData = bookmarkHelper.getCount();
-
-        QuranRow[] elements = new QuranRow[aksi.length + jumlahData];
-
-        Activity activity = getActivity();
-        boolean wantPrefix = activity.getResources().getBoolean(R.bool.show_surat_prefix);
-        boolean wantTranslation = activity.getResources().getBoolean(R.bool.show_sura_names_translation);
-        for (int dataAksi = -1; dataAksi < aksi.length-1; dataAksi++) {
-            final String headerTitle = aksi[dataAksi + 1];
-            final QuranRow.Builder headerBuilder = new QuranRow.Builder()
-                    .withType(QuranRow.HEADER)
-                    .withText(headerTitle)
-                    .withAksi(dataAksi)
-                    .withPage(1);
-            elements[pos++] = headerBuilder.build();
-            Cursor cursor = null;
-            cursor = bookmarkHelper.getListBookAksi(dataAksi);
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    sura = cursor.getInt(cursor.getColumnIndex("surat"));
-                    int ayat = cursor.getInt(cursor.getColumnIndex("ayat"));
-                    int page = cursor.getInt(cursor.getColumnIndex("page"));
-                    String text =cursor.getString(cursor.getColumnIndex("isi"));
-                    if(text.equals("")) text = getTextAyat(sura,ayat);
-                    final QuranRow.Builder builder = new QuranRow.Builder()
-                            .withType(QuranRow.AYAH_BOOKMARK)
-                            .withText(text)
-                            .withMetadata(BaseQuranInfo.getAyahMetadata(sura, ayat, page, getContext()))
-                            .withSura(sura)
-                            .withAksi(dataAksi)
-                            .withPage(BaseQuranInfo.getPageFromSuraAyah(sura,ayat));
-
-                    elements[pos++] = builder.build();
+    private void createListBook(List<Books> books){
+            List<String> folders = folder(books);
+            List<TreeNode> listForder = new ArrayList<>();
+            for(int f=0; f<folders.size(); f++) {
+                TreeNode folder = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder, folders.get(f),null));
+                for (int i = 0; i < books.size(); i++) {
+                    Books books1 = books.get(i);
+                    if(folders.get(f).equals(books1.folder)) {
+                        Ayah ayah = new Ayah(books1.surat, books1.ayat);
+                        TreeNode isi = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_bookmark, BaseQuranInfo.getSuraAyahString(getContext(), books1.surat, books1.ayat),ayah));
+                        folder.addChild(isi);
+                    }
                 }
+                listForder.add(folder);
+            }
+            root.addChildren(listForder);
+            containerView.addView(tView.getView());
+    }
+
+    @Override
+    public void OnLoadBook(List<Books> books) {
+        createListBook(books);
+    }
+    private TreeNode.TreeNodeClickListener nodeClickListener = new TreeNode.TreeNodeClickListener() {
+        @Override
+        public void onClick(TreeNode node, Object value) {
+            IconTreeItemHolder.IconTreeItem item = (IconTreeItemHolder.IconTreeItem) value;
+            if (((IconTreeItemHolder.IconTreeItem) value).ayah!=null) {
+                Ayah ayah = ((IconTreeItemHolder.IconTreeItem) value).ayah;
+                int page = BaseQuranInfo.getPageFromSuraAyah(ayah.sura, ayah.ayat);
+                ((MainActivity)getAppContext()).jumpTo(page,0);
             }
         }
-        return elements;
-    }
-    String TAG="BookFragment";
-
-    @Override
-    public void onClick(QuranRow row, int position) {
-        //Log.e(TAG,"page "+row.page+" aksi "+row.aksi);
-        if(!row.isHeader()) {
-            adapter.setItemChecked(position, adapter.isItemChecked(position));
-            settings.setLastAksi(row.aksi);
-            ((MainActivity) getContext()).jumpTo(row.page, row.aksi);
+    };
+    private TreeNode.TreeNodeLongClickListener nodeLongClickListener = new TreeNode.TreeNodeLongClickListener() {
+        @Override
+        public boolean onLongClick(TreeNode node, Object value) {
+            return false;
         }
-    }
-
-    @Override
-    public boolean onLongClick(QuranRow row, int position) {
-        return false;
-    }
+    };
 }

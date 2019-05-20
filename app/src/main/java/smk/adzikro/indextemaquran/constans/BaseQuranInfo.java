@@ -7,11 +7,12 @@ import android.text.TextUtils;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import smk.adzikro.indextemaquran.object.QuranAyah;
+import smk.adzikro.indextemaquran.object.SuraAyahIterator;
 import smk.adzikro.indextemaquran.ui.QuranUtils;
 import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.object.SuraAyah;
 
+import static smk.adzikro.indextemaquran.constans.Constants.PAGES_FIRST;
 import static smk.adzikro.indextemaquran.constans.Constants.PAGES_LAST;
 
 public class BaseQuranInfo {
@@ -23,15 +24,6 @@ public class BaseQuranInfo {
   public static int[] SURA_NUM_AYAHS = BaseQuranData.SURA_NUM_AYAHS;
   public static boolean[] SURA_IS_MAKKI = BaseQuranData.SURA_IS_MAKKI;
   public static int[][] QUARTERS = BaseQuranData.QUARTERS;
-  public static int TAFSIR_IND = 0;
-  public static int TAFSIR_ENG = 1;
-  public static int TAFSIR_LAFDZI = 2;
-  public static int TAFSIR_ADZIKRO = 3;
-  public static int TAFSIR_JALALAIN = 4;
-  public static int TAFSIR_IBNU_KATSIR = 5;
-  public static int TAFSIR_IRAB = 6;
-  public static int TAFSIR_SHARF = 7;
-  public static int TAFSIR_BALAGHA = 8;
   /**
    * Get localized sura name from resources
    *
@@ -78,6 +70,13 @@ public class BaseQuranInfo {
     }
 
     return builder.toString();
+  }
+  public static int safelyGetSuraOnPage(int page) {
+    if (page < PAGES_FIRST || page > PAGES_LAST) {
+      //Crashlytics.logException(new IllegalArgumentException("got page: " + page));
+      page = 1;
+    }
+    return PAGE_SURA_START[page - 1];
   }
   public static String getArtiSuraName(Context context, int sura) {
     if (sura < Constants.SURA_FIRST ||
@@ -133,11 +132,11 @@ public class BaseQuranInfo {
   }
 
   public static String getNotificationTitle(Context context,
-                                            QuranAyah minVerse,
-                                            QuranAyah maxVerse,
+                                            SuraAyah minVerse,
+                                            SuraAyah maxVerse,
                                             boolean isGapless) {
-    int minSura = minVerse.getSura();
-    int maxSura = maxVerse.getSura();
+    int minSura = minVerse.sura;
+    int maxSura = maxVerse.sura;
 
     String notificationTitle =
             BaseQuranInfo.getSuraName(context, minSura, true, false);
@@ -152,23 +151,23 @@ public class BaseQuranInfo {
       }
     }
 
-    int maxAyah = maxVerse.getAyah();
+    int maxAyah = maxVerse.ayah;
     if (maxAyah == 0) {
       maxSura--;
       maxAyah = BaseQuranInfo.getNumAyahs(maxSura);
     }
 
     if (minSura == maxSura) {
-      if (minVerse.getAyah() == maxAyah) {
+      if (minVerse.ayah == maxAyah) {
         notificationTitle += " (" + maxAyah + ")";
       } else {
-        notificationTitle += " (" + minVerse.getAyah() +
-            "-" + maxAyah + ")";
+        notificationTitle += " (" + minVerse.ayah +
+                "-" + maxAyah + ")";
       }
     } else {
-      notificationTitle += " (" + minVerse.getAyah() +
-          ") - " + BaseQuranInfo.getSuraName(context, maxSura, true, false) +
-          " (" + maxAyah + ")";
+      notificationTitle += " (" + minVerse.ayah +
+              ") - " + BaseQuranInfo.getSuraName(context, maxSura, true, false) +
+              " (" + maxAyah + ")";
     }
 
     return notificationTitle;
@@ -321,20 +320,18 @@ public class BaseQuranInfo {
 
   public static Set<String> getAyahKeysOnPage(int page, SuraAyah lowerBound, SuraAyah upperBound) {
     Set<String> ayahKeys = new LinkedHashSet<>();
-    Integer[] bounds = BaseQuranInfo.getPageBounds(page);
-    if (bounds != null) {
-      SuraAyah start = new SuraAyah(bounds[0], bounds[1]);
-      SuraAyah end = new SuraAyah(bounds[2], bounds[3]);
-      if (lowerBound != null) {
-        start = SuraAyah.max(start, lowerBound);
-      }
-      if (upperBound != null) {
-        end = SuraAyah.min(end, upperBound);
-      }
-      SuraAyah.Iterator iterator = SuraAyah.getIterator(start, end);
-      while (iterator.next()) {
-        ayahKeys.add(iterator.getSura() + ":" + iterator.getAyah());
-      }
+    Integer bounds[] = BaseQuranInfo.getPageBounds(page);
+    SuraAyah start = new SuraAyah(bounds[0], bounds[1]);
+    SuraAyah end = new SuraAyah(bounds[2], bounds[3]);
+    if (lowerBound != null) {
+      start = SuraAyah.max(start, lowerBound);
+    }
+    if (upperBound != null) {
+      end = SuraAyah.min(end, upperBound);
+    }
+    SuraAyahIterator iterator = new SuraAyahIterator(start, end);
+    while (iterator.next()) {
+      ayahKeys.add(iterator.getSura() + ":" + iterator.getAyah());
     }
     return ayahKeys;
   }

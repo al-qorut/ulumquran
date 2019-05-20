@@ -129,7 +129,7 @@ public class QuranDownloadService extends Service implements
     super.onCreate();
     HandlerThread thread = new HandlerThread(TAG);
     thread.start();
-    Log.e(TAG,"onCreate");
+ //   Log.e(TAG,"onCreate");
     Context appContext = getApplicationContext();
     mNotifier = new QuranDownloadNotifier(this);
     mWifiLock = ((WifiManager) appContext.getSystemService(Context.WIFI_SERVICE))
@@ -141,14 +141,14 @@ public class QuranDownloadService extends Service implements
     mSuccessfulZippedDownloads = new HashMap<>();
     mRecentlyFailedDownloads = new HashMap<>();
     mQuranSettings = QuranSettings.getInstance(this);
-    Log.e(TAG,"onCreate");
+  //  Log.e(TAG,"onCreate");
 //    ((QuranApplication) getApplication()).getApplicationComponent().inject(this);
     mOkHttpClient = new OkHttpClient();
     mBroadcastManager = LocalBroadcastManager.getInstance(appContext);
   }
 
   private void handleOnStartCommand(Intent intent, int startId) {
-    Log.e(TAG,"handleOnStartCommand "+intent.getExtras().getString(QuranDownloadService.EXTRA_URL));
+ //   Log.e(TAG,"handleOnStartCommand "+intent.getExtras().getString(QuranDownloadService.EXTRA_URL));
     if (intent != null) {
       if (ACTION_CANCEL_DOWNLOADS.equals(intent.getAction())) {
         mServiceHandler.removeCallbacksAndMessages(null);
@@ -251,7 +251,7 @@ public class QuranDownloadService extends Service implements
       int type = intent.getIntExtra(EXTRA_DOWNLOAD_TYPE, 0);
       String notificationTitle =
           intent.getStringExtra(EXTRA_NOTIFICATION_NAME);
-
+    Log.e(TAG, "Tah "+url);
       NotificationDetails details =
           new NotificationDetails(notificationTitle, key, type);
       // check if already downloaded, and if so, send broadcast

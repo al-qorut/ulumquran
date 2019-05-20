@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import smk.adzikro.indextemaquran.fragments.BookFragment;
 import smk.adzikro.indextemaquran.fragments.SuraListFragment;
 import smk.adzikro.indextemaquran.fragments.TemaFragment;
-import smk.adzikro.indextemaquran.fragments.UlumFragment;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -32,7 +31,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             SuraListFragment tab1 = new SuraListFragment();
             return tab1;
         }else if(position==1){
-            //UlumFragment tab2 = new UlumFragment();
             SuraListFragment tab2 = new SuraListFragment();
             return tab2;
         }else if(position==2){

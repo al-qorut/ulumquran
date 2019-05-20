@@ -4,14 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,14 +18,15 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
 import smk.adzikro.indextemaquran.constans.QuranFileConstants;
-import smk.adzikro.indextemaquran.object.QuranAyah;
+import smk.adzikro.indextemaquran.object.Ayah;
+import smk.adzikro.indextemaquran.object.BundleTema;
 import smk.adzikro.indextemaquran.object.QuranInfo;
 import smk.adzikro.indextemaquran.object.QuranLafdzi;
 import smk.adzikro.indextemaquran.object.QuranSource;
 import smk.adzikro.indextemaquran.object.QuranText;
+import smk.adzikro.indextemaquran.object.Tema;
 import smk.adzikro.indextemaquran.object.VerseRange;
 import smk.adzikro.indextemaquran.setting.QuranSettings;
 import smk.adzikro.indextemaquran.util.Fungsi;
@@ -111,7 +109,7 @@ public class QuranApi {
                                     @NonNull List<QuranText> arabic,
                                     @NonNull List<List<QuranText>> texts,
                                     List<List<QuranLafdzi>> lafdzi) {
-        Log.e(TAG,"combineAyahData "+lafdzi.size());
+      //  Log.e(TAG,"combineAyahData "+lafdzi.size());
         final int arabicSize = arabic.size();
         final int translationCount = texts.size();
         List<QuranInfo> result = new ArrayList<>();
@@ -195,6 +193,58 @@ public class QuranApi {
             cursor.close();
         }
         return sources;
+    }
+    public Observable<List<Tema>> getTema(String title){
+        Observable<List<Tema>> observable = Observable.create(e -> {
+            mQuranHelper = DatabaseHandler.getDatabaseHandler(context, QuranFileConstants.TEMA_DATABASE);
+            List<Tema> temas = mQuranHelper.getListTema(title);
+            e.onNext(temas);
+        });
+        return observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<List<Ayah>> getListTema(String title){
+        Observable<List<Ayah>> observable = Observable.create(e -> {
+            mQuranHelper = DatabaseHandler.getDatabaseHandler(context, QuranFileConstants.TEMA_DATABASE);
+            List<Ayah> ayahs = mQuranHelper.getListAyahTema(title);
+            mQuranHelper = DatabaseHandler.getDatabaseHandler(context, QuranFileConstants.ARABIC_DATABASE);
+            for (int i=0; i<ayahs.size();i++){
+                Ayah ayah = ayahs.get(i);
+                String arab = mQuranHelper.getAyahText(ayah.sura, ayah.ayat, DatabaseHandler.TextType.ARABIC);
+                ayah.setArab(arab);
+                ayahs.set(i,ayah);
+            }
+            File file = new File(Fungsi.PATH_DATABASE()+setting.getActiveTranslation());
+            if(file.exists()) {
+                mQuranHelper = DatabaseHandler.getDatabaseHandler(context, setting.getActiveTranslation());
+                for (int i=0; i<ayahs.size();i++){
+                    Ayah ayah = ayahs.get(i);
+                    String arti = mQuranHelper.getAyahText(ayah.sura, ayah.ayat, DatabaseHandler.TextType.TRANSLATION);
+                    ayah.setArti(arti);
+                    ayahs.set(i,ayah);
+                }
+            }
+            e.onNext(ayahs);
+        });
+        return observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Ayah> getAyat(Ayah ayah){
+        Observable<Ayah> observable = Observable.create(e -> {
+            mQuranHelper = DatabaseHandler.getDatabaseHandler(context, QuranFileConstants.ARABIC_DATABASE);
+            String arab = mQuranHelper.getAyahText(ayah.sura, ayah.ayat, DatabaseHandler.TextType.ARABIC);
+            File file = new File(Fungsi.PATH_DATABASE()+setting.getActiveTranslation());
+            String arti="";
+            if(file.exists()) {
+                mQuranHelper = DatabaseHandler.getDatabaseHandler(context, setting.getActiveTranslation());
+                arti = mQuranHelper.getAyahText(ayah.sura, ayah.ayat, DatabaseHandler.TextType.TRANSLATION);
+            }
+            Ayah ayah1 = new Ayah(ayah.sura,ayah.ayat);
+            ayah1.setArab(arab);
+            ayah1.setArti(arti);
+            e.onNext(ayah1);
+        });
+        return observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
     public static class BundleQuranInfo{
         public List<String> info;

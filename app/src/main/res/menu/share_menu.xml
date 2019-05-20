@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item
       android:id="@+id/cab_favorite"
-      android:icon="@drawable/ic_favorite"
+      android:icon="@drawable/ic_heart_outline_white_24dp"
       android:title="@string/bookmark_ayah"/>
   <item
       android:id="@+id/cab_share_ayah_text"
@@ -18,6 +18,6 @@
       android:title="@string/play_from_here"/>
   <item
       android:id="@+id/cab_tema"
-      android:icon="@drawable/ic_translation"
-      android:title="@string/translate"/>
+      android:icon="@drawable/ic_favorite"
+      android:title="@string/info_detail_ayat"/>
 </menu>

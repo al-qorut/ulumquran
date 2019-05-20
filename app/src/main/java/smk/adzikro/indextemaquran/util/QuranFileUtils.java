@@ -25,6 +25,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import smk.adzikro.indextemaquran.BuildConfig;
 import smk.adzikro.indextemaquran.constans.QuranFileConstants;
+import smk.adzikro.indextemaquran.provider.QuranDataProvider;
 import smk.adzikro.indextemaquran.provider.QuranScreenInfo;
 import smk.adzikro.indextemaquran.setting.QuranSettings;
 import smk.adzikro.indextemaquran.ui.Response;
@@ -581,4 +582,33 @@ public class QuranFileUtils {
     out.close();
     in.close();
   }
+  public static boolean hasArabicSearchDatabase(Context context) {
+    if (hasTranslation(context, QuranDataProvider.QURAN_ARABIC_DATABASE)) {
+      return true;
+    } else if (!DATABASE_DIRECTORY.equals(AYAHINFO_DIRECTORY)){
+      // non-hafs flavors copy their ayahinfo and arabic search database in a subdirectory,
+      // so we copy back the arabic database into the translations directory where it can
+      // be shared across all flavors of quran android
+      final File ayahInfoFile = new File(getQuranAyahDatabaseDirectory(context),
+              QuranDataProvider.QURAN_ARABIC_DATABASE);
+      final String baseDir = getQuranDatabaseDirectory(context);
+      if (ayahInfoFile.exists() && baseDir != null) {
+        final File base = new File(baseDir);
+        final File translationsFile = new File(base, QuranDataProvider.QURAN_ARABIC_DATABASE);
+        if (base.mkdir()) {
+          try {
+            copyFile(ayahInfoFile, translationsFile);
+            return true;
+          } catch (IOException ioe) {
+            if (!translationsFile.delete()) {
+              Timber.e("Error deleting translations file");
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+
 }

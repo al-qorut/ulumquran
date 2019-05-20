@@ -14,33 +14,17 @@ public class QuranPageAdapter extends FragmentStatePagerAdapter {
 
     private boolean mIsShowingTranslation = true;
 
-   private int mAksi;
    public QuranPageAdapter(FragmentManager fm,
-                           boolean isShowingTranslation, int aksi){
+                           boolean isShowingTranslation){
       super(fm);
       mIsShowingTranslation = isShowingTranslation;
-      mAksi = aksi;
    }
 
-   public void setTranslationMode(int aksi){
-      if (!mIsShowingTranslation){
-          mAksi = aksi;
-         mIsShowingTranslation = true;
+   public void setTranslationMode(boolean mIsShowing){
+       this.mIsShowingTranslation = mIsShowing;
          notifyDataSetChanged();
-      }
    }
 
-   public void setQuranMode(int mode){
-      if (mIsShowingTranslation){
-          mAksi = mode;
-         mIsShowingTranslation = false;
-         notifyDataSetChanged();
-      }
-   }
-   public void setAksi(int aksi){
-       mAksi = aksi;
-       notifyDataSetChanged();
-   }
    @Override
    public int getItemPosition(Object object){
       /* when the ViewPager gets a notifyDataSetChanged (or invalidated),
@@ -72,25 +56,14 @@ public class QuranPageAdapter extends FragmentStatePagerAdapter {
     int mPage = position;//QuranInfo.getPageFromPos(position);
 	   Log.e(TAG,"getting page: " + mPage);
       if (mIsShowingTranslation){
-          Log.e(TAG,"Transalation true: " + mPage+" aksi "+mAksi);
          return TranslationFragment.newInstance(mPage);
       } else {
-          Log.e(TAG,"Transalation false: " + mPage);
-          if(mAksi==1) {
-              return ImagePagerQuran.newInstance(mPage);//QuranPageFragment.newInstance(mPage);
-          }else{
-              return TranslationFragment.newInstance(mPage);
-          }
+         return ImagePagerQuran.newInstance(mPage);
       }
 	}
 	
 	@Override
 	public void destroyItem(ViewGroup container, int position, Object object){
-      Fragment f = (Fragment)object;
-      if (f instanceof ImagePagerQuran){
-         ((ImagePagerQuran)f).cleanup();
-      }
-
 	   super.destroyItem(container, position, object);
 	}
 

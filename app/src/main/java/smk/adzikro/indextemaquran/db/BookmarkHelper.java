@@ -8,7 +8,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import smk.adzikro.indextemaquran.object.Books;
 import smk.adzikro.indextemaquran.util.Fungsi;
 
 /**
@@ -16,15 +23,14 @@ import smk.adzikro.indextemaquran.util.Fungsi;
  */
 
 public class BookmarkHelper {
-    private static int VERSI=1;
+    private static int VERSI=2;
     private static String DATABASE = Fungsi.PATH_DATABASE()+"bookmark.db";
-    private static Context context;
+    //private static Context context;
     private static SQLiteDatabase db;
 
     public BookmarkHelper(Context context) {
         BookmarkDatabase bookmarkDatabase = new BookmarkDatabase(context);
         this.db = bookmarkDatabase.getWritableDatabase();
-        this.context = context;
     }
 
     private class BookmarkDatabase extends SQLiteOpenHelper {
@@ -35,7 +41,7 @@ public class BookmarkHelper {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL("create TABLE IF NOT EXISTS bookmarks (_ID INTEGER PRIMARY KEY " +
-                    "AUTOINCREMENT, surat int, ayat int, page int, aksi int, isi text, tanggal TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+                    "AUTOINCREMENT, surat int, ayat int, folder text, isi text, tanggal TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
         }
 
         @Override
@@ -44,21 +50,19 @@ public class BookmarkHelper {
         }
     }
 
-    public  long addBook(int surat, int ayat, int page, int aksi, String isi){
+    public  long addBook(int surat, int ayat, String folder){
         ContentValues data = new ContentValues();
         data.put(BookmarksTable.SURAT, surat);
         data.put(BookmarksTable.AYAT, ayat);
-        data.put(BookmarksTable.PAGE, page);
-        data.put(BookmarksTable.AKSI, aksi);
-        data.put(BookmarksTable.ISI, isi);
+        data.put(BookmarksTable.FOLDER, folder);
         return db.insert(BookmarksTable.TABLE_NAME,null,data);
     }
 
-    public  long getBookId(int surat, int ayat, int page, int aksi){
+    public  long getBookId(int surat, int ayat){
         Cursor cursor = null;
         try {
             cursor = db.rawQuery("select * from " + BookmarksTable.TABLE_NAME +
-                    " where page= " + page + " and aksi= " + aksi+" and ayat="+ayat+" and surat="+surat, null);
+                    " where ayat="+ayat+" and surat="+surat, null);
             if(cursor!=null && cursor.moveToNext()){
                 return cursor.getLong(0);
             }
@@ -70,42 +74,24 @@ public class BookmarkHelper {
         return -1;
     }
 
-    public boolean isPageBookmarked(int page){
-        Cursor cursor = null;
-        try {
-            cursor = db.rawQuery("select * from " + BookmarksTable.TABLE_NAME +
-                    " where page= " + page, null);
-            if(cursor!=null && cursor.moveToNext()){
-                return true;
-            }
-        }catch (Exception e) {
-            // swallow the error for now
-        } finally {
-            cursor.close();
-        }
-        return false;
-    }
 
-    public  long addBookmarkIfNotExists(Integer sura, Integer ayah, int page, int aksi, String isi) {
-        long bookmarkId = getBookId(sura, ayah, page, aksi);
+
+    public long addRemoveBookmark(Integer sura, Integer ayah, String isi) {
+        long bookmarkId = getBookId(sura, ayah);
         if (bookmarkId < 0) {
-            bookmarkId = addBook(sura, ayah, page, aksi, isi);
+            bookmarkId = addBook(sura, ayah, isi);
+        }else{
+            hapusBook(bookmarkId);
         }
         return bookmarkId;
     }
-    public  long addBookmarkTadarrus(Integer sura, Integer ayah, int page, int aksi, String isi) {
-       // long bookmarkId = getBookId(sura, ayah, page, aksi);
-        if (aksi < 0) hapusTadarrus();
-            return addBook(sura, ayah, page, aksi, isi);
-    }
+
 
     public  boolean hapusBook(long id){
         return db.delete(BookmarksTable.TABLE_NAME,"_ID="+id,null)==1;
     }
 
-    public  boolean hapusTadarrus(){
-        return db.delete(BookmarksTable.TABLE_NAME,"aksi=-1",null)==1;
-    }
+
 
     public int getCount(){
         Cursor cursor = null;
@@ -123,31 +109,18 @@ public class BookmarkHelper {
         return 0;
     }
 
-    public  boolean hapusBookPage(int page){
-        return db.delete(BookmarksTable.TABLE_NAME,"page="+page,null)==1;
-    }
-    public long addRemoveBookmark(Integer sura, Integer ayah, int page, int aksi, String isi) {
-        long bookmarkId = getBookId(sura, ayah, page, aksi);
-        if (bookmarkId < 0) {
-            bookmarkId = addBook(sura, ayah, page, aksi, isi);
-        }
-        return bookmarkId;
-    }
 
-    public ArrayList<HashMap<String, String>> getListBook(int aksi) {
-        ArrayList<HashMap<String, String>> alist = new ArrayList<HashMap<String, String>>();
+
+    public ArrayList<HashMap<String, Integer>> getListBook() {
+        ArrayList<HashMap<String, Integer>> alist = new ArrayList<HashMap<String, Integer>>();
         Cursor cursor = null;
         try {
-            cursor = db.rawQuery("select * from "+BookmarksTable.TABLE_NAME+
-                    " where aksi="+aksi, null);
+            cursor = db.rawQuery("select * from "+BookmarksTable.TABLE_NAME, null);
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    HashMap<String, String> hashMap = new HashMap<String, String>();
-                    hashMap.put("no", String.valueOf(cursor.getPosition() + 1));
-                    hashMap.put("surat", cursor.getString(cursor.getColumnIndex("surat")));
-                    hashMap.put("ayat", cursor.getString(cursor.getColumnIndex("ayat")));
-                    hashMap.put("page", cursor.getString(cursor.getColumnIndex("page")));
-                    hashMap.put("aksi", cursor.getString(cursor.getColumnIndex("aksi")));
+                    HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
+                    hashMap.put("surat", cursor.getInt(cursor.getColumnIndex("surat")));
+                    hashMap.put("ayat", cursor.getInt(cursor.getColumnIndex("ayat")));
                     alist.add(hashMap);
                 }
             }
@@ -160,17 +133,49 @@ public class BookmarkHelper {
         return alist;
     }
 
-    public Cursor getListBookAksi(int aksi){
-        return db.rawQuery("select * from "+BookmarksTable.TABLE_NAME+" where aksi="+aksi,null);
+    private List<Books> getAllListBooks(){
+        List<Books> books = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from "+BookmarksTable.TABLE_NAME+" order by "+BookmarksTable.FOLDER,null);
+        try {
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    Books book = new Books(cursor.getInt(1),
+                            cursor.getInt(2),
+                            cursor.getString(3));
+                    books.add(book);
+                }
+            }
+        }finally {
+            closeCursor(cursor);
+        }
+        return books;
     }
+
+    private void closeCursor(Cursor cursor){
+        if(cursor!=null){
+            try {
+                cursor.close();
+            } catch (Exception e) {
+                // no op
+            }
+        }
+    }
+
     static class BookmarksTable {
         static final String TABLE_NAME = "bookmarks";
         static final String ID = "_ID";
         static final String SURAT = "surat";
         static final String AYAT = "ayat";
-        static final String PAGE = "page";
-        static final String AKSI = "aksi";
+        static final String FOLDER = "folder";
         static final String ISI = "isi";
         static final String ADDED_DATE = "tanggal";
+    }
+
+    public Observable<List<Books>> getListBooks(){
+        Observable<List<Books>> observable = Observable.create(e -> {
+            List<Books> books = getAllListBooks();
+            e.onNext(books);
+        });
+        return observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 }

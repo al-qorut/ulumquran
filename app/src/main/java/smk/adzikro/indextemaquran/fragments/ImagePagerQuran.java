@@ -15,57 +15,44 @@
  *******************************************************************************/
 package smk.adzikro.indextemaquran.fragments;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.activities.UlumQuranActivity;
-import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
 import smk.adzikro.indextemaquran.constans.Constants;
 import smk.adzikro.indextemaquran.util.Fungsi;
 
 /**
- * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * alqorut
  */
 public class ImagePagerQuran extends Fragment {
-	private ProgressDialog prgDialog;
-	public static int juz, halaman;
-	public static String[] IMG_URL;
 	public static Context context;
-    public static ViewPager viewPager;
-	String p;
+    String path;
+    private int page;
 	public static String TAG="TranslationFragment";
 	private static final String PAGE_NUMBER_EXTRA = "page";
+	int bitmapWidth, bitmapHeight, screenWidth, screenHeight;
 
 	public static ImagePagerQuran newInstance(int page) {
 		final ImagePagerQuran f = new ImagePagerQuran();
 		final Bundle args = new Bundle();
 		args.putInt(PAGE_NUMBER_EXTRA, page);
 		f.setArguments(args);
-		Log.e(TAG,"new Instance "+page);
 		return f;
 	}
 
@@ -73,193 +60,119 @@ public class ImagePagerQuran extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		juz = getArguments() != null ?
+		page = getArguments() != null ?
 				getArguments().getInt(PAGE_NUMBER_EXTRA) : 1;
 		setHasOptionsMenu(true);
 	}
-
+	private ImageView imageView;
 	@Override
 	public View onCreateView(LayoutInflater inflater,
 							 ViewGroup container, Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.image_quran, container, false);
+		imageView = view.findViewById(R.id.image);
+		imageView.setAdjustViewBounds(true);
+		imageView.setClickable(true);
 		context = getContext();
-		p= Fungsi.getPathImage();
-		IMG_URL = new String[Constants.IMAGE_URL.length];
-		for(int i=0;i<Constants.IMAGE_URL.length;i++){
-			IMG_URL[i]="file://"+p+Constants.IMAGE_URL[i];
-		}
-
-		juz = getArguments().getInt("page");
-			halaman = juz;
-		Log.e(TAG,"onView page "+halaman);
-		view.setBackgroundColor(Color.WHITE);
-
-		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-				//	.cacheOnDisc(true).cacheInMemory(true)
-				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
-
-				.displayer(new FadeInBitmapDisplayer(300)).build();
-
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
-				getContext())
-				.defaultDisplayImageOptions(defaultOptions)
-
-				.memoryCache(new WeakMemoryCache()).build();
-		//.discCacheSize(100 * 1024 * 1024).build();
-		if(!ImageLoader.getInstance().isInited()) {
-			ImageLoader.getInstance().init(config);
-		}
-
-		viewPager = (ViewPager) view.findViewById(R.id.pager);
-
-
-		ImageAdapter adapter = new ImageAdapter(getContext());
-		viewPager.setAdapter(adapter);
-		viewPager.setCurrentItem(halaman);
-		viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+		Display display = getActivity().getWindowManager().getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+		screenHeight = size.y;
+		screenWidth = size.x;
+		//Log.e(TAG, "layar w "+screenWidth+" h "+screenHeight);
+		path= Fungsi.getPathImage();
+		page = getArguments().getInt("page");
+		String gb	="file://"+path+Constants.IMAGE_URL[page];
+		Glide.with(context)
+				.load(gb)
+				.into(imageView);
+		//imageView.setOnClickListener(view1 -> ((UlumQuranActivity)getContext()).toggleActionBar());
+		imageView.setOnTouchListener(new View.OnTouchListener() {
+			float downX, downY;
+			int totalX, totalY;
+			int scrollByX, scrollByY;
 			@Override
-			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+			public boolean onTouch(View view, MotionEvent event) {
+				float currentX, currentY;
+				switch (event.getAction())
+				{
+					case MotionEvent.ACTION_DOWN:
+						downX = event.getX();
+						downY = event.getY();
+						break;
+					case MotionEvent.ACTION_UP:
+						if(downX== event.getX() && downY==event.getY()){
+							((UlumQuranActivity)getContext()).toggleActionBar();
+						}
+						break;
+					case MotionEvent.ACTION_MOVE:
+						currentX = event.getX();
+						currentY = event.getY();
+					//	Log.e(TAG, "Image di scroll "+currentX+" Y "+currentY);
+						scrollByX = (int)(downX - currentX);
+						scrollByY = (int)(downY - currentY);
 
-			}
+								// scrolling to top of image (pic moving to the bottom)
+						if (currentY > downY)
+						{
+							if (totalY == maxTop)
+							{
+								scrollByY = 0;
+							}
+							if (totalY > maxTop)
+							{
+								totalY = totalY + scrollByY;
+							}
+							if (totalY < maxTop)
+							{
+								scrollByY = maxTop - (totalY - scrollByY);
+								totalY = maxTop;
+							}
+						}
 
-			@Override
-			public void onPageSelected(int position) {
-				Log.e(TAG,""+position);
-				((UlumQuranActivity)context).setPage(BaseQuranInfo.getPosFromPage(position));
-				((UlumQuranActivity)context).updateActionBarTitle();
-			}
+						// scrolling to bottom of image (pic moving to the top)
+						if (currentY < downY)
+						{
+							if (totalY == maxBottom)
+							{
+								scrollByY = 0;
+							}
+							if (totalY < maxBottom)
+							{
+								totalY = totalY + scrollByY;
+							}
+							if (totalY > maxBottom)
+							{
+								scrollByY = maxBottom - (totalY - scrollByY);
+								totalY = maxBottom;
+							}
+						}
 
-			@Override
-			public void onPageScrollStateChanged(int state) {
+						imageView.scrollBy(scrollByX, scrollByY);
+						downX = currentX;
+						downY = currentY;
+						break;
 
+				}
+
+				return true;
 			}
 		});
 		return view;
 	}
 
+	int maxX = (int)((bitmapWidth / 2) - (screenWidth / 2));
+	int maxY = (int)((bitmapHeight / 2) - (screenHeight / 2));
+
+	// set scroll limits
+	final int maxLeft = (maxX * -1);
+	final int maxRight = maxX;
+	final int maxTop = (maxY * -1);
+	final int maxBottom = maxY;
 
 	@Override
 	public void onResume(){
 		super.onResume();
-		//setHalaman(((MainFragment)getContext()).getPage());
-	}
-	private static class ImageAdapter extends PagerAdapter {
-
-
-		private LayoutInflater inflater;
-		private DisplayImageOptions options;
-
-		ImageAdapter(Context context) {
-			inflater = LayoutInflater.from(context);
-
-			options = new DisplayImageOptions.Builder()
-					.showImageForEmptyUri(R.drawable.folder)
-					.showImageOnFail(R.drawable.rowfolder)
-					.resetViewBeforeLoading(true)
-					.cacheOnDisk(true)
-					.imageScaleType(ImageScaleType.NONE)
-					.bitmapConfig(Bitmap.Config.RGB_565)
-					.considerExifParams(true)
-
-					.displayer(new FadeInBitmapDisplayer(300))
-					.build();
-		}
-
-		@Override
-		public void destroyItem(ViewGroup container, int position, Object object) {
-			container.removeView((View) object);
-		}
-
-		@Override
-		public int getCount() {
-			//dua
-			return IMG_URL.length;
-		}
-
-
-		@Override
-		public Object instantiateItem(ViewGroup view, final int position) {
-			View imageLayout = inflater.inflate(R.layout.item_pager_image, view, false);
-			assert imageLayout != null;
-			final ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
-			imageView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-                    ((UlumQuranActivity)context).toggleActionBar();
-				}
-			});
-			final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
-			imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-			imageView.setAdjustViewBounds(true);
-			//tiga
-			ImageLoader.getInstance().displayImage(IMG_URL[position], imageView, options, new SimpleImageLoadingListener() {
-				@Override
-				public void onLoadingStarted(String imageUri, View view) {
-					spinner.setVisibility(View.VISIBLE);
-				}
-
-				@Override
-				public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-					String message = null;
-					switch (failReason.getType()) {
-						case IO_ERROR:
-							message = "IO error";
-							break;
-						case DECODING_ERROR:
-							message = "Image can't be decoded";
-							break;
-						case NETWORK_DENIED:
-							message = "Downloads are denied";
-							break;
-						case OUT_OF_MEMORY:
-							message = "Out Of Memory error";
-							break;
-						case UNKNOWN:
-							message = "Unknown error";
-							break;
-					}
-					Toast.makeText(view.getContext(), message, Toast.LENGTH_SHORT).show();
-
-					spinner.setVisibility(View.GONE);
-				}
-
-				@Override
-				public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-				//	book= getBook(getHalaman());
-					spinner.setVisibility(View.GONE);
-			/*		if(book){
-						bm.setImageResource(R.drawable.ic_favorite);
-					}else{
-						bm.setImageResource(R.drawable.ic_not_favorite);
-					}
-			*/		//loadedImage.
-
-                //    ((MainFragment)context).setInfoQuran(getHalaman());
-				}
-			});
-
-			view.addView(imageLayout, 0);
-			return imageLayout;
-		}
-
-
-			@Override
-		public boolean isViewFromObject(View view, Object object) {
-			return view.equals(object);
-		}
-
-		@Override
-		public void restoreState(Parcelable state, ClassLoader loader) {
-		}
-
-		@Override
-		public Parcelable saveState() {
-			return null;
-		}
 	}
 
-	public void cleanup() {
-
-	}
 
 }

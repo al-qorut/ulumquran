@@ -90,7 +90,7 @@ public class SeekBarPreference extends Preference implements SeekBar.OnSeekBarCh
     if (isEnabled()) {
       final TextView tv = (TextView) view.findViewById(android.R.id.title);
       if (tv != null) {
-        tv.setTextColor(Color.WHITE);
+        tv.setTextColor(Color.BLACK);
       }
     }
     mValue = shouldPersist() ? getPersistedInt(mDefault) : 0;

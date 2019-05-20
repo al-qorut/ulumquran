@@ -7,7 +7,7 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:orientation="horizontal"
-    android:background="@drawable/list_header_background">
+    android:background="@color/rada_transafaran">
 
     <TextView
         android:id="@+id/title"

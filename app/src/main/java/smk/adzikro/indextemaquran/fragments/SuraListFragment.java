@@ -6,55 +6,102 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
+
+import java.text.Format;
+import java.util.ArrayList;
+import java.util.List;
 
 import smk.adzikro.indextemaquran.R;
-import smk.adzikro.indextemaquran.adapter.QuranListAdapter;
+import smk.adzikro.indextemaquran.activities.MainActivity;
+import smk.adzikro.indextemaquran.constans.BaseQuranData;
 import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
 import smk.adzikro.indextemaquran.constans.Constants;
+import smk.adzikro.indextemaquran.object.Ayah;
 import smk.adzikro.indextemaquran.object.QuranRow;
 import smk.adzikro.indextemaquran.setting.QuranSettings;
 import smk.adzikro.indextemaquran.ui.QuranUtils;
+import smk.adzikro.indextemaquran.widgets.IconTreeItemHolder;
+import smk.adzikro.indextemaquran.widgets.RowQuranHolder;
 
 import static smk.adzikro.indextemaquran.constans.Constants.JUZ2_COUNT;
 import static smk.adzikro.indextemaquran.constans.Constants.PAGES_LAST;
 import static smk.adzikro.indextemaquran.constans.Constants.SURAS_COUNT;
 
 public class SuraListFragment extends Fragment {
-
-  private RecyclerView mRecyclerView;
- // private Spinner surat, ayat;
-
-/*  public static SuraListFragment newInstance() {
-      SuraListFragment newFrag = new SuraListFragment();
-      Bundle args = new Bundle();
-      newFrag.setArguments( args );
-      return newFrag;
-  }
-*/
+  private ViewGroup containerView;
+  private TreeNode root;
+  private AndroidTreeView tView;
+  Spinner surat, ayat;
+  QuranSettings settings;
+  TextView last_open;
   @Override
   public View onCreateView(LayoutInflater inflater,
       ViewGroup container, Bundle savedInstanceState) {
     final View view = inflater.inflate(R.layout.quran_list, container, false);
-
     final Context context = getActivity();
+    settings = QuranSettings.getInstance(getContext());
+    containerView = (ViewGroup) view.findViewById(R.id.container);
+    surat = view.findViewById(R.id.list_nama_surat);
+    ayat = view.findViewById(R.id.list_ayat);
+    last_open = view.findViewById(R.id.last_opened);
+    last_open.setVisibility(View.GONE);
 
-    mRecyclerView = view.findViewById(R.id.recycler_view);
-  //  surat = view.findViewById(R.id.list_surat);
-  //  ayat = view.findViewById(R.id.list_ayat);
-    mRecyclerView.setHasFixedSize(true);
-    mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-    mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+    root = TreeNode.root();
+    createList();
+    tView = new AndroidTreeView(getActivity(), root);
+    tView.setDefaultAnimation(true);
+    tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
+    tView.setDefaultViewHolder(RowQuranHolder.class);
+    tView.setDefaultNodeClickListener(nodeClickListener);
+    tView.setDefaultNodeLongClickListener(nodeLongClickListener);
+    containerView.addView(tView.getView());
+    if(savedInstanceState!=null){
+      String state = savedInstanceState.getString("tFragment");
+      if (!TextUtils.isEmpty(state)) {
+        tView.restoreState(state);
+      }
+    }
+    last_open.setOnClickListener(view1 -> ((MainActivity)getContext()).jumpTo(settings.getLastPage(),0));
 
-    final QuranListAdapter adapter =
-        new QuranListAdapter(context, mRecyclerView, getSuraList(), true);
-    mRecyclerView.setAdapter(adapter);
+    surat.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+      @Override
+      public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        int jAyat;
+        String[] listAyat;
+        jAyat = BaseQuranData.SURA_NUM_AYAHS[i];
+        listAyat = new String[jAyat];
+        for (i = 0; i < jAyat; i++) {
+          listAyat[i] = String.valueOf(i + 1);
+        }
+        ArrayAdapter<String> list_ayat = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, listAyat);
+        list_ayat.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ayat.setAdapter(list_ayat);
+      }
 
+      @Override
+      public void onNothingSelected(AdapterView<?> adapterView) {
+
+      }
+    });
+    ImageView gotoq =view.findViewById(R.id.goto_quran);
+    gotoq.setOnClickListener(view12 -> {
+      int sura = surat.getSelectedItemPosition()+1;
+      int aya = ayat.getSelectedItemPosition()+1;
+      int page = BaseQuranInfo.getPageFromSuraAyah(sura, aya);
+      ((MainActivity)getContext()).jumpTo(page,0);
+    });
     return view;
   }
 
@@ -66,10 +113,7 @@ public class SuraListFragment extends Fragment {
     if (lastPage != Constants.NO_PAGE_SAVED &&
         lastPage >= Constants.PAGES_FIRST &&
         lastPage <= Constants.PAGES_LAST) {
-      int sura = BaseQuranInfo.PAGE_SURA_START[lastPage - 1];
-      int juz = BaseQuranInfo.getJuzFromPage(lastPage);
-      int position = sura + juz - 1;
-      mRecyclerView.scrollToPosition(position);
+      createList();
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB &&
@@ -82,15 +126,57 @@ public class SuraListFragment extends Fragment {
 
   @TargetApi(Build.VERSION_CODES.HONEYCOMB)
   private void updateScrollBarPositionHoneycomb() {
-    mRecyclerView.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
+   // mRecyclerView.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
   }
-
+  private void createList(){
+    if(settings.getLastPage()!=Constants.NO_PAGE_SAVED){
+      int page = settings.getLastPage();
+      String nama = BaseQuranInfo.getSuraNameFromPage(getContext(),page,true)+" "+BaseQuranInfo.getPageSubtitle(getContext(),page);
+      last_open.setText(String.format(getContext().getString(R.string.terakhir_dibuka),nama));
+      last_open.setVisibility(View.VISIBLE);
+    }
+    QuranRow[] list = getSuraList();
+    List<TreeNode> hulu = new ArrayList<>();
+    TreeNode header=null;
+    for (int i=0; i<list.length;i++){
+      QuranRow row = list[i];
+      if(list[i].isHeader()){
+        header = new TreeNode(new RowQuranHolder.RowQuran("",R.string.ic_folder,row.text ,row.page));
+        hulu.add(header);
+      }else{
+        TreeNode surat = new TreeNode(new RowQuranHolder.RowQuran(""+row.sura, R.string.ic_drive_document,row.text,row.page));
+        header.addChild(surat);
+      }
+    }
+    root.addChildren(hulu);
+  }
+  private TreeNode.TreeNodeClickListener nodeClickListener = new TreeNode.TreeNodeClickListener() {
+    @Override
+    public void onClick(TreeNode node, Object value) {
+      RowQuranHolder.RowQuran item = (RowQuranHolder.RowQuran) value;
+      if(node.getChildren().size()>0){
+        return;
+      }else{
+        ((MainActivity)getContext()).jumpTo(item.page,0);
+      }
+    }
+  };
+  private TreeNode.TreeNodeLongClickListener nodeLongClickListener = new TreeNode.TreeNodeLongClickListener() {
+    @Override
+    public boolean onLongClick(TreeNode node, Object value) {
+      RowQuranHolder.RowQuran item = (RowQuranHolder.RowQuran) value;
+      if(node.getChildren().size()>0){
+        ((MainActivity)getContext()).jumpTo(item.page,0);
+        return false;
+      }
+      return true;
+    }
+  };
   private QuranRow[] getSuraList() {
     int next;
     int pos = 0;
     int sura = 1;
     QuranRow[] elements = new QuranRow[SURAS_COUNT + JUZ2_COUNT];
-
     Activity activity = getActivity();
     boolean wantPrefix = activity.getResources().getBoolean(R.bool.show_surat_prefix);
     boolean wantTranslation = activity.getResources().getBoolean(R.bool.show_sura_names_translation);
@@ -116,7 +202,6 @@ public class SuraListFragment extends Fragment {
         sura++;
       }
     }
-
     return elements;
   }
 

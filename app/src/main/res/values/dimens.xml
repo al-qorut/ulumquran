@@ -36,4 +36,10 @@
     <dimen name="tag_width">50dp</dimen>
     <dimen name="tag_margin">6dp</dimen>
     <dimen name="tag_text_size">10sp</dimen>
+    <dimen name="stand10">10dp</dimen>
+    <dimen name="stand08">8dp</dimen>
+    <dimen name="standard_1.5">1.5dp</dimen>
+    <dimen name="standard_5">5dp</dimen>
+    <dimen name="standard_50">50dp</dimen>
+    <dimen name="standard_60">60dp</dimen>
 </resources>

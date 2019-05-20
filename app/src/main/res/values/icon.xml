@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AndroidTreeView -->
+    <string name="ic_keyboard_arrow_right" translatable="false">&#xe0c7;</string>
+    <string name="ic_image" translatable="false">&#xe0bb;</string>
+    <string name="ic_keyboard_arrow_down" translatable="false">&#xe0c5;</string>
+    <string name="ic_folder" translatable="false">&#xe09d;</string>
+    <string name="ic_laptop" translatable="false">&#xe0d4;</string>
+    <string name="ic_content_copy" translatable="false">&#xe053;</string>
+    <string name="ic_drive_file" translatable="false">&#xe077;</string>
+    <string name="ic_check_circle" translatable="false">&#xe03d;</string>
+    <string name="ic_check_circle_blank" translatable="false">&#xe03e;</string>
+    <string name="ic_check_circle_outline" translatable="false">&#xe03f;</string>
+    <string name="ic_check_box" translatable="false">&#xe039;</string>
+    <string name="ic_check_box_blank" translatable="false">&#xe03a;</string>
+    <string name="ic_check_box_outline" translatable="false">&#xe03b;</string>
+    <string name="ic_check_box_outline_blank" translatable="false">&#xe03c;</string>
+    <string name="ic_bookmark" translatable="false">&#xe022;</string>
+    <string name="ic_book" translatable="false">&#xe021;</string>
+    <string name="ic_drive_document" translatable="false">&#xe074;</string>
+    <string name="ic_folder_mydrive" translatable="false">&#xe09e;</string>
+    <string name="ic_home" translatable="false">&#xe0b8;</string>
+    <string name="ic_email" translatable="false">&#xe087;</string>
+    <string name="ic_sd_card" translatable="false">&#xe140;</string>
+    <string name="infinity" translatable="false">&#8734;</string>
+    <string translatable="false" name="prefs_translation_text_size">translationTextSize</string>
+
+</resources>

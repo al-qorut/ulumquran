@@ -16,6 +16,10 @@ public class QuranInfo {
     public final int sura;
     public final int ayah;
     public final int ayahId;
+    private boolean bookmark=false;
+
+
+
     @Nullable
     public final String arabicText;
     @NonNull
@@ -34,5 +38,12 @@ public class QuranInfo {
         this.texts = Collections.unmodifiableList(texts);
         this.ayahId = BaseQuranInfo.getAyahId(sura, ayah);
         this.lafdzi = lafdzi;
+    }
+    public boolean isBookmark() {
+        return bookmark;
+    }
+
+    public void setBookmark(boolean bookmark) {
+        this.bookmark = bookmark;
     }
 }

@@ -1,0 +1,303 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+    menu drawer-->
+    <string name="nav_item_tema">Loncat ke Ayat..</string>
+    <string name="nav_item_update">Perbaharui Data</string>
+    <string name="nav_item_images">Gambar</string>
+    <string name="nav_item_setting">Pengaturan</string>
+    <string name="nav_sub_menu">Applikasi</string>
+    <string name="nav_sub_menu_share">Bagikan..</string>
+    <string name="nav_sub_menu_rate">Nilai..</string>
+    <string name="nav_sub_menu_about">Tentang</string>
+    <string name="nav_sub_menu_help">FAQ</string>
+    <string name="nav_sub_menu_registrasi">Registrasi</string>
+    <string name="nav_item_keluar">Keluar</string>
+    <string name="drawer_header_text">Pesantren Adz-Dzikro</string>
+    <!-- sampai sini -->
+    <string name="nama">"Qur'an"</string>
+    <string name="tema">"Loncat ke.."</string>
+    <string name="app_name">"Ulum Al-Qur'an"</string>
+    <string name="action_settings">Pengaturan</string>
+    <string name="action_cari_tema">Cari Tema</string>
+    <string name="action_cari_kata">Cari Kata</string>
+    <string name="title_activity_ads">AdsActivity</string>
+    <string name="descr_image">Image</string>
+    <string name="hello_world">Hello world!</string>
+    <!-- -
+        This is an ad unit ID for a banner test ad. Replace with your own banner ad unit id.
+        For more information, see https://support.google.com/admob/answer/3052638
+        ca-app-pub-3624492980147085/1054486053
+    <!- -->
+    <!-- tulisan yg muncul pada kotak cari. -->
+    <string name="tulisanDiKotakCari">Cari..</string>
+
+    <!-- untuk menu. -->
+    <string name="menu_cari">Cari..</string>
+    <string name="menu_settings">Pengaturan</string>
+    <string name="menu_tampil">Tampilkan Tafsir</string>
+    <!-- akan terlihat di search settings utk kode ini.  -->
+    <string name="artinya">Kata atau lafadz</string>
+    <string name="search_hint">Cari di Al-Quran</string>
+    <!-- instruksi pada halaman utama. -->
+    <string name="instruksi_utama">Silahkan ketik kata yang mau di cari</string>
+
+    <!-- akan di tunjukan di atas hasil pencarian -->
+    <plurals name="hasil_pencarian">
+        <item quantity="one">%1$d hasil dari \"%2$s\": </item>
+        <item quantity="other">%1$d hasil dari \"%2$s\": </item>
+    </plurals>
+
+    <!-- ketika pencarian gagal -->
+    <string name="tak_ada_hasil">Tak ada \"%s\" dalam database</string>
+    <string name="terakhir_dibuka">Lanjutkan baca  %s </string>
+
+    <string name="banner_ad_unit_id">ca-app-pub-3624492980147085/6635820455</string>
+    <string name="title_activity_tema">"Tema Al-Qur'an"</string>
+    <string name="drawer_open">Buka</string>
+    <string name="drawer_close">Tutup</string>
+    <string name="title_activity_interstital">InterstitalActivity</string>
+
+    <string name="interstitial_ad_sample">Interstitial Ad Sample</string>
+    <string name="start_level">Level 1</string>
+    <string name="next_level">Next Level</string>
+    <!-- -
+        This is an ad unit ID for an interstitial test ad. Replace with your own interstitial ad unit id.
+        For more information, see https://support.google.com/admob/answer/3052638
+    <!- -->
+    <string name="interstitial_ad_unit_id">ca-app-pub-3624492980147085/8112553650</string>
+
+    <!-- End Number picker Strings -->
+    <string name="quran_rob3">¼</string>
+    <string name="quran_nos">½</string>
+    <string name="quran_talt_arb3">¾</string>
+    <string name="quran_hizb">Hizb</string>
+    <string name="quran_juz2">Juz\'</string>
+    <string name="quran_page">Hal.</string>
+    <string name="quran_sura">Surat</string>
+    <string name="quran_ayah">Ayat %1$d</string>
+    <string name="quran_ayah_details">%1$s - Ayat %2$s, Juz\' %3$s</string>
+    <string name="quran_sura_title"> %1$s</string>
+    <string name="quran_sura_title_with_ayah">%1$s, %2$d ayah </string>
+    <string name="sura_ayah_notification_str">Surat %1$s, Ayat %2$d</string>
+
+    <string name="bookmarks_current_page">Halaman.</string>
+    <string name="index_loading">Loading&#8230;</string>
+
+    <string name="canceling">Batal&#8230;</string>
+    <string name="juz2_description">Juz\' %1$s</string>
+    <string name="page_description">Page. %1$s, Juz\' %2$s</string>
+    <string name="ayat">﴾%s﴿</string>
+    <string name="highlighting_database">Butuh beberapa file</string>
+    <string name="timing_database">Butuh beberapa file</string>
+    <!-- sura metainfo -->
+    <string name="makki">Makkiyah</string>
+    <string name="madani">Madaniyah</string>
+    <plurals name="verses">
+        <item quantity="one">Satu ayat</item>
+        <item quantity="other">%s Ayat</item>
+    </plurals>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="infoapp">"
+        Applikasi Ulum Al-Qur'an dikembangkan dari Aplikasi free Quran for Android
+        \nData Sources \nTafsir Adz-Dzikro dan Terjemah Lafdziyah dan Teori Ulum Al-Qur'an dikembangkan oleh Pesantren Adz-Dzikro
+        \nQuran images diambil dari King Fahd Quran Printing Complex
+        \Tema Al-Qur'an, Tafsir Jalalain, Tafsir Ibnu Katsir, Terjemah Indonesia, Terjemah Inggris, 'Irab, Sharf dan Balagha Al-Qur'an bukan milik pengembang. kami susun untuk membantu memasyarakatkan Al-Qur'an beserta Tafsirnya yang berbahasa Indonesia"
+    </string>
+    <string name="infoReg">
+        Cara Registrasi App Versi Ikhlas\n
+        1. Transfer Infak ke\n
+           - Bank Mandiri No. Rek 132-00-1532888-4 \n
+           - Bank BNI No. Rek 0415939278 \n
+           - Bank BNI Syariah No Rek 0339547357\n
+            an/ Dadang Sarif Alhuda\n
+        2. Simpan Bukti Transfer \n
+        3. Pastikan ada Koneksi internet\n
+        4. Kirim Bukti Transfer caranya \n
+           - Isi alamat e-mail \n
+           - Tap tombol Regitrasi\n
+           - Pilih Gmail\n
+           - Kirim\n
+        5. Paling lambat 2x24 Jam hari kerja akan mendapat konfirmasi\n
+        6. Mendapat konfirmasi, klik Tombol Cek Registrasi App
+    </string>
+   <string name="infak">
+       "<b>Materi belum tersedia..</b> \nInfak untuk pengembangan,
+           \nUpgrade ke Versi Ikhlas,\n
+       Atau Transfer ke\n
+           - Bank Mandiri No. Rek 132-00-1532888-4 \n
+           - Bank BNI No. Rek 0415939278 \n
+           - Bank BNI Syariah No Rek 0339547357\n
+            an/ Dadang Sarif Alhuda"
+   </string>
+  <string name="infoUpdate">"
+      Update Database tersedia untuk pengguna Aplikasi versi Ikhlas"
+  </string>
+  <string name="Infoinstalasi">
+      Instalasi \n
+      dibutuhkan beberapa saat, tergantung\n
+      kecepatan smartphone pemroses.\n\n
+      Perhatian !!\n
+      Untuk kelancaran instalasi\n
+         - Pastikan Koneksi Internet, membutuhkan sekitar 90mb data Internet\n
+         - Space yang dibutuhkan di SD-card 150MB\n
+         - Update dari versi sebelumnya tidak perlu Koneksi Internet\n\n
+      Apabila terjadi kegagalan : \n
+      1. Setting ~ App ~ Ulum Al-Quran ~ Clear Data\n
+      2. Hapus Folder (SD-card)/indexQuran/database\n
+      3. Jalankan kembali aplikasi\n
+      4. Masih tetap gagal e-mail ke dadangsyarifalhuda@gmail.com
+  </string>
+    <string name="help">
+        Menampilkan tafsir\n
+        1. Klik pada icon bola\n
+        2. Mengganti tafsir klik pada title Toolbar\n
+        3. Kalau isi tafsir tidak tampil semua silahkan klik iklan
+    </string>
+    <string name="app_id">1038751793192</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="download_retry">Coba lagi Download</string>
+    <string name="menu_about">Tentang Kami</string>
+    <string name="menu_other_apps">Aplikasi lain</string>
+    <string name="menu_jump_last_page">Halaman terakhir</string>
+    <string name="menu_tags">Tags</string>
+    <string name="menu_bookmarks">Tandai</string>
+    <string name="menu_bookmarks_page">Halaman di Tandai</string>
+    <string name="menu_bookmarks_ayah">Ayat di Tandai</string>
+    <string name="menu_sort">Urutkan</string>
+    <string name="menu_sort_date">Tambah Tanggal</string>
+    <string name="menu_sort_location">"Tempat di Al-Qur'an"</string>
+    <string name="menu_sort_group_by_tags">Group by Tags</string>
+    <string name="menu_translation">Tampilkan Terjemah</string>
+    <string name="menu_back_to_page">Tampilan Quran</string>
+    <string name="menu_help">Bantuan</string>
+    <string name="menu_search">Cari</string>
+    <string name="menu_get_translations">Ambil Terjemahan</string>
+    <string name="menu_jump">Loncat</string>
+    <string name="gotoPage">Ke Halaman</string>
+    <string name="cancel">Batal</string>
+    <string name="prefs_translation_text_title">Besar Text terjemah</string>
+    <string name="infak_iklan">Infak dengan klik iklan : \n\nSupaya Iklan tidak tampil terus \n1. Upgrade ke versi Ikhlas \n2. klik iklan yang tampil sampai membuka link iklan tersebut, terserah mau mengikuti atau tidak apa yang diinginkan iklan, kemudian tutup kembali\n3. Dengan mengklik iklan membuka seluruh tafsir yang dimiliki   \nLanjutkan ?</string>
+    <string name="klik_iklan">Untuk menampilkan isi Tafsir ==> Klik menu ~ Tampilkan Tafsir</string>
+    <string name="tampilkan_tafsir">Menampilkan seluruh tafsir yang tersedia ?\nUntuk menampilkan klik iklan yang tampil sampai membuka link iklan tersebut, terserah mau mengikuti atau tidak apa yang diinginkan iklan, kemudian tutup kembali</string>
+    <string name="versi">"Ulum Al-Qur'an %1$s \nVersi %2$s"</string>
+    <string name="navb_quran">Quran</string>
+    <string name="navb_ulum">Ulum</string>
+    <string name="navb_tema">Tema</string>
+    <string name="navb_book">Bookmark</string>
+    <string name="mode_display">Like Mushaf</string>
+    <string name="translate">Translations</string>
+    <string name="text_latin">Quran Latin</string>
+    <string name="display_tafsir">Tampilkan Tafsir</string>
+    <string name="view_onstart">Tampilkan semenjak awal</string>
+    <string name="Reader">Qori</string>
+
+    <!-- download statuses and errors -->
+    <string name="sdcard_error">Tidak ada SD card. coba lepas kemudian pasang kembali.</string>
+    <string name="download_successful">Download Berhasil</string>
+    <string name="download_processing">Proses Download&#8230;</string>
+    <string name="download_error_general">Download Gagal</string>
+    <string name="download_error_disk">Tidak cukup tempat untuk download</string>
+    <string name="download_error_network">Jaringan error</string>
+    <string name="download_error_perms">Download dicegah</string>
+    <string name="download_error_invalid_download">File hasil download ruksak</string>
+    <string name="download_error_invalid_download_retry">File hasil download ruksak, coba download lagi</string>
+    <string name="download_error_network_retry">Jaringan eror, coba lagi&#8230;</string>
+    <string name="notification_download_canceled">Download dibatalkan</string>
+    <string name="download_non_wifi_prompt">Kamu bukan di jaringan Wi-Fi. Download data lanjut?</string>
+    <!-- notification channels -->
+    <string name="notification_channel_download">Quran Downloads</string>
+    <string name="notification_channel_audio">Audio Playback</string>
+    <string name="downloading_title">Downloading&#8230;</string>
+    <string name="downloading_message">Silahkan tunggu sedang download file (bisa di pause).</string>
+    <string name="font_size">Besar Huruf</string>
+    <string name="display_quran">Tampilan Quran</string>
+    <string name="display_latin">Tampilan Latin Quran</string>
+    <string name="display_terjemah">Quran Terjemah</string>
+    <string name="font">Huruf</string>
+    <string name="type_font">Tipe huruf Quran</string>
+    <string name="menu_source_quran">Terjemah dan Tafsir</string>
+    <string name="menu_source_tafsir">Tafsir</string>
+    <string name="prefs_megabytes_int">%1$d MB</string>
+    <string name="prefs_megabytes_str">%s MB</string>
+
+    <!-- downloading dialogs -->
+    <string name="download_progress">Downloaded %1$s / %2$s</string>
+    <string name="download_sura_progress">Downloaded %1$s / %2$s dari surat %3$d</string>
+    <string name="download_sura_ayah_progress" tools:ignore="PluralsCandidate">Downloading sura %1$d ayah %2$d</string>
+    <string name="process_progress">Processing file %1$d / %2$d</string>
+    <string name="download_cancel">Cancel</string>
+    <string name="download_extra_data">We need to download one or two small files to support sharing and translation. Download now?</string>
+    <string name="extracting_title">Processing&#8230;</string>
+    <string name="translate_manage">Download and Manage Translations</string>
+    <string name="translate_show">Show Translation</string>
+    <string name="tafsir">Tafseer</string>
+    <string name="tafsir_manage">Download and manage tafseer</string>
+    <string name="remove_button">Remove</string>
+    <string name="dialog_ok">OK</string>
+    <string name="remove_dlg_title">Remove Translation?</string>
+    <string name="remove_dlg_msg">Are you sure you would like to remove the %1$s?</string>
+    <string name="sura_ayah">%1d:%2d</string>
+    <string name="display_lafdzi">Translate Word by word</string>
+    <string name="lafdzi">Word by word Language</string>
+    <string name="lafdzi_manage">Indonesian, English</string>
+
+    <!-- long press -->
+    <string name="bookmark_ayah">Bookmark this Ayah</string>
+    <string name="tag_ayah">Tag this Ayah</string>
+    <string name="share_ayah">Share Ayah Link</string>
+    <string name="share_ayah_text">Share Ayah Text</string>
+    <string name="translation_ayah">Ayah Translation/Tafseer</string>
+    <string name="play_from_here">Play from Here</string>
+    <string name="via_string">via @UlumQuran</string>
+    <string name="search_key">Press the search key to look up a verse</string>
+    <string name="copy_ayah">Copy Ayah</string>
+    <string name="ayah_copied_popup">Ayah Copied</string>
+    <string name="info_detail_ayat">Info Detail ayah</string>
+    <string name="put_notes">Put Notes for ayah</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="notes">Notes</string>
+
+    <!-- ayah action panel -->
+    <string name="play_from">From</string>
+    <string name="play_to">To</string>
+    <string name="play_restrict_range">Only play the above verses</string>
+    <string name="play_verses_range">Play set of verses:</string>
+    <string name="play_each_verse">Play each verse:</string>
+    <string name="play_apply">Apply</string>
+    <string name="play_apply_and_play">Apply and Play</string>
+    <string name="previous">Previous</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="next">Next</string>
+    <!-- Dialog -->
+    <string name="confirm">Confirm</string>
+    <string name="polder_bookmark">Polder Bookmark</string>
+    <string name="put_polder">Polder Bookmark</string>
+
+
+    <string name="thema_quran">Tema Al-Qur\'an</string>
+    <string name="active_translation">Translation For Thema</string>
+    <string name="sum_active_translation">Translation Quran Thema</string>
+
+    <!-- Search messages -->
+    <string name="found_in_sura">Found in Sura %1$s, Ayah %2$d</string>
+    <string name="no_results">No results found for \"%s\"</string>
+    <string name="no_arabic_search_available">You have not downloaded the Arabic search pack. Please download it and try your search again.</string>
+    <string name="get_arabic_search_db">Get Arabic Search Database</string>
+    <string name="search_data">Search Data</string>
+    <plurals name="search_results">
+        <item quantity="one">One result for \"%1$s\": </item>
+        <item quantity="other">%2$d results for \"%1$s\": </item>
+    </plurals>
+    <string name="quranSearchType">Verses of the Quran</string>
+    <string name="finish">Finish</string>
+    <string name="help_ads">This ad help free education</string>
+    <string name="remove_ads">Remove Ads</string>
+    <string name="nav_item_ads">Show Ads</string>
+    <string name="upgrade">Remove Ads Rp. 13.000 /Month</string>
+
+</resources>

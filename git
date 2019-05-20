@@ -1,0 +1,7 @@
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/al-qorut/ulumquran.git
+git push -u origin master
+
+ebe550895e678f3051039fdd551d1d8e59993703

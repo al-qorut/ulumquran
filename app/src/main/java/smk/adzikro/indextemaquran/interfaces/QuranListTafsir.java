@@ -8,8 +8,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import smk.adzikro.indextemaquran.db.QuranApi;
-import smk.adzikro.indextemaquran.object.QuranAyah;
-import smk.adzikro.indextemaquran.object.QuranInfo;
+import smk.adzikro.indextemaquran.object.SuraAyah;
 
 /**
  * Created by server on 12/17/17.
@@ -39,7 +38,7 @@ public class QuranListTafsir implements QuranListContrack.Presenter {
 
 
     private void getListQuran(){
-        Log.e(TAG, "getListQuran");
+       // Log.e(TAG, "getListQuran");
        Disposable disposable = QuranApi.getsInstance(mView.getAppContext())
                .getQuran(page)
                .subscribe(new Consumer<QuranApi.BundleQuranInfo>() {
@@ -52,7 +51,7 @@ public class QuranListTafsir implements QuranListContrack.Presenter {
     }
 
     @Override
-    public void disPlayTafsir(List<QuranAyah> qurans) {
+    public void disPlayTafsir(List<SuraAyah> qurans) {
 
     }
 }

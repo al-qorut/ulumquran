@@ -3,25 +3,29 @@ package smk.adzikro.indextemaquran.activities;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,25 +45,41 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 
 import smk.adzikro.indextemaquran.R;
+import smk.adzikro.indextemaquran.SearchActivity;
 import smk.adzikro.indextemaquran.adapter.QuranPageAdapter;
-import smk.adzikro.indextemaquran.adapter.QuranSourceAdapter;
 import smk.adzikro.indextemaquran.adapter.QuranViewPager;
 import smk.adzikro.indextemaquran.constans.BaseQuranData;
 import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
+import smk.adzikro.indextemaquran.constans.Constants;
 import smk.adzikro.indextemaquran.db.BookmarkHelper;
 import smk.adzikro.indextemaquran.fragments.TranslationFragment;
-import smk.adzikro.indextemaquran.object.QuranSource;
+import smk.adzikro.indextemaquran.object.QariItem;
 import smk.adzikro.indextemaquran.object.SuraAyah;
+import smk.adzikro.indextemaquran.services.AudioService;
+import smk.adzikro.indextemaquran.services.QuranDownloadService;
+import smk.adzikro.indextemaquran.services.utils.AudioRequest;
+import smk.adzikro.indextemaquran.services.utils.DefaultDownloadReceiver;
+import smk.adzikro.indextemaquran.services.utils.DownloadAudioRequest;
+import smk.adzikro.indextemaquran.services.utils.QuranDownloadNotifier;
+import smk.adzikro.indextemaquran.services.utils.ServiceIntentHelper;
+import smk.adzikro.indextemaquran.services.utils.StreamingAudioRequest;
 import smk.adzikro.indextemaquran.setting.QuranSettings;
 import smk.adzikro.indextemaquran.ui.QuranDisplayHelper;
+import smk.adzikro.indextemaquran.ui.QuranUtils;
+import smk.adzikro.indextemaquran.util.AudioUtils;
 import smk.adzikro.indextemaquran.util.Fungsi;
+import smk.adzikro.indextemaquran.util.QuranFileUtils;
+import smk.adzikro.indextemaquran.widgets.AudioStatusBar;
 import smk.adzikro.indextemaquran.widgets.AyahToolBar;
+import smk.adzikro.indextemaquran.widgets.HighlightType;
+import timber.log.Timber;
 
 import static smk.adzikro.indextemaquran.constans.Constants.PAGES_LAST;
 
@@ -67,7 +87,9 @@ import static smk.adzikro.indextemaquran.constans.Constants.PAGES_LAST;
  * Created by server on 11/30/16.
  */
 
-public class UlumQuranActivity extends AppCompatActivity {
+public class UlumQuranActivity extends AppCompatActivity
+ implements AudioStatusBar.AudioBarListener,
+        DefaultDownloadReceiver.SimpleDownloadListener{
     QuranPageAdapter adapter;
     //QuranViewPager pager;
     public int aksi=-1, page;
@@ -81,10 +103,7 @@ public class UlumQuranActivity extends AppCompatActivity {
     private SuraAyah mStart;
     private SuraAyah mEnd;
     private QuranSettings mSettings = null;
-    private ArrayAdapter<String> mSpinnerAdapter = null;
-    private String[] mTranslationItems;
     private View mToolBarArea;
-    private Spinner translationsSpinner;
     private TextView title, subTitle;
     private static final String LAST_READ_PAGE = "LAST_READ_PAGE";
     private static final String LAST_READING_MODE_IS_TRANSLATION =
@@ -92,14 +111,14 @@ public class UlumQuranActivity extends AppCompatActivity {
     private static final String LAST_ACTIONBAR_STATE = "LAST_ACTIONBAR_STATE";
     private static final String LAST_START_POINT = "LAST_START_POINT";
     private static final String LAST_ENDING_POINT = "LAST_ENDING_POINT";
-
-
+    private AudioStatusBar audioStatusBar;
+    private Menu menu;
     private static final long DEFAULT_HIDE_AFTER_TIME = 2000;
     private AyahToolBar ayahToolBar;
     BookmarkHelper bookmarkHelper=null;
-    private boolean isBookmarked = false;
-    private Menu menu;
     private InterstitialAd mInterstitialAd;
+    private DefaultDownloadReceiver downloadReceiver;
+
 
     private static class PagerHandler extends Handler {
         private final WeakReference<UlumQuranActivity> mActivity;
@@ -137,8 +156,13 @@ public class UlumQuranActivity extends AppCompatActivity {
         statusBarBackground.getLayoutParams().height = getStatusBarHeight();
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        audioStatusBar = findViewById(R.id.audio_area);
+        audioStatusBar.setAudioBarListener(this);
         mSettings = QuranSettings.getInstance(this);
+
+        if(!mSettings.isIklas()){
+            iklan();
+        }
         ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayShowHomeEnabled(true);
@@ -147,52 +171,17 @@ public class UlumQuranActivity extends AppCompatActivity {
         ab.setTitle("");
         mAyahToolBar = (AyahToolBar) findViewById(R.id.ayah_toolbar);
         bookmarkHelper = new BookmarkHelper(this);
-
-        translationsSpinner = (Spinner) findViewById(R.id.spinner);
         title = (TextView)findViewById(R.id.title);
         subTitle = (TextView)findViewById(R.id.subtitle);
-        title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(UlumQuranActivity.this, ActivityQuranSource.class));
-              //if(mShowingTranslation)
-               // translationsSpinner.performClick();
-              //    showSourceTranslation();
-            }
-        });
-        subTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //if(mShowingTranslation)
-                 //   translationsSpinner.performClick();
-                startActivity(new Intent(UlumQuranActivity.this, ActivityQuranSource.class));
-            }
-        });
-
-      //  iklan();
-        mAyahToolBar.setOnItemSelectedListener(new AyahMenuItemSelectionHandler());
         Bundle extras = getIntent().getExtras();
-        page = extras.getInt("page");
-        aksi = extras.getInt("aksi");
-        if (aksi == -1){
-            mShowingTranslation = false;// Fungsi.getModeView(this);
+        if(extras!=null) {
+            page = extras.getInt("page");
         }else{
-            mShowingTranslation = true;
-          }
-
-            if(mShowingTranslation) {
-                adapter = new QuranPageAdapter(getSupportFragmentManager(), mShowingTranslation, aksi);
-                mViewPager.setAdapter(adapter);
-                adapter.setAksi(aksi);
-            //    spinnerAksi.setVisibility(View.VISIBLE);
-            }else {
-                //type image
-                int tampil= Fungsi.getModeView(this)?1:2;
-                adapter = new QuranPageAdapter(
-                        getSupportFragmentManager(), mShowingTranslation, tampil);
-                mViewPager.setAdapter(adapter);
-            //    spinnerAksi.setVisibility(View.GONE);
-            }
+            page = mSettings.getLastPage();
+        }
+        mShowingTranslation = !mSettings.isModeImage();
+        adapter = new QuranPageAdapter(getSupportFragmentManager(), mShowingTranslation);
+        mViewPager.setAdapter(adapter);
 
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -230,12 +219,7 @@ public class UlumQuranActivity extends AppCompatActivity {
                     mLastPopupTime = QuranDisplayHelper.displayMarkerPopup(
                             UlumQuranActivity.this, page, mLastPopupTime);
                 }
-                if (!mShowingTranslation) {
                     updateActionBarTitle();
-                } else {
-                    refreshActionBarSpinner();
-                }
-                isBookmarked=bookmarkHelper.isPageBookmarked(page);
             }
 
             @Override
@@ -245,31 +229,28 @@ public class UlumQuranActivity extends AppCompatActivity {
         });
 
         // mTranslationItems = getResources().getStringArray(R.array.aksi);
-         requestTranslationsList();
-         mSpinnerAdapter= new ArrayAdapter<String>(this, R.layout.sherlock_spinner_dropdown_item, mTranslationItems);
-         translationsSpinner.setAdapter(mSpinnerAdapter);
-         translationsSpinner.setOnItemSelectedListener(translationItemSelectedListener);
          mViewPager.setCurrentItem(BaseQuranInfo.getPageFromPos(page));
 
      //   mStart = savedInstanceState.getParcelable(LAST_START_POINT);
      //   mEnd = savedInstanceState.getParcelable(LAST_ENDING_POINT);
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                audioReceiver,
+                new IntentFilter(AudioService.AudioUpdateIntent.INTENT_NAME));
+
+        downloadReceiver = new DefaultDownloadReceiver(this,
+                QuranDownloadService.DOWNLOAD_TYPE_AUDIO);
+        String action = QuranDownloadNotifier.ProgressIntent.INTENT_NAME;
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                downloadReceiver,
+                new IntentFilter(action));
+        downloadReceiver.setListener(this);
+
     }
+
     private void iklan() {
         mInterstitialAd = new InterstitialAd(this);
         // Defined in res/values/strings.xml
         mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                //  onResume();
-                startGame();
-            }
-            @Override
-            public void onAdLeftApplication ()
-            {
-                mSettings.setIklanKlik(true);
-            }
-        });
         startGame();
     }
     private void startGame() {
@@ -303,12 +284,7 @@ public class UlumQuranActivity extends AppCompatActivity {
                     }
                 }).show();
     }
-    public void setPage(int page1){
-        page = page1;
-        MenuItem bookmenu = menu.findItem(R.id.favorite_item);
-        isBookmarked=bookmarkHelper.isPageBookmarked(page);
-        bookmenu.setIcon(isBookmarked ? R.drawable.ic_favorite : R.drawable.ic_not_favorite);
-    }
+
     private int getStatusBarHeight() {
         // thanks to https://github.com/jgilfelt/SystemBarTint for this
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -332,11 +308,20 @@ public class UlumQuranActivity extends AppCompatActivity {
         if(mInterstitialAd!=null){
             mInterstitialAd = null;
         }
+        // remove broadcast receivers
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(audioReceiver);
+        if (downloadReceiver != null) {
+            downloadReceiver.setListener(null);
+            LocalBroadcastManager.getInstance(this)
+                    .unregisterReceiver(downloadReceiver);
+            downloadReceiver = null;
+        }
         super.onDestroy();
     }
     @Override
     public void onResume(){
-        Log.e(TAG, "onResume");
+      //  Log.e(TAG, "onResume");
+        if(mShowingTranslation)
         adapter.notifyDataSetChanged();
        // requestTranslationsList();
         if(bookmarkHelper==null){
@@ -345,32 +330,7 @@ public class UlumQuranActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    private void requestTranslationsList() {
-        mTranslationItems = null;
-        List<String> temp = new ArrayList<>();
-        temp.add("Terjemah Indonesia");
-        temp.add("Terjemah English");
-        temp.add("Terjemah Lafdziyah");
-        temp.add("Tafsir Adz-Dzikro");
-        temp.add("Tafsir Jalalain");
-        if(mSettings.isTafsirIbnuKatsir())
-            temp.add("Tafsir Ibnu Katsir");
-        if(mSettings.isTafsirIrab())
-            temp.add("I'rab Al Qur'an");
-        if(mSettings.isTafsirSharf())
-            temp.add("Sharf Al Qur'an");
-        if(mSettings.isTafsirBalagha())
-            temp.add("Balaghah Al Qur'an");
 
-        mTranslationItems = new String[temp.size()];
-        for(int i=0;i<temp.size();i++) {
-            mTranslationItems[i] = temp.get(i);
-        }
-        translationsSpinner.setAdapter(null);
-        mSpinnerAdapter= new ArrayAdapter<String>(this, R.layout.sherlock_spinner_dropdown_item, mTranslationItems);
-        translationsSpinner.setAdapter(mSpinnerAdapter);
-        if(mShowingTranslation)adapter.notifyDataSetChanged();
-    }
 
     private void updateToolbarPosition(final SuraAyah start) {
         mAyahToolBar.updatePosition(mAyahToolBarPos);
@@ -433,9 +393,17 @@ public class UlumQuranActivity extends AppCompatActivity {
     private void clearUiVisibilityListener(){
         mViewPager.setOnSystemUiVisibilityChangeListener(null);
     }
-
-
-
+    @Override
+    public void onBackPressed(){
+        if(!mSettings.isIklas()){
+            if(QuranUtils.haveInternet(this)) {
+                showInterstitial();
+            }else{
+                startActivity(new Intent(UlumQuranActivity.this, AdsActivity.class));
+            }
+        }
+        super.onBackPressed();
+    }
     @Override
     public void onSaveInstanceState(Bundle state) {
         int lastPage = BaseQuranInfo.getPageFromPos(mViewPager.getCurrentItem());
@@ -450,46 +418,10 @@ public class UlumQuranActivity extends AppCompatActivity {
     }
 
     public void updateActionBarTitle() {
-        String sura="";
-        if(mShowingTranslation){
-            log("Mode Translate ");
-            page = BaseQuranInfo.getPageFromPos(mViewPager.getCurrentItem());
-            if(aksiPertama) {
-                sura = getAksiName(mSettings.getLastAksi());// getActiveTranslation();
-                aksiPertama = false;
-                aksi = mSettings.getLastAksi();
-                log("Aksi pertama");
-            }else{
-                sura = mTranslationItems[translationsSpinner.getSelectedItemPosition()];
-                aksi = translationsSpinner.getSelectedItemPosition();
-                log("Aksi pertama false");
-            }
-
-        }else {
-            log("Mode Tadarrus ");
-            aksi = -1;
-            sura = BaseQuranInfo.getSuraNameFromPage(this, page, true);
-            if(!Fungsi.getModeView(this)){
-                log("Mode Tadarrus Text");
-                page = BaseQuranInfo.getPageFromPos(mViewPager.getCurrentItem());
-                int pos = mViewPager.getCurrentItem() - 1;
-                for (int count = 0; count < 3; count++) {
-                    if (pos + count < 0) {
-                        continue;
-                    }
-                    Fragment f = adapter
-                            .getFragmentIfExists(pos + count);
-                    if (f instanceof TranslationFragment) {
-                        ((TranslationFragment) f).refresh();
-                    }
-                }
-            }
-        }
+        String sura = BaseQuranInfo.getSuraNameFromPage(this, page, true);
         String desc = BaseQuranInfo.getPageSubtitle(this, page);
         title.setText(sura);
         subTitle.setText(desc);
-       // mSpinnerAdapter = null;
-
     }
     private int getCurrentPage() {
         return BaseQuranInfo.getPageFromPos(mViewPager.getCurrentItem());
@@ -498,106 +430,8 @@ public class UlumQuranActivity extends AppCompatActivity {
         Log.e(TAG,info);
     }
 
-    private void refreshActionBarSpinner() {
-        log("refreshActionBarSpinner");
-        if (mSpinnerAdapter != null) {
-            log("mSpinnerAdapter != null");
-           // mSpinnerAdapter = null;
-             mSpinnerAdapter.notifyDataSetChanged();
-           // updateActionBarSpinner();
-            //int position = translationsSpinner.getSelectedItemPosition();
-            aksi = getIndexAksi(translationsSpinner.getSelectedItem().toString());
-            int pos = mViewPager.getCurrentItem() - 1;
-            for (int count = 0; count < 3; count++) {
-                if (pos + count < 0) {
-                    continue;
-                }
-                Fragment f = adapter
-                        .getFragmentIfExists(pos + count);
-                if (f instanceof TranslationFragment) {
-                    ((TranslationFragment) f).refresh();
-                }
-            }
-        } else {
-            log("mSpinnerAdapter == null");
-            updateActionBarSpinner();
-        }
-        updateActionBarTitle();
-    }
-    private void updateActionBarSpinner() {
-        if (mTranslationItems== null || mTranslationItems.length == 0) {
-            log("mTranslationItems== null || mTranslationItems.length == 0");
-            updateActionBarTitle();
-            return;
-        }
 
-        if (mSpinnerAdapter == null) {
-            log("mSpinnerAdapter == null");
-            mSpinnerAdapter = new ArrayAdapter<String>(this, R.layout.sherlock_spinner_dropdown_item, mTranslationItems);
-            translationsSpinner.setAdapter(mSpinnerAdapter);
-            translationsSpinner.setOnItemSelectedListener(translationItemSelectedListener);
-        }
-    }
-    private int getIndexAksi(String aksi){
-        String[] lAksi = getResources().getStringArray(R.array.aksi);
-        int hasil=0;
-        for(int i=0;i<lAksi.length;i++){
-            if(aksi.equals(lAksi[i])){
-                hasil=i;
-                break;
-            }
-        }
-        return hasil;
-    }
-    private String getAksiName(int aksi){
-        String[] lAksi = getResources().getStringArray(R.array.aksi);
-        String hasil="";
-        for(int i=0;i<lAksi.length;i++){
-            if(aksi==i){
-                hasil=lAksi[i];
-                break;
-            }
-        }
-        return hasil;
-    }
 
-    boolean aksiPertama = true;
-    private AdapterView.OnItemSelectedListener translationItemSelectedListener =
-            new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    Log.e(TAG,"item chosen: "+position);
-                    log("AdapterView.OnItemSelectedListener");
-                    if (mTranslationItems != null && mTranslationItems.length > position) {
-                     //   aksi = position ;
-                        if(aksiPertama){
-                            aksi = mSettings.getLastAksi();
-                         //   aksiPertama = false;
-                        }else{
-                            Log.e(TAG,translationsSpinner.getSelectedItem().toString());
-                            aksi = getIndexAksi(translationsSpinner.getSelectedItem().toString());
-                            mSettings.setActiveTranslation(translationsSpinner.getSelectedItem().toString());
-                        }
-                        int pos = mViewPager.getCurrentItem() - 1;
-                        for (int count = 0; count < 3; count++) {
-                            if (pos + count < 0) {
-                                continue;
-                            }
-                            Fragment f = adapter
-                                    .getFragmentIfExists(pos + count);
-                            if (f instanceof TranslationFragment) {
-                                ((TranslationFragment) f).refresh();
-                            }
-                        }
-                        mSettings.setLastAksi(aksi);
-                    }
-                    updateActionBarTitle();
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                }
-            };
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -609,24 +443,13 @@ public class UlumQuranActivity extends AppCompatActivity {
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setQueryHint(getString(R.string.search_hint));
         searchView.setSearchableInfo(searchManager.getSearchableInfo(
-                new ComponentName(this, CariAyatQuran.class)));
+                new ComponentName(this, SearchActivity.class)));
         return true;
     }
     boolean mShowingTranslation = false;
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        MenuItem item = menu.findItem(R.id.favorite_item);
-        if (item != null) {
-            //int page = BaseQuranInfo.getPageFromPos(mViewPager.getCurrentItem());
-
-           // boolean bookmarked = false;
-           // if (bookmarksCache.indexOfKey(page) >= 0) {
-           //     bookmarked = bookmarksCache.get(page);
-           // }
-            item.setIcon(isBookmarked ? R.drawable.ic_favorite : R.drawable.ic_not_favorite);
-        }
-
         MenuItem quran = menu.findItem(R.id.goto_quran);
         MenuItem translation = menu.findItem(R.id.goto_translation);
         if (quran != null && translation != null) {
@@ -644,25 +467,25 @@ public class UlumQuranActivity extends AppCompatActivity {
     }
 
     public void switchToQuran() {
-        mShowingTranslation = false;
-     //   mSettings.setLastAksi(aksi);
-        translationsSpinner.setVisibility(View.GONE);
-        int mode = Fungsi.getModeView(this)?1:2;
-        adapter.setQuranMode(mode);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("");
-        updateActionBarTitle();
+        if(!Fungsi.isFileImageExist()){
+            Fungsi.setModeView(this, true);
+            finish();
+        }else {
+            adapter.setTranslationMode(false);
+         //   adapter.notifyDataSetChanged();
+            mViewPager.setCurrentItem(BaseQuranInfo.getPageFromPos(page));
+            ActionBar actionBar = getSupportActionBar();
+            actionBar.setTitle("");
+            mShowingTranslation = false;
+            updateActionBarTitle();
+        }
     }
     public void switchToTranslation(){
-        adapter.setTranslationMode(mSettings.getLastAksi());
-        Log.e(TAG,"aksi terakshir "+mSettings.getLastAksi());
-        //adapter.setAksi();
-        adapter.notifyDataSetChanged();
+        adapter.setTranslationMode(true);
+     //   adapter.notifyDataSetChanged();
         mViewPager.setCurrentItem(BaseQuranInfo.getPageFromPos(page));
         mShowingTranslation = true;
         updateActionBarTitle();
-        translationsSpinner.setVisibility(View.VISIBLE);
-        //invalidateOptionsMenu();
     }
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -727,51 +550,44 @@ public class UlumQuranActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         final int itemId = item.getItemId();
-        if (itemId == R.id.favorite_item) {
-           // int page = getCurrentPage();
-            Integer[] data=BaseQuranInfo.getPageBounds(page);
-           // toggleBookmark(null, null, page, aksi);
-            if(isBookmarked){
-                isBookmarked = false;
-                bookmarkHelper.hapusBookPage(page);
-                item.setIcon(R.drawable.ic_not_favorite);
-            }else {
-                isBookmarked = true;
-                if (aksi < 0) {
-                    bookmarkHelper.addBookmarkTadarrus(data[0], data[1], page, -1, "");
-                } else {
-                    bookmarkHelper.addBookmarkIfNotExists(data[0], data[1], page, aksi, "");
-                }
-                item.setIcon(R.drawable.ic_favorite);
-            }
-
-
-            return true;
-        }else if (itemId == R.id.goto_quran) {
+        if (itemId == R.id.goto_quran) {
             switchToQuran();
             return true;
         }else if (itemId == R.id.goto_translation) {
             switchToTranslation();
             return true;
+        }else if (itemId == R.id.cab_play_from_here) {
+            //switchToTranslation();
+            onPlayPressed();
+            return true;
         } else if (itemId == R.id.settings) {
             startActivity(new Intent(UlumQuranActivity.this, settings.class));
             return true;
-        } else if (itemId == R.id.help) {
-           // showHelp();
-            //showSourceTranslation();
-            startActivity(new Intent(this, ActivityQuranSource.class));
+        } else if (itemId == R.id.qori) {
+            audioStatusBar.spinner.performClick();
             return true;
-        } else if (itemId == R.id.tampil) {
-            showDialogIklan("Tampilkan",getString(R.string.tampilkan_tafsir));
-//            ((MainActivity)getBaseContext()).showDialogIklan("test","iklan");
-        return true;
-        }else if (itemId == android.R.id.home) {
-            finish();
+        } else if (itemId == android.R.id.home) {
+           // startActivity(new Intent(UlumQuranActivity.this, AdsActivity.class));
+            if(!mSettings.isIklas()){
+                if(QuranUtils.haveInternet(this)) {
+                    showInterstitial();
+                }else{
+                    startActivity(new Intent(UlumQuranActivity.this, AdsActivity.class));
+                }
+            }
+            onBackPressed();
             return true;
         } else if (itemId == R.id.jump) {
             gotoAyat();
             return true;
+        }else if (itemId == R.id.play) {
+            startActivity(new Intent(UlumQuranActivity.this, ActivityQuranSource.class));
+            return true;
+        }else if (itemId == R.id.search) {
+            onSearchRequested();
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -790,6 +606,8 @@ public class UlumQuranActivity extends AppCompatActivity {
                 getWindow().clearFlags(
                         WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 mToolBarArea.setVisibility(View.VISIBLE);
+                audioStatusBar.updateSelectedItem();
+                audioStatusBar.setVisibility(View.VISIBLE);
             }
 
             mIsActionBarHidden = false;
@@ -804,6 +622,7 @@ public class UlumQuranActivity extends AppCompatActivity {
                 getWindow().clearFlags(
                         WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
                 mToolBarArea.setVisibility(View.GONE);
+                audioStatusBar.setVisibility(View.GONE);
             }
 
             mIsActionBarHidden = true;
@@ -815,13 +634,7 @@ public class UlumQuranActivity extends AppCompatActivity {
             toggleActionBar();
         }
     }
-    public void setLoadingIfPage(int page) {
-        int position = mViewPager.getCurrentItem();
-        int currentPage = PAGES_LAST - position;
-        if (currentPage == page) {
-            setLoading(true);
-        }
-    }
+
 
     String TAG="UlumQuranActivity";
 
@@ -829,115 +642,474 @@ public class UlumQuranActivity extends AppCompatActivity {
         return loading;
     }
 
-    private class AyahMenuItemSelectionHandler implements MenuItem.OnMenuItemClickListener {
-        @Override
-        public boolean onMenuItemClick(MenuItem item) {
-            int sliderPage = -1;
-            switch (item.getItemId()) {
-                case R.id.cab_bookmark_ayah:
-                 //   toggleBookmark(mStart.sura, mStart.ayah, mStart.getPage());
-                    break;
-                case R.id.cab_tag_ayah:
-                 //   sliderPage = mSlidingPagerAdapter.getPagePosition(TAG_PAGE);
-                    break;
-                case R.id.cab_translate_ayah:
-                  //  sliderPage = mSlidingPagerAdapter.getPagePosition(TRANSLATION_PAGE);
-                    break;
-                case R.id.cab_play_from_here:
-                  //  sliderPage = mSlidingPagerAdapter.getPagePosition(AUDIO_PAGE);
-                    break;
-                case R.id.cab_share_ayah_link:
-                  //  new ShareQuranAppTask(PagerActivity.this, mStart, mEnd).execute();
-                    break;
-                case R.id.cab_share_ayah_text:
-                  //  new ShareAyahTask(PagerActivity.this, mStart, mEnd, false).execute();
-                    break;
-                case R.id.cab_copy_ayah:
-                  //  new ShareAyahTask(PagerActivity.this, mStart, mEnd, true).execute();
-                    break;
-                default:
-                    return false;
-            }
-            if (sliderPage < 0) {
-           //     endAyahMode();
-            } else {
-           //     showSlider(sliderPage);
-            }
-            return true;
-        }
-    }
-    private Integer[] getAyahFromId(int id){
-        Integer[] data = new Integer[2];
-        int count=0;
-        for(int i=0;i<BaseQuranInfo.SURA_NUM_AYAHS.length-1;i++){
-            for(int x=0; x<BaseQuranInfo.SURA_NUM_AYAHS[i];x++){
-                count++;
-                if(count==id){
-                    data[0]=i+1;
-                    data[1]=x+1;
-                }
-            }
-        }
-        return data;
-    }
+
+
     private AlertDialog promptDialog = null;
 
-    public void showHelp(){
-        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Help");
-        alert.setMessage(R.string.help)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-        alert.show();
-    }
-    public void showSourceTranslation(){
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.quran_list);
-        RecyclerView recyclerView = dialog.findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        List<QuranSource> data = Fungsi.getDataSourceQuran(this);
-        QuranSourceAdapter sourceAdapter = new QuranSourceAdapter(this, data,null,null);
-        recyclerView.setAdapter(sourceAdapter);
-        dialog.show();
-    }
-    public void showGetBookmark(final int surat, final int ayat, final String text) {
+
+
+    public void showMessage(String title, String message){
         if (promptDialog != null) {
             return;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Ayat mau di Bookmark ?")
-                .setPositiveButton("Ok",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int option) {
-                                //toggleBookmark(surat,ayat,BaseQuranInfo.getPageFromSuraAyah(surat,ayat),aksi);
-                                bookmarkHelper.addBookmarkIfNotExists(surat, ayat, BaseQuranInfo.getPageFromSuraAyah(surat,ayat),aksi,text );
-                                Toast.makeText(UlumQuranActivity.this,"Tambahkan bookmark",Toast.LENGTH_SHORT).show();
-                                dialog.dismiss();
-                                promptDialog = null;
-                            }
-                        })
-                .setNegativeButton("Tidak",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int option) {
-                                dialog.dismiss();
-                                promptDialog = null;
-                            }
-                        });
-        promptDialog = builder.create();
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(R.string.dialog_ok, (dialogInterface, i) -> {
+                    onAcceptPressed();
+                    promptDialog=null;
+                })
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> promptDialog=null);
+        promptDialog = alert.create();
         promptDialog.show();
     }
 
-    public void onLongClick(final int idAyat, final String text) {
-        Integer[] datax = new Integer[2];
-        datax = getAyahFromId(idAyat);
-        int surat = datax[0];
-        int ayat = datax[1];
-        showGetBookmark(surat, ayat, text);
+//=========Audio region---------------
+    private boolean shouldOverridePlaying = false;
+    private DownloadAudioRequest lastAudioDownloadRequest = null;
+    private boolean needsPermissionToDownloadOver3g = true;
+    private static final String AUDIO_DOWNLOAD_KEY = "AUDIO_DOWNLOAD_KEY";
+    private boolean isActionBarHidden = true;
+    private AudioRequest lastAudioRequest;
+
+    @Override
+    public void onPlayPressed() {
+        if (audioStatusBar.getCurrentMode() == AudioStatusBar.PAUSED_MODE) {
+            // if we are "paused," just un-pause.
+            play(null);
+            return;
+        }
+        int position = mViewPager.getCurrentItem();
+        int page = PAGES_LAST - position;
+        int startSura = BaseQuranInfo.safelyGetSuraOnPage(page);
+        int startAyah = BaseQuranInfo.PAGE_AYAH_START[page - 1];
+        playFromAyah(page, startSura, startAyah, false);
     }
 
+    public void playFromAyah(int page, int startSura,
+                              int startAyah, boolean force) {
+        final SuraAyah start = new SuraAyah(startSura, startAyah);
+        playFromAyah(start, null, page, 0, 0, false, force);
+    }
 
+    public void playFromAyah(SuraAyah start, SuraAyah end,
+                             int page, int verseRepeat, int rangeRepeat,
+                             boolean enforceRange, boolean force) {
+        if (force) {
+            shouldOverridePlaying = true;
+        }
+
+        QariItem item = audioStatusBar.getAudioInfo();
+
+        lastAudioDownloadRequest = getAudioDownloadRequest(start, end, page, item,
+                verseRepeat, rangeRepeat, enforceRange);
+        if (mSettings.shouldStream() && lastAudioDownloadRequest != null &&
+                !AudioUtils.haveAllFiles(lastAudioDownloadRequest)) {
+            playStreaming(start, end, page, item, verseRepeat, rangeRepeat, enforceRange);
+        } else {
+            playAudioRequest(lastAudioDownloadRequest);
+        }
+    }
+
+    @Nullable
+    private DownloadAudioRequest getAudioDownloadRequest(SuraAyah ayah, SuraAyah ending,
+                                                         int page, @NonNull QariItem item, int verseRepeat,
+                                                         int rangeRepeat, boolean enforceBounds) {
+        final SuraAyah endAyah;
+        if (ending != null) {
+            endAyah = ending;
+        } else {
+            endAyah = AudioUtils.getLastAyahToPlay(ayah, page,
+                    mSettings.getPreferredDownloadAmount(), false);
+        }
+
+        String baseUri = AudioUtils.getLocalQariUrl(this, item);
+        if (endAyah == null || baseUri == null) {
+            return null;
+        }
+        String dbFile = AudioUtils.getQariDatabasePathIfGapless(this, item);
+
+        String fileUrl;
+        if (TextUtils.isEmpty(dbFile)) {
+            fileUrl = baseUri + File.separator + "%d" + File.separator +
+                    "%d" + AudioUtils.AUDIO_EXTENSION;
+        } else {
+            fileUrl = baseUri + File.separator + "%03d" +
+                    AudioUtils.AUDIO_EXTENSION;
+        }
+        DownloadAudioRequest request =  new DownloadAudioRequest(fileUrl, ayah, item, baseUri);
+        request.setGaplessDatabaseFilePath(dbFile);
+        request.setPlayBounds(ayah, endAyah);
+        request.setEnforceBounds(enforceBounds);
+        request.setRangeRepeatCount(rangeRepeat);
+        request.setVerseRepeatCount(verseRepeat);
+        return request;
+    }
+
+    private void playStreaming(SuraAyah ayah, SuraAyah end,
+                               int page, QariItem item, int verseRepeat,
+                               int rangeRepeat, boolean enforceRange) {
+        String qariUrl = AudioUtils.getQariUrl(item);
+        String dbFile = AudioUtils.getQariDatabasePathIfGapless(this, item);
+        if (!TextUtils.isEmpty(dbFile)) {
+            // gapless audio is "download only"
+            lastAudioDownloadRequest = getAudioDownloadRequest(ayah, end, page, item,
+                    verseRepeat, rangeRepeat, enforceRange);
+            playAudioRequest(lastAudioDownloadRequest);
+            return;
+        }
+
+        final SuraAyah ending;
+        if (end != null) {
+            ending = end;
+        } else {
+            // this won't be enforced unless the user sets a range
+            // repeat, but we set it to a sane default anyway.
+            ending = AudioUtils.getLastAyahToPlay(ayah, page,
+                    mSettings.getPreferredDownloadAmount(), false);
+        }
+        AudioRequest request = new StreamingAudioRequest(qariUrl, ayah);
+        request.setPlayBounds(ayah, ending);
+        request.setEnforceBounds(enforceRange);
+        request.setRangeRepeatCount(rangeRepeat);
+        request.setVerseRepeatCount(verseRepeat);
+        play(request);
+
+        audioStatusBar.switchMode(AudioStatusBar.PLAYING_MODE);
+        audioStatusBar.setRepeatCount(verseRepeat);
+    }
+
+    private void playAudioRequest(@Nullable DownloadAudioRequest request) {
+        if (request == null) {
+            audioStatusBar.switchMode(AudioStatusBar.STOPPED_MODE);
+            return;
+        }
+
+        boolean needsPermission = needsPermissionToDownloadOver3g;
+        if (needsPermission) {
+            if (QuranUtils.isOnWifiNetwork(this)) {
+                Timber.d("on wifi, don't need permission for download...");
+                needsPermission = false;
+            }
+        }
+
+        Timber.d("seeing if we can play audio request...");
+       if (AudioUtils.shouldDownloadGaplessDatabase(request)) {
+            Timber.d("need to download gapless database...");
+            if (needsPermission) {
+                showMessage(getString(R.string.confirm),getString(R.string.download_non_wifi_prompt));
+             //   audioStatusBar.switchMode(AudioStatusBar.PROMPT_DOWNLOAD_MODE);
+                return;
+            }
+
+            if (isActionBarHidden) {
+                toggleActionBar();
+            }
+            audioStatusBar.switchMode(AudioStatusBar.DOWNLOADING_MODE);
+            String url = AudioUtils.getGaplessDatabaseUrl(request);
+            if(url.contains("null")){
+                Log.e(TAG,"aya null");
+                return;
+            }
+            Log.e(TAG,"Naon "+url);
+            String destination = request.getLocalPath();
+            // start the download
+            String notificationTitle = getString(R.string.timing_database);
+            Intent intent = ServiceIntentHelper.getDownloadIntent(this, url,
+                    destination, notificationTitle, AUDIO_DOWNLOAD_KEY,
+                    QuranDownloadService.DOWNLOAD_TYPE_AUDIO);
+            startService(intent);
+        } else if (AudioUtils.haveAllFiles(request)) {
+            if (!AudioUtils.shouldDownloadBasmallah(request)) {
+                Timber.d("have all files, playing!");
+                play(request);
+                lastAudioDownloadRequest = null;
+            } else {
+                Timber.d("should download basmalla...");
+                if (needsPermission) {
+                  //  audioStatusBar.switchMode(AudioStatusBar.PROMPT_DOWNLOAD_MODE);
+                    showMessage(getString(R.string.confirm),getString(R.string.download_non_wifi_prompt));
+                    return;
+                }
+
+                SuraAyah firstAyah = new SuraAyah(1, 1);
+                String qariUrl = AudioUtils.getQariUrl(request.getQariItem());
+                Log.e(TAG,"Naon berikut "+qariUrl);
+                audioStatusBar.switchMode(AudioStatusBar.DOWNLOADING_MODE);
+
+                if (isActionBarHidden) {
+                    toggleActionBar();
+                }
+                String notificationTitle = BaseQuranInfo.getNotificationTitle(
+                        this, firstAyah, firstAyah, request.isGapless());
+                Intent intent = ServiceIntentHelper.getDownloadIntent(this, qariUrl,
+                        request.getLocalPath(), notificationTitle,
+                        AUDIO_DOWNLOAD_KEY,
+                        QuranDownloadService.DOWNLOAD_TYPE_AUDIO);
+                intent.putExtra(QuranDownloadService.EXTRA_START_VERSE, firstAyah);
+                intent.putExtra(QuranDownloadService.EXTRA_END_VERSE, firstAyah);
+                startService(intent);
+            }
+        } else {
+            if (needsPermission) {
+               // audioStatusBar.switchMode(AudioStatusBar.PROMPT_DOWNLOAD_MODE);
+                showMessage(getString(R.string.confirm),getString(R.string.download_non_wifi_prompt));
+                return;
+            }
+
+            if (isActionBarHidden) {
+                toggleActionBar();
+            }
+            audioStatusBar.switchMode(AudioStatusBar.DOWNLOADING_MODE);
+            String notificationTitle = BaseQuranInfo.getNotificationTitle(this,
+                    request.getMinAyah(), request.getMaxAyah(), request.isGapless());
+            String qariUrl = AudioUtils.getQariUrl(request.getQariItem());
+            Timber.d("need to start download: %s", qariUrl);
+            Log.e(TAG,"Naon next  "+qariUrl);
+            // start service
+            Intent intent = ServiceIntentHelper.getDownloadIntent(this, qariUrl,
+                    request.getLocalPath(), notificationTitle, AUDIO_DOWNLOAD_KEY,
+                    QuranDownloadService.DOWNLOAD_TYPE_AUDIO);
+            intent.putExtra(QuranDownloadService.EXTRA_START_VERSE,
+                    request.getMinAyah());
+            intent.putExtra(QuranDownloadService.EXTRA_END_VERSE,
+                    request.getMaxAyah());
+            intent.putExtra(QuranDownloadService.EXTRA_IS_GAPLESS,
+                    request.isGapless());
+            startService(intent);
+        }
+    }
+    private void play(AudioRequest request) {
+        needsPermissionToDownloadOver3g = true;
+        Intent i = new Intent(this, AudioService.class);
+        i.setAction(AudioService.ACTION_PLAYBACK);
+        if (request != null) {
+            i.putExtra(AudioService.EXTRA_PLAY_INFO, request);
+            lastAudioRequest = request;
+            audioStatusBar.setRepeatCount(request.getVerseRepeatCount());
+        }
+
+        if (shouldOverridePlaying) {
+            // force the current audio to stop and start playing new request
+            i.putExtra(AudioService.EXTRA_STOP_IF_PLAYING, true);
+            shouldOverridePlaying = false;
+        }
+        // just a playback request, so tell audio service to just continue
+        // playing (and don't store new audio data) if it was already playing
+        else {
+            i.putExtra(AudioService.EXTRA_IGNORE_IF_PLAYING, true);
+        }
+        startService(i);
+    }
+    @Override
+    public void onPausePressed() {
+        startService(AudioUtils.getAudioIntent(
+                this, AudioService.ACTION_PAUSE));
+        audioStatusBar.switchMode(AudioStatusBar.PAUSED_MODE);
+    }
+
+    @Override
+    public void onNextPressed() {
+        startService(AudioUtils.getAudioIntent(this,
+                AudioService.ACTION_SKIP));
+    }
+
+    @Override
+    public void onPreviousPressed() {
+        startService(AudioUtils.getAudioIntent(this,
+                AudioService.ACTION_REWIND));
+    }
+
+    @Override
+    public void onStopPressed() {
+
+    }
+
+    @Override
+    public void onCancelPressed(boolean stopDownload) {
+        if (stopDownload) {
+            needsPermissionToDownloadOver3g = true;
+
+            int resId = R.string.canceling;
+            audioStatusBar.setProgressText(getString(resId), true);
+            Intent i = new Intent(this, QuranDownloadService.class);
+            i.setAction(QuranDownloadService.ACTION_CANCEL_DOWNLOADS);
+            startService(i);
+        } else {
+            audioStatusBar.switchMode(AudioStatusBar.STOPPED_MODE);
+        }
+    }
+
+    @Override
+    public void setRepeatCount(int repeatCount) {
+        if (lastAudioRequest != null) {
+            Intent i = new Intent(this, AudioService.class);
+            i.setAction(AudioService.ACTION_UPDATE_REPEAT);
+            i.putExtra(AudioService.EXTRA_VERSE_REPEAT_COUNT, repeatCount);
+            startService(i);
+            lastAudioRequest.setVerseRepeatCount(repeatCount);
+        }
+    }
+
+    @Override
+    public void onAcceptPressed() {
+        if (lastAudioDownloadRequest != null) {
+            needsPermissionToDownloadOver3g = false;
+            playAudioRequest(lastAudioDownloadRequest);
+        }
+    }
+
+    @Override
+    public void onAudioSettingsPressed() {
+        if (lastPlayingSura != null) {
+            mStart = new SuraAyah(lastPlayingSura, lastPlayingAyah);
+            mEnd = mStart;
+        }
+
+        if (mStart == null) {
+            final Integer bounds[] = BaseQuranInfo.getPageBounds(getCurrentPage());
+            mStart = new SuraAyah(bounds[0], bounds[1]);
+            mEnd = mStart;
+        }
+       // showSlider(AUDIO_PAGE);
+    }
+    public boolean updatePlayOptions(int rangeRepeat,
+                                     int verseRepeat, boolean enforceRange) {
+        if (lastAudioRequest != null) {
+            Intent i = new Intent(this, AudioService.class);
+            i.setAction(AudioService.ACTION_UPDATE_REPEAT);
+            i.putExtra(AudioService.EXTRA_VERSE_REPEAT_COUNT, verseRepeat);
+            i.putExtra(AudioService.EXTRA_RANGE_REPEAT_COUNT, rangeRepeat);
+            i.putExtra(AudioService.EXTRA_RANGE_RESTRICT, enforceRange);
+            startService(i);
+
+            lastAudioRequest.setVerseRepeatCount(verseRepeat);
+            lastAudioRequest.setRangeRepeatCount(rangeRepeat);
+            lastAudioRequest.setEnforceBounds(enforceRange);
+            audioStatusBar.setRepeatCount(verseRepeat);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+//=======Download Listner
+    @Override
+    public void handleDownloadSuccess() {
+      //  refreshQuranPages();
+        playAudioRequest(lastAudioDownloadRequest);
+    }
+
+    @Override
+    public void handleDownloadFailure(int errId) {
+        String s = getString(errId);
+        audioStatusBar.setProgressText(s, true);
+    }
+/*
+    @Override
+    public void updateDownloadProgress(int progress, long downloadedSize, long totalSize) {
+        audioStatusBar.switchMode(
+                AudioStatusBar.DOWNLOADING_MODE);
+        audioStatusBar.setProgress(progress);
+    }
+
+    @Override
+    public void updateProcessingProgress(int progress, int processFiles, int totalFiles) {
+        audioStatusBar.setProgressText(getString(R.string.extracting_title), false);
+        audioStatusBar.setProgress(-1);
+    }
+
+    @Override
+    public void handleDownloadTemporaryError(int errorId) {
+        audioStatusBar.setProgressText(getString(errorId), false);
+    }
+*/
+    private BroadcastReceiver audioReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                int state = intent.getIntExtra(
+                        AudioService.AudioUpdateIntent.STATUS, -1);
+                int sura = intent.getIntExtra(
+                        AudioService.AudioUpdateIntent.SURA, -1);
+                int ayah = intent.getIntExtra(
+                        AudioService.AudioUpdateIntent.AYAH, -1);
+                int repeatCount = intent.getIntExtra(
+                        AudioService.AudioUpdateIntent.REPEAT_COUNT, -200);
+                AudioRequest request = intent.getParcelableExtra(AudioService.AudioUpdateIntent.REQUEST);
+                if (request != null) {
+                    lastAudioRequest = request;
+                }
+                if (state == AudioService.AudioUpdateIntent.PLAYING) {
+                    audioStatusBar.switchMode(AudioStatusBar.PLAYING_MODE);
+                    highlightAyah(sura, ayah, HighlightType.AUDIO);
+                    if (repeatCount >= -1) {
+                        audioStatusBar.setRepeatCount(repeatCount);
+                    }
+                } else if (state == AudioService.AudioUpdateIntent.PAUSED) {
+                    audioStatusBar.switchMode(AudioStatusBar.PAUSED_MODE);
+                    highlightAyah(sura, ayah, HighlightType.AUDIO);
+                } else if (state == AudioService.AudioUpdateIntent.STOPPED) {
+                    audioStatusBar.switchMode(AudioStatusBar.STOPPED_MODE);
+                    unHighlightAyahs(HighlightType.AUDIO);
+                    lastAudioRequest = null;
+                    AudioRequest qi = intent.getParcelableExtra(AudioService.EXTRA_PLAY_INFO);
+                    if (qi != null) {
+                        // this means we stopped due to missing audio
+                    }
+                }
+            }
+        }
+    };
+    private Integer lastPlayingSura;
+    private Integer lastPlayingAyah;
+
+    public void highlightAyah(int sura, int ayah, HighlightType type) {
+        if (HighlightType.AUDIO.equals(type)) {
+            lastPlayingSura = sura;
+            lastPlayingAyah = ayah;
+        }
+        highlightAyah(sura, ayah, true, type);
+    }
+
+    private void highlightAyah(int sura, int ayah,
+                               boolean force, HighlightType type) {
+        Timber.d("highlightAyah() - %s:%s", sura, ayah);
+        int page = BaseQuranInfo.getPageFromSuraAyah(sura, ayah);
+        if (page < Constants.PAGES_FIRST ||
+                PAGES_LAST < page) {
+            return;
+        }
+
+        int position = BaseQuranInfo.getPosFromPage(page);
+        if (position != mViewPager.getCurrentItem() && force) {
+            unHighlightAyahs(type);
+            mViewPager.setCurrentItem(position);
+        }
+        int ayahId = BaseQuranInfo.getAyahId(sura, ayah);
+        Fragment f = adapter.getFragmentIfExists(position);
+        if (f instanceof TranslationFragment && f.isAdded()) {
+            ((TranslationFragment) f).setHighligh(ayahId);
+        }
+    }
+
+    private void unHighlightAyah(int sura, int ayah, HighlightType type) {
+        int position = mViewPager.getCurrentItem();
+        Fragment f = adapter.getFragmentIfExists(position);
+        if (f instanceof TranslationFragment && f.isVisible()) {
+            ((TranslationFragment) f).setHighligh(0);
+        }
+    }
+
+    private void unHighlightAyahs(HighlightType type) {
+        if (HighlightType.AUDIO.equals(type)) {
+            lastPlayingSura = null;
+            lastPlayingAyah = null;
+        }
+        int position = mViewPager.getCurrentItem();
+        Fragment f = adapter.getFragmentIfExists(position);
+        if (f instanceof TranslationFragment && f.isVisible()) {
+            ((TranslationFragment) f).setHighligh(0);
+        }
+    }
 }

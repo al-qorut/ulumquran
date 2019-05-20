@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class ExtractDatabase extends SQLiteOpenHelper {
 
     public ExtractDatabase(Context context, String data) {
-        super(context, data, null, 1);
+        super(context, data, null, 4);
     }
 
     @Override

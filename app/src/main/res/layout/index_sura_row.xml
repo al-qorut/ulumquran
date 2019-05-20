@@ -1,78 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="72dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:background="@drawable/quran_row_background"
-    android:orientation="horizontal">
+    android:minHeight="@dimen/toolbar_height"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.github.johnkil.print.PrintView
+        android:layout_alignParentLeft="true"
+        android:id="@+id/arrow_icon"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:iconText="@string/ic_keyboard_arrow_right"
+        app:iconColor="@color/rada_transafaran"
+        app:iconFont="font/material-icon-font.ttf"
+        app:iconSize="20dp" />
+
+    <com.github.johnkil.print.PrintView
+        android:layout_alignWithParentIfMissing="true"
+        android:id="@+id/icon"
+        android:layout_toRightOf="@id/arrow_icon"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:iconText="@string/ic_image"
+        app:iconColor="@color/rada_transafaran"
+        app:iconFont="font/material-icon-font.ttf"
+        app:iconSize="24dp" />
 
     <TextView
         android:id="@+id/suraNumber"
-        android:layout_width="46dp"
+        android:layout_width="30dp"
+        android:layout_toRightOf="@+id/icon"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_gravity="center"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_centerVertical="true"
         android:textColor="@color/sura_number_color"
         android:textSize="16sp"
         tools:text="23"/>
-
-    <ImageView
-        android:id="@+id/rowIcon"
-        android:layout_width="40dp"
-        android:layout_height="match_parent"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/ic_favorite"
-        android:scaleType="center"
-        android:visibility="gone" />
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:gravity="start"
-            android:scrollHorizontally="true"
-            android:textAppearance="@style/TitleText"
-            tools:text="البقرة"/>
-
-        <TextView
-            android:id="@+id/metadata"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:maxLines="1"
-            android:textColor="@color/sura_details_color"
-            android:textSize="14sp"
-            tools:text="Makki - 286 Verses"/>
-
-        <smk.adzikro.indextemaquran.ui.TagsViewGroup
-            android:id="@+id/tags"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:layout_gravity="start"
-            android:layout_marginTop="4dp"
-            android:gravity="start"/>
-    </LinearLayout>
-
-    <Spinner
-        android:id="@+id/pageNumber"
+    <TextView
+        android:id="@+id/suraName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"/>
-</LinearLayout>
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/suraNumber"
+        android:textAppearance="@style/TitleText"
+        android:textSize="16sp"
+        tools:text="23"/>
+    <LinearLayout
+        android:id="@+id/buttonsContainer"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    <TextView
+         android:id="@+id/nopage"
+         android:layout_alignParentEnd="true"
+         android:layout_alignParentRight="true"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_centerVertical="true"
+         android:layout_marginBottom="4dp"
+         android:textColor="@color/sura_number_color"
+         android:maxLines="1"
+         tools:text="23"/>
+    </LinearLayout>
+</RelativeLayout>

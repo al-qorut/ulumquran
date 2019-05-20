@@ -17,6 +17,7 @@ import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.constans.Constants;
 import smk.adzikro.indextemaquran.constans.QuranFileConstants;
 import smk.adzikro.indextemaquran.services.QuranDownloadService;
+import smk.adzikro.indextemaquran.util.AudioUtils;
 import smk.adzikro.indextemaquran.util.Encryption;
 
 
@@ -52,12 +53,27 @@ public class QuranSettings {
   String TAG="QuranSettings";
   public void setIklas(){
     mPrefs.edit().putLong(Constants.PREF_VERSI_IKLHAS, new Date().getTime()).apply();
-   // Log.e(TAG,"versi Iklhas "+new Date().getTime());
   }
   public String getQuranName(){
     return mPrefs.getString(Constants.PREF_QURAN_ACTIVE, QuranFileConstants.ARABIC_DATABASE);
   }
 
+  public int getPreferredDownloadAmount() {
+    String str = mPrefs.getString(Constants.PREF_DOWNLOAD_AMOUNT,
+            "" + AudioUtils.LookAheadAmount.PAGE);
+    int val = AudioUtils.LookAheadAmount.PAGE;
+    try {
+      val = Integer.parseInt(str);
+    } catch (Exception e) {
+      // no op
+    }
+
+    if (val > AudioUtils.LookAheadAmount.MAX ||
+            val < AudioUtils.LookAheadAmount.MIN) {
+      return AudioUtils.LookAheadAmount.PAGE;
+    }
+    return val;
+  }
   public boolean isIklas(){
     long tglx = mPrefs.getLong(Constants.PREF_VERSI_IKLHAS, 0L);
    // Log.e(TAG,"versi Iklhas cek "+tglx);
@@ -83,6 +99,10 @@ public class QuranSettings {
   }
   public boolean isArabicNames() {
     return mPrefs.getBoolean(Constants.PREF_USE_ARABIC_NAMES, false);
+  }
+  public void setTafsir(boolean b) {
+    mPrefs.edit().putBoolean(Constants.PREF_TAFSIR_DISPLAY, b).apply();
+    mPrefs.edit().putBoolean(Constants.PREF_TRANSLATE_DISPLAY, b).apply();
   }
   public boolean isDisplay() {
     return mPrefs.getBoolean(Constants.PREF_LATIN_TEXT_DISPLAY, false);
@@ -307,7 +327,7 @@ public class QuranSettings {
   }
 
   public String getActiveTranslation() {
-    return mPerInstallationPrefs.getString(Constants.PREF_ACTIVE_TRANSLATION, "Terjemah Indonesia");
+    return mPerInstallationPrefs.getString(Constants.PREF_ACTIVE_TRANSLATION, "quran.id.db");
   }
 
   public void setActiveTranslation(String translation) {

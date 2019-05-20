@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import java.io.File;
@@ -30,6 +31,7 @@ import smk.adzikro.indextemaquran.services.QuranDownloadService;
 import smk.adzikro.indextemaquran.services.utils.DefaultDownloadReceiver;
 import smk.adzikro.indextemaquran.services.utils.QuranDownloadNotifier;
 import smk.adzikro.indextemaquran.services.utils.ServiceIntentHelper;
+import smk.adzikro.indextemaquran.setting.QuranSettings;
 import smk.adzikro.indextemaquran.util.Fungsi;
 import smk.adzikro.indextemaquran.util.QuranFileUtils;
 import timber.log.Timber;
@@ -48,6 +50,7 @@ implements View.OnClickListener,
     public static final String KODE = "kode";
     private RecyclerView recyclerView;
     private QuranSourceAdapter adapter;
+    private QuranSettings settings;
     private QuranSource downloadingItem;
     List<QuranSource> data=new ArrayList<>();
     private int kode=-1;
@@ -60,6 +63,7 @@ implements View.OnClickListener,
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.menu_source_quran);
         setSupportActionBar(toolbar);
+        settings = QuranSettings.getInstance(this);
         final ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
@@ -99,25 +103,13 @@ implements View.OnClickListener,
     private void getData(){
         SQLiteDatabase db = new QuranDataLocal(this).getWritableDatabase();
         Cursor cursor = null;
-        String sql = "select * from quran";
+        String sql = "select * from quran order by ada desc";
         if(kode!=-1)
             sql = "select * from quran where type="+kode+" order by ada desc";
 
 
         cursor = db.rawQuery(sql,null);
-       // List<QuranSource> quranSources=new ArrayList<>();
         data.clear();
-           /*
-                    1. nama
-                    2. pengarang
-                    3. nama asing
-                    4. url
-                    5. nama file
-                    6. ada
-                    7. type
-                    8. Active
-                    public QuranSource(String nama, String translator, String file_name, String file_url ){
-                     */
         try {
             if (cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
@@ -149,7 +141,14 @@ implements View.OnClickListener,
         int pos = recyclerView.getChildAdapterPosition(view);
         File selectedItem = new File(Fungsi.PATH_DATABASE()+data.get(pos).getFile_name());
         if(selectedItem.exists()){
-            removeItem(data.get(pos));
+            CheckBox checkBox = view.findViewById(R.id.aktif);
+            if(checkBox.isChecked()){
+                onItemUncheck(data.get(pos));
+            }else{
+                onItemCheck(data.get(pos));
+            }
+            checkBox.setChecked(!checkBox.isChecked());
+
         }else {
             downloadItem(data.get(pos));
         }
@@ -256,10 +255,10 @@ implements View.OnClickListener,
 
     @Override
     public void onItemCheck(QuranSource item) {
-        //Toast.makeText(ActivityQuranSource.this,"di Checked",Toast.LENGTH_SHORT).show();
         SQLiteDatabase db = new QuranDataLocal(this).getWritableDatabase();
         db.execSQL("update quran set active=1 where _id="+item.getId());
         db.close();
+        settings.setTafsir(true);
     }
 
     @Override
@@ -268,5 +267,16 @@ implements View.OnClickListener,
         SQLiteDatabase db = new QuranDataLocal(this).getWritableDatabase();
         db.execSQL("update quran set active=0 where _id="+item.getId());
         db.close();
+        settings.setTafsir(true);
+    }
+
+    @Override
+    public void onItemClick(QuranSource item) {
+        File selectedItem = new File(Fungsi.PATH_DATABASE()+item.getFile_name());
+        if(selectedItem.exists()){
+            removeItem(item);
+        }else{
+            downloadItem(item);
+        }
     }
 }

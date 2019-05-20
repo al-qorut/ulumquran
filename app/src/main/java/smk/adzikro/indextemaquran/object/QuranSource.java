@@ -8,29 +8,38 @@ import android.os.Parcelable;
  */
 
 public class QuranSource implements Parcelable {
-    String displayName;
-    String translator=" ";
-    String translator_asing=" ";
-    String file_url;
-    String file_name;
-    int ada=0;
-    int type=0;
-    int id=0;
-
+    public String displayName;
+    public String translator=" ";
+    public String translator_asing=" ";
+    public String file_url;
+    public String file_name;
+    public int ada=0;
+    public int type=0;
+    public int id=0;
+    public String languageCode;
     public int getId() {
         return id;
     }
+
+
 
     public void setId(int id) {
         this.id = id;
     }
 
     int active=0;
-    public QuranSource(String nama, String translator, String file_name, String file_url ){
+    public QuranSource(String nama, String translator, String file_name, String file_url){
         this.displayName = nama;
         this.translator = translator;
         this.file_name = file_name;
         this.file_url = file_url;
+    }
+    public String getLanguageCode() {
+        return languageCode;
+    }
+
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
     }
     public int getActive() {
         return active;

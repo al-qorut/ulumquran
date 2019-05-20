@@ -27,36 +27,45 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- mengarahkan ke aktivitas cari agar aplikasi menghidupkan kegiatan pencarian. -->
         <activity
-            android:name=".activities.CariAyatQuran"
-            android:theme="@style/AppTheme">
+            android:name=".SearchActivity"
+            android:launchMode="singleTop">
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
+                <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/data_untuk_pencarian" />
+                android:resource="@xml/searchable"/>
         </activity>
-        <provider
-            android:name=".provider.PenghubungData"
-            android:authorities="smk.adzikro.indextemaquran.provider.PenghubungData" />
-        <!-- mengarahkan ke aktivitas cari agar aplikasi menghidupkan kegiatan pencarian. -->
+
         <meta-data
             android:name="android.app.default_searchable"
-            android:value=".CariAyatQuran" />
-        <activity android:name=".activities.TampilanKata"/>
-        <activity android:name=".activities.ActivityUlum"/>
+            android:value=".SearchActivity" />
+        <provider
+            android:name=".provider.QuranDataProvider"
+            android:exported="false"
+            android:authorities="smk.adzikro.indextemaquran.provider.QuranDataProvider"/>
+
         <activity android:name=".activities.UlumQuranActivity"
             android:hardwareAccelerated="true"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout"
             />
         <activity android:name=".activities.settings"/>
         <activity android:name=".activities.ActivityIAP"/>
-        <activity android:name=".activities.ActivityUpdate"/>
+        <activity android:name=".activities.AdsActivity"/>
         <service
             android:enabled="true"
             android:name=".services.QuranDownloadService"/>
         <activity android:name=".activities.ActivityQuranSource"/>
+        <service
+            android:exported="false"
+            android:name=".services.AudioService">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

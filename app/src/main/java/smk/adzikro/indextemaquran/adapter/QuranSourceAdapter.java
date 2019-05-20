@@ -34,6 +34,7 @@ public class QuranSourceAdapter extends RecyclerView.Adapter<QuranSourceAdapter.
     private Context context;
     private List<QuranSource> data = new ArrayList<>();
     private View.OnClickListener onClickListener;
+
     @NonNull
     public OnItemCheckListener onItemCheckListener;
 
@@ -69,8 +70,8 @@ public class QuranSourceAdapter extends RecyclerView.Adapter<QuranSourceAdapter.
             String pengarang = "";;
             if(!quranSource.getTranslator().equals("null"))pengarang=quranSource.getTranslator();
 
-            holder.textTranslator.setText(pengarang);
-            holder.textTranslator_asing.setText(asing);
+          //  holder.textTranslator.setText(pengarang);
+          //  holder.textTranslator_asing.setText(asing);
             File file = new File(Fungsi.PATH_DATABASE()+quranSource.getFile_name());
             holder.imageView.setImageResource(R.drawable.ic_download);
             holder.checkBox.setChecked(false);
@@ -78,7 +79,6 @@ public class QuranSourceAdapter extends RecyclerView.Adapter<QuranSourceAdapter.
             holder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                  //  holder.checkBox.setChecked(!holder.checkBox.isChecked());
                     if(holder.checkBox.isChecked())
                         onItemCheckListener.onItemCheck(quranSource);
                     else
@@ -91,6 +91,12 @@ public class QuranSourceAdapter extends RecyclerView.Adapter<QuranSourceAdapter.
                 if(quranSource.getActive()==1)
                     holder.checkBox.setChecked(true);
             }
+            holder.imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onItemCheckListener.onItemClick(quranSource);
+                }
+            });
 
         }
     }
@@ -102,15 +108,15 @@ public class QuranSourceAdapter extends RecyclerView.Adapter<QuranSourceAdapter.
 
     public class RowHolder extends RecyclerView.ViewHolder{
         TextView textName;
-        TextView textTranslator,textTranslator_asing;
+       // TextView textTranslator,textTranslator_asing;
         ImageView imageView;
         CheckBox checkBox;
 
         public RowHolder(View itemView) {
             super(itemView);
             textName = itemView.findViewById(R.id.displayName);
-            textTranslator = itemView.findViewById(R.id.translator);
-            textTranslator_asing = itemView.findViewById(R.id.translator_asing);
+          //  textTranslator = itemView.findViewById(R.id.translator);
+          //  textTranslator_asing = itemView.findViewById(R.id.translator_asing);
             imageView = itemView.findViewById(R.id.img_donlot);
             checkBox = itemView.findViewById(R.id.aktif);
             itemView.setOnClickListener(defaultClickListener);
@@ -127,5 +133,7 @@ public class QuranSourceAdapter extends RecyclerView.Adapter<QuranSourceAdapter.
     public interface OnItemCheckListener {
         void onItemCheck(QuranSource item);
         void onItemUncheck(QuranSource item);
+        void onItemClick(QuranSource item);
     }
+
 }

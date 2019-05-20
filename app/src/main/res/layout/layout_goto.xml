@@ -20,19 +20,13 @@
     <Spinner
         android:layout_width="150dp"
         android:layout_height="60dp"
-        android:entries="@array/nama_surat_id"
+        android:entries="@array/nama_surat"
         android:id="@+id/surat"/>
     <Spinner
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:id="@+id/ayat"/>
         </LinearLayout>
-    <Spinner
-        android:layout_width="match_parent"
-        android:id="@+id/aksi"
-        android:entries="@array/aksi"
-        android:visibility="gone"
-        android:layout_height="wrap_content"/>
 
     <LinearLayout
         android:layout_width="match_parent"

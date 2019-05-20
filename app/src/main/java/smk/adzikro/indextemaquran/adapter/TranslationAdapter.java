@@ -294,8 +294,8 @@ public class  TranslationAdapter extends RecyclerView.Adapter<TranslationAdapter
       holder.divider.setDividerColor(dividerColor);
     } else if (holder.ayahNumber != null) {
       String text = BaseQuranInfo.setHurufArab(context,""+row.ayahInfo.ayah);//context.getString(R.string.sura_ayah, row.ayahInfo.sura, row.ayahInfo.ayah);
-      //if(row.ayahInfo.ayah==200)
-       // holder.ayahNumber.setAyahFavorite(true);
+     // if(row.ayahInfo.ayah==200)
+        holder.ayahNumber.setAyahFavorite(row.ayahInfo.isBookmark());
         holder.ayahNumber.setAyahString(text);
         holder.ayahNumber.setTextColor(textColor);
     } else if(holder.recyclerView!=null){

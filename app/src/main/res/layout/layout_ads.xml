@@ -1,0 +1,50 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/colorPrimary"
+    android:layout_height="match_parent">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/cancel"
+        android:clickable="true"
+        android:src="@drawable/ic_cancel"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:layout_below="@+id/cancel"
+        android:gravity="center"
+        android:id="@+id/title"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/white"
+        android:text="@string/help_ads"/>
+        <!--<FrameLayout
+            android:layout_below="@+id/title"
+            android:layout_above="@+id/remove"
+            android:id="@+id/fl_adplaceholder"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp" /> -->
+    <ImageView
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:layout_below="@+id/title"
+        android:layout_above="@+id/remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/adzikro"/>
+
+<Button
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/remove_ads"
+    android:id="@+id/remove"
+    android:textColor="@android:color/white"
+    android:layout_marginBottom="@dimen/activity_horizontal_margin"
+    android:background="@color/tranparent"
+    android:clickable="true"
+    android:layout_alignParentBottom="true"/>
+</RelativeLayout>

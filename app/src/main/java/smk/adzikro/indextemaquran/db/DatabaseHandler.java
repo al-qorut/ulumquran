@@ -2,7 +2,6 @@ package smk.adzikro.indextemaquran.db;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.DefaultDatabaseErrorHandler;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -24,9 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 import smk.adzikro.indextemaquran.R;
-import smk.adzikro.indextemaquran.object.QuranAyah;
+import smk.adzikro.indextemaquran.object.Ayah;
 import smk.adzikro.indextemaquran.object.QuranLafdzi;
 import smk.adzikro.indextemaquran.object.QuranText;
+import smk.adzikro.indextemaquran.object.Tema;
 import smk.adzikro.indextemaquran.object.VerseRange;
 import smk.adzikro.indextemaquran.util.Fungsi;
 import smk.adzikro.indextemaquran.util.QuranFileUtils;
@@ -39,7 +39,7 @@ public class DatabaseHandler {
   private static final String COL_TEXT = "text";
   public static final String VERSE_TABLE = "verses";
   public static final String ARABIC_TEXT_TABLE = "arabic_text";
-  public static final String LAFDZI_IN = "in";
+  public static final String LAFDZI_IN = "id";
   public static final String LAFDZI_EN = "en";
   private static final String PROPERTIES_TABLE = "properties";
   private static final String COL_PROPERTY = "property";
@@ -74,16 +74,16 @@ public class DatabaseHandler {
   }
 
   private DatabaseHandler(Context context, String databaseName) throws SQLException {
-  //  String base = QuranFileUtils.getQuranDatabaseDirectory(context);
-  //  if (base == null) return;
+    String base = QuranFileUtils.getQuranDatabaseDirectory(context);
+   if(base == null) return;
     String path = Fungsi.PATH_DATABASE()+databaseName;//base + File.separator + databaseName;
-  //  Log.e(TAG,"opening database file: " + path);
+    Log.e(TAG,"opening database file: " + databaseName);
     try {
       database = SQLiteDatabase.openDatabase(path, null,
         SQLiteDatabase.NO_LOCALIZED_COLLATORS, new DefaultDatabaseErrorHandler());
-    //  Log.e(TAG,"sukses... opening database file: " + path);
+      Log.e(TAG,"sukses... opening database file: " + path);
     } catch (SQLiteDatabaseCorruptException sce) {
-   //   Log.e(TAG,"corrupt database: " + databaseName);
+      Log.e(TAG,"corrupt database: " + databaseName);
       throw sce;
     } catch (SQLException se){
       Log.e(TAG,"database file " + path +
@@ -210,6 +210,26 @@ public class DatabaseHandler {
     return results;
   }
 
+ public List<Ayah> getListAyahTema(String tema){
+   List<Ayah> ayahs = new ArrayList<>();
+   Cursor cursor=database.rawQuery("select _id from TEMA where TEMA=\""+tema+"\"",null);
+   try {
+     if (cursor != null) {
+       cursor.moveToNext();
+       int id = cursor.getInt(0);
+       cursor=database.rawQuery("select SURAT, AYAT from AYAT_TEMA where id="+id,null);
+       if(cursor.getCount()>0){
+         while (cursor.moveToNext()){
+            Ayah ayah = new Ayah(cursor.getInt(0),cursor.getInt(1));
+            ayahs.add(ayah);
+         }
+       }
+     }
+   }finally {
+     closeCursor(cursor);
+   }
+   return ayahs;
+ }
 
   private void closeCursor(Cursor cursor){
     if(cursor!=null){
@@ -219,6 +239,70 @@ public class DatabaseHandler {
         // no op
       }
     }
+  }
+
+  public List<Tema> getListTema(String title) {
+    String query;
+    List<Tema> alist = new ArrayList<>();
+    Cursor cursor=null;
+    try {
+      if (title.equals("0")) {
+        query = "select * from TEMA where PARENT=0";
+        cursor = database.rawQuery(query, null);
+        if (cursor != null) {
+          while (cursor.moveToNext()) {
+            Tema tema = new Tema(cursor.getInt(cursor.getColumnIndex("_id")),
+                    cursor.getInt(cursor.getColumnIndex("PARENT")),
+                    cursor.getString(cursor.getColumnIndex("TEMA")));
+            alist.add(tema);
+          }
+        }
+      } else {
+        cursor = database.rawQuery("select _id from TEMA where TEMA=\"" + title + "\"", null);
+        if (cursor != null && cursor.getCount() > 0) {
+          cursor.moveToNext();
+          int id = cursor.getInt(0);
+          query = "select * from TEMA where PARENT=" + id;
+          cursor = database.rawQuery(query, null);
+          if (cursor != null && cursor.getCount()>0) {
+            while (cursor.moveToNext()) {
+              Tema tema = new Tema(cursor.getInt(cursor.getColumnIndex("_id")),
+                      cursor.getInt(cursor.getColumnIndex("PARENT")),
+                      cursor.getString(cursor.getColumnIndex("TEMA")));
+              alist.add(tema);
+            }
+          }
+          cursor=null;
+          cursor = database.rawQuery("select * from AYAT_TEMA where id=" + id, null);
+          if (cursor != null && cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+              Tema tema = new Tema(-1,
+                      cursor.getInt(cursor.getColumnIndex("id")),
+                      cursor.getInt(cursor.getColumnIndex("SURAT")) + ":" + cursor.getInt(cursor.getColumnIndex("AYAT")));
+              alist.add(tema);
+            }
+          }
+        }
+      }
+    }finally {
+      closeCursor(cursor);
+    }
+    return alist;
+  }
+
+  public List<Tema> getListChild() {
+    List<Tema> alist = new ArrayList<>();
+    Cursor cursor = database.rawQuery("select * from AYAT_TEMA", null);
+    if (cursor != null) {
+      while (cursor.moveToNext()) {
+        Tema tema = new Tema(-1,
+                cursor.getInt(cursor.getColumnIndex("id")),
+                cursor.getString(cursor.getColumnIndex("SURAT"))+":"+cursor.getString(cursor.getColumnIndex("AYAT")));
+        alist.add(tema);
+      }
+    }
+    closeCursor(cursor);
+    return alist;
   }
 
   private Cursor getVersesInternal(VerseRange verses, String table) {
@@ -272,7 +356,6 @@ public class DatabaseHandler {
     final String COL_ARAB ="hi";
     final String COL_INDEX ="word";
     if (!validDatabase()) {
-      //   Log.e(TAG,"DataBAse te valid");
       return null;
     }
     StringBuilder whereQuery = new StringBuilder();
@@ -313,6 +396,21 @@ public class DatabaseHandler {
             new String[] { "rowid as _id ", COL_SURA, COL_AYAH, COL_ARAB, bahasa },
             whereQuery.toString(), null, null, null,
             COL_SURA+","+COL_AYAH);
+  }
+  public String getAyahText(int sura, int ayah, @TextType int textType) {
+    String table = textType == TextType.ARABIC ? ARABIC_TEXT_TABLE : VERSE_TABLE;
+    Cursor cursor = database.query(table,
+            new String[]{"rowid as _id", COL_SURA, COL_AYAH, COL_TEXT},
+            COL_SURA + "=" + sura + " and " + COL_AYAH + "=" + ayah, null, null, null,null);
+    String text="";
+    try {
+      while (cursor != null && cursor.moveToNext()) {
+        text = cursor.getString(3);
+      }
+    } finally {
+      closeCursor(cursor);
+    }
+    return text;
   }
 
   public Cursor getVersesByIds(List<Integer> ids) {

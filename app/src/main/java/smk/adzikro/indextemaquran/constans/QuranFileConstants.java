@@ -29,4 +29,5 @@ public class QuranFileConstants {
 
   // images version
   public static final int IMAGES_VERSION = 4;
+  public static final String TEMA_DATABASE ="index4" ;
 }

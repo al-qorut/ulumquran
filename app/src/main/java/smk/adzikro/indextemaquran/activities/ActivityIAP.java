@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import smk.adzikro.indextemaquran.ui.QuranUtils;
 import smk.adzikro.indextemaquran.util.Fungsi;
 import smk.adzikro.indextemaquran.setting.QuranSettings;
 import smk.adzikro.indextemaquran.R;
@@ -91,6 +92,7 @@ public class ActivityIAP extends AppCompatActivity implements
 
     @Override
     public void onClick(View view) {
+        if(!QuranUtils.haveInternet(this)) return;
         if(view.getId()==R.id.upgrade){
             bayarInfak();
         }else if(view.getId()==R.id.versi){

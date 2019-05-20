@@ -54,13 +54,14 @@
                     style="@android:style/TextAppearance.Small"
                     android:id="@+id/subtitle"/>
             </LinearLayout>
-            <Spinner
-                android:layout_width="20dp"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:layout_marginRight="30dp"
-                android:id="@+id/spinner"></Spinner>
             </android.support.v7.widget.Toolbar>
     </FrameLayout>
-
+    <smk.adzikro.indextemaquran.widgets.AudioStatusBar
+        android:id="@+id/audio_area"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/audiobar_height"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:itemBackground="?attr/selectableItemBackgroundBorderless"
+        android:background="@color/transparent_actionbar_color"/>
 </smk.adzikro.indextemaquran.ui.FitSystemRelativeLayout>

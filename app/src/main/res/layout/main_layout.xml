@@ -88,12 +88,6 @@
                     android:layout_below="@+id/text_latin"
                     android:id="@+id/tafsir"
                     android:text="@string/display_tafsir"/>
-                <Spinner
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:entries="@array/aksi"
-                    android:layout_below="@+id/tafsir"
-                    android:id="@+id/list_tafsir"/>
 
             </RelativeLayout>
 

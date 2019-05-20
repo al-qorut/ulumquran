@@ -16,8 +16,7 @@
             android:key="@string/prefs_translation_text_size"
             android:summary="@string/font_size"
             android:max="40"
-            android:persistent="true"
-            android:title="@string/prefs_translation_text_title"/>
+            android:persistent="true"/>
         <CheckBoxPreference
             android:defaultValue="true"
             android:summary="@string/display_latin"
@@ -51,8 +50,8 @@
             android:summary="@string/lafdzi_manage"
             android:dependency="text_lafdzi_display"
             android:entries="@array/lafdzi_display"
-            android:entryValues="@array/lafdzi"/>
-    </PreferenceCategory>
+            android:entryValues="@array/perkata"/>
+       </PreferenceCategory>
     <PreferenceCategory
         android:title="STYLE TAMPILAN MUSHAF">
         <CheckBoxPreference
@@ -60,11 +59,5 @@
             android:summary="Mode quran image"
             android:key="mode_view"
             android:defaultValue="false"/>
-
-    </PreferenceCategory>
-    <PreferenceCategory
-        android:title="TAFSIR Al-Qur'an"
-        android:summary="Tafsir-tafsir ini bukan milik developer">
-
     </PreferenceCategory>
 </PreferenceScreen>

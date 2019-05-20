@@ -4,7 +4,6 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import smk.adzikro.indextemaquran.object.QuranAyah;
 import smk.adzikro.indextemaquran.object.QuranInfo;
 
 /**

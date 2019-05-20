@@ -3,16 +3,12 @@ package smk.adzikro.indextemaquran.adapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.icu.text.RelativeDateTimeFormatter;
 import android.os.Build;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.Layout;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.util.Log;
@@ -25,19 +21,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import smk.adzikro.indextemaquran.BuildConfig;
 import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.activities.UlumQuranActivity;
 import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
-import smk.adzikro.indextemaquran.object.QuranAyah;
-import smk.adzikro.indextemaquran.object.QuranInfo;
 import smk.adzikro.indextemaquran.setting.QuranSettings;
 import smk.adzikro.indextemaquran.setting.UthmaniSpan;
-import smk.adzikro.indextemaquran.ui.Holder;
 import smk.adzikro.indextemaquran.ui.TranslationViewRow;
 import smk.adzikro.indextemaquran.widgets.AyahNumberView;
 

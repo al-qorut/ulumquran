@@ -2,35 +2,40 @@ package smk.adzikro.indextemaquran.fragments;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
-import android.os.Build;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.activities.UlumQuranActivity;
-import smk.adzikro.indextemaquran.adapter.QuranListAyahAdapter;
 import smk.adzikro.indextemaquran.adapter.TranslationAdapter;
+import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
+import smk.adzikro.indextemaquran.db.BookmarkHelper;
 import smk.adzikro.indextemaquran.db.QuranApi;
 import smk.adzikro.indextemaquran.interfaces.OnTranslationActionListener;
 import smk.adzikro.indextemaquran.interfaces.QuranListContrack;
 import smk.adzikro.indextemaquran.interfaces.QuranListTafsir;
 import smk.adzikro.indextemaquran.object.QuranInfo;
-import smk.adzikro.indextemaquran.object.QuranLafdzi;
 import smk.adzikro.indextemaquran.setting.QuranSettings;
 import smk.adzikro.indextemaquran.ui.TranslationViewRow;
-import smk.adzikro.indextemaquran.widgets.QuranTranslationPageLayout;
+import smk.adzikro.indextemaquran.util.ShareUtil;
 
 
 public class TranslationFragment extends Fragment
@@ -41,6 +46,9 @@ public class TranslationFragment extends Fragment
     private static final String PAGE_NUMBER_EXTRA = "page";
     private int mPageNumber;
     private QuranListTafsir mPresenter;
+    private List<String> translat=new ArrayList<>();
+    private BookmarkHelper bookmark;
+    ArrayList<HashMap<String, Integer>> listBook=new ArrayList<>();
 
     public static TranslationFragment newInstance(int page) {
        final TranslationFragment sInstance = new TranslationFragment();
@@ -69,11 +77,12 @@ public class TranslationFragment extends Fragment
         mQuranSettings = QuranSettings.getInstance(getContext());
         mMainView.setTranslationClickedListener(this);
         mMainView.setOnTranslationActionListener(this);
+        bookmark = new BookmarkHelper(getContext());
+        listBook = bookmark.getListBook();
         return mMainView;
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {
-      //  outState.putInt(PAGE_NUMBER_EXTRA, mPageNumber);
         super.onSaveInstanceState(outState);
     }
 
@@ -83,9 +92,18 @@ public class TranslationFragment extends Fragment
         if (activity != null) {
             mPresenter.subscribe(this, mPageNumber);
         }
+        listBook = bookmark.getListBook();
         newInstance(mPageNumber);
     }
-
+    private boolean isBookmark(int sura, int ayah){
+        boolean hasil=false;
+        for(int i=0;i<listBook.size();i++){
+            if(sura==listBook.get(i).get("surat") && ayah==listBook.get(i).get("ayat")){
+                hasil=true;
+            }
+        }
+        return hasil;
+    }
     @Override
     public Context getAppContext() {
         return getContext();
@@ -95,15 +113,14 @@ public class TranslationFragment extends Fragment
 
         List<String> translations= quraninfo.info;
         List<QuranInfo> ayahs = quraninfo.quranAyahList;
+        translat.addAll(translations);
         List<TranslationViewRow> data = new ArrayList<>();
-
         int currenSura=-1;
         boolean wantTranslationHeaders = translations.size()> 1;
 
         for(int i=0 ;i<ayahs.size();i++){
-
             QuranInfo quran = ayahs.get(i);
-           // Log.e(TAG, quran.ayah+" "+quran.arabicText);
+            quran.setBookmark(isBookmark(quran.sura, quran.ayah));
             int sura = quran.sura;
 
             if(sura != currenSura){
@@ -118,9 +135,7 @@ public class TranslationFragment extends Fragment
             if(quran.arabicText != null){
                 data.add(new TranslationViewRow(TranslationViewRow.Type.QURAN_TEXT, quran));
             }
-            //Ambil translate
             int verseText = quran.texts.size();
-         //   Log.e(TAG,"Banyak tran "+verseText);
             for (int j = 0; j < translations.size(); j++) {
                 String text = verseText > j ? quran.texts.get(j) : "";
 
@@ -132,15 +147,12 @@ public class TranslationFragment extends Fragment
                         data.add(new TranslationViewRow(TranslationViewRow.Type.TAFSIR_ARABIC, quran, text));
                     else
                         data.add(new TranslationViewRow(TranslationViewRow.Type.TAFSIR_LATIN, quran, text));
-                      //  Log.e(TAG,"Isinya "+text);
                 }
             }
-           // Log.e(TAG, "Lafdzi "+quran.lafdzi.size());
             if(quran.lafdzi!=null){
                 data.add(new TranslationViewRow(TranslationViewRow.Type.LAFDZI, quran));
             }
             
-            //boleh tambah garis di sini
             data.add(new TranslationViewRow(TranslationViewRow.Type.SPACER,quran));
         }
 
@@ -154,8 +166,6 @@ public class TranslationFragment extends Fragment
 
     @Override
     public void onClick(View view) {
-       // Toast.makeText(getContext(), "Click", Toast.LENGTH_SHORT).show();
-        //mMainView.
         ((UlumQuranActivity) getActivity()).toggleActionBar();
     }
 
@@ -163,28 +173,48 @@ public class TranslationFragment extends Fragment
     public void onVerseSelected(QuranInfo ayahInfo) {
 
     }
-
+    public void showDialogNotes(int sura, int aya){
+        Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.input_ayah_favorite);
+        dialog.setTitle(getString(R.string.polder_bookmark));
+        Button ok = dialog.findViewById(R.id.ok);
+        EditText notes = dialog.findViewById(R.id.notes);
+        ok.setOnClickListener(view -> {
+            String info = notes.getText().toString();
+            bookmark.addRemoveBookmark(sura, aya, info);
+            refresh();
+            dialog.dismiss();
+        });
+        Button cancel = dialog.findViewById(R.id.cancel);
+        cancel.setOnClickListener(view -> dialog.dismiss());
+        dialog.show();
+    }
+    public void setHighligh(int ayah){
+        mMainView.highlightAyah(ayah);
+    }
     @Override
-    public void onTranslationAction(QuranInfo ayah, String[] translationNames, int actionId) {
+    public void onTranslationAction(QuranInfo ayah, List<String> translationNames, int actionId) {
 
         Activity activity = getActivity();
         if (activity instanceof UlumQuranActivity) {
-
+            String shareText = ShareUtil.getShareText(activity, ayah, translat);
             switch (actionId) {
                 case R.id.cab_favorite:
-                    Toast.makeText(activity, "Pavorite", Toast.LENGTH_SHORT).show();
+                    bookmark.addRemoveBookmark(ayah.sura, ayah.ayah,"Default");
+                    refresh();
                     break;
                 case R.id.cab_share_ayah_text:
-                    Toast.makeText(activity, "Share ayah", Toast.LENGTH_SHORT).show();
+                     ShareUtil.shareViaIntent(activity, shareText, R.string.share_ayah_text);
                     break;
                 case R.id.cab_copy_ayah:
-                    Toast.makeText(activity, "Copy ayah", Toast.LENGTH_SHORT).show();
+                    ShareUtil.copyToClipboard(activity, shareText);
                     break;
                 case R.id.cab_play:
-                    Toast.makeText(activity, "Play", Toast.LENGTH_SHORT).show();
+                    int page = BaseQuranInfo.getPageFromSuraAyah(ayah.sura, ayah.ayah);
+                    ((UlumQuranActivity)getContext()).playFromAyah(page,ayah.sura, ayah.ayah, false);
                     break;
                 case R.id.cab_tema:
-                    Toast.makeText(activity, "Tema", Toast.LENGTH_SHORT).show();
+                    showDialogNotes(ayah.sura, ayah.ayah);
                     break;
 
             }

@@ -8,8 +8,11 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
@@ -22,6 +25,7 @@ import android.widget.ListView;
 
 import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.adapter.QuranSourceAdapter;
+import smk.adzikro.indextemaquran.db.QuranDataLocal;
 
 /**
  * Created by server on 12/21/15.
@@ -67,6 +71,7 @@ public class settings extends AppCompatActivity{
                 showList(1);
                 return true;
             });
+
         }
 
         private void showList(int kode){
@@ -74,6 +79,9 @@ public class settings extends AppCompatActivity{
             intent.putExtra(ActivityQuranSource.KODE,kode);
             startActivity(intent);
         }
+
+
+
     }
 
 
