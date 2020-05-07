@@ -1,13 +1,10 @@
 package smk.adzikro.indextemaquran.adapter;
 
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
-import smk.adzikro.indextemaquran.fragments.BookFragment;
 import smk.adzikro.indextemaquran.fragments.SuraListFragment;
-import smk.adzikro.indextemaquran.fragments.TemaFragment;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -16,7 +13,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
-    public ViewPagerAdapter(FragmentManager fm,CharSequence mTitles[], int mNumbOfTabsumb) {
+    public ViewPagerAdapter(FragmentManager fm, CharSequence mTitles[], int mNumbOfTabsumb) {
         super(fm);
 
         this.Titles = mTitles;

@@ -40,9 +40,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnErrorListener;
-import android.media.MediaPlayer.OnPreparedListener;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.AsyncTask;
@@ -51,18 +48,19 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.PowerManager;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.app.NotificationCompat.MediaStyle;
-import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.util.SparseIntArray;
 
+
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.media.session.MediaButtonReceiver;
+import androidx.media.app.NotificationCompat.MediaStyle;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,8 +85,8 @@ import timber.log.Timber;
  * (which come from our main activity, {@link }, which signal
  * the service to perform specific operations: Play, Pause, Rewind, Skip, etc.
  */
-public class AudioService extends Service implements OnCompletionListener,
-    OnPreparedListener, OnErrorListener, AudioFocusable, MediaPlayer.OnSeekCompleteListener {
+public class AudioService extends Service implements MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, AudioFocusable, MediaPlayer.OnSeekCompleteListener {
 
   // These are the Intent actions that we are prepared to handle. Notice that
   // the fact these constants exist in our class is a mere convenience: what

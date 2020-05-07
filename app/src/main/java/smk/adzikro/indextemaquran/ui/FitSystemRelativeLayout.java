@@ -4,10 +4,11 @@ package smk.adzikro.indextemaquran.ui;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RelativeLayout;
+
+import androidx.annotation.NonNull;
 
 import smk.adzikro.indextemaquran.R;
 

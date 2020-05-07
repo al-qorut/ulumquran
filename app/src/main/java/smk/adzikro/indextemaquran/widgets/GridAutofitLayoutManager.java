@@ -1,16 +1,16 @@
 package smk.adzikro.indextemaquran.widgets;
 
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
 import android.util.TypedValue;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by server on 11/26/17.
  */
 
-public class GridAutofitLayoutManager  extends GridLayoutManager{
+public class GridAutofitLayoutManager  extends GridLayoutManager {
     private int mColumnWidth;
     private boolean mColumnWidthChanged = true;
 

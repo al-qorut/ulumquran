@@ -3,7 +3,8 @@ package smk.adzikro.indextemaquran.setting;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import smk.adzikro.indextemaquran.constans.QuranFileConstants;
 

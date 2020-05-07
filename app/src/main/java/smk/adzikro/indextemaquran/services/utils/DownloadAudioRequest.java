@@ -1,8 +1,9 @@
 package smk.adzikro.indextemaquran.services.utils;
 
 import android.os.Parcel;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import smk.adzikro.indextemaquran.object.QariItem;
 import smk.adzikro.indextemaquran.object.SuraAyah;
@@ -12,7 +13,8 @@ import smk.adzikro.indextemaquran.util.AudioUtils;
 public class DownloadAudioRequest extends AudioRequest {
 
   private static final String TAG = "DownloadAudioRequest";
-  @NonNull private final QariItem qariItem;
+  @NonNull
+  private final QariItem qariItem;
   private String localDirectoryPath = null;
 
   public DownloadAudioRequest(String baseUrl, SuraAyah verse,

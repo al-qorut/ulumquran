@@ -2,16 +2,19 @@ package smk.adzikro.indextemaquran.object;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class QariItem implements Parcelable {
   private final int mId;
-  @NonNull private final String mName;
+  @NonNull
+  private final String mName;
   @NonNull private final String mUrl;
   @NonNull private final String mPath;
-  @Nullable private final String mDatabaseName;
+  @Nullable
+  private final String mDatabaseName;
 
   public QariItem(int id, @NonNull String name, @NonNull String url,
       @NonNull String path, @Nullable String databaseName) {

@@ -4,14 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -24,11 +16,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
 import smk.adzikro.indextemaquran.object.QuranInfo;
@@ -38,7 +35,7 @@ import smk.adzikro.indextemaquran.ui.TranslationViewRow;
 import smk.adzikro.indextemaquran.widgets.AyahNumberView;
 import smk.adzikro.indextemaquran.widgets.DividerView;
 
-import static android.support.v4.view.ViewCompat.LAYOUT_DIRECTION_RTL;
+import static androidx.core.view.ViewCompat.LAYOUT_DIRECTION_RTL;
 import static smk.adzikro.indextemaquran.util.Fungsi.AR_BASMALLAH;
 import static smk.adzikro.indextemaquran.util.Fungsi.getAyahWithoutBasmallah;
 

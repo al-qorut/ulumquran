@@ -3,8 +3,9 @@ package smk.adzikro.indextemaquran.db;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileOutputStream;

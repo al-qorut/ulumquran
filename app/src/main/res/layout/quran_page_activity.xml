@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:visibility="gone"
             android:layout_height="wrap_content" />
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -54,7 +54,7 @@
                     style="@android:style/TextAppearance.Small"
                     android:id="@+id/subtitle"/>
             </LinearLayout>
-            </android.support.v7.widget.Toolbar>
+            </androidx.appcompat.widget.Toolbar>
     </FrameLayout>
     <smk.adzikro.indextemaquran.widgets.AudioStatusBar
         android:id="@+id/audio_area"

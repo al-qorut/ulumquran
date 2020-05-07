@@ -1,29 +1,12 @@
 package smk.adzikro.indextemaquran.activities;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
-import android.os.AsyncTask;
 import android.os.CountDownTimer;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,9 +17,20 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdListener;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -44,11 +38,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 

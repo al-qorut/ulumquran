@@ -1,14 +1,17 @@
 package smk.adzikro.indextemaquran.adapter;
 
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import smk.adzikro.indextemaquran.fragments.TranslationFragment;
 import smk.adzikro.indextemaquran.constans.Constants;
 import smk.adzikro.indextemaquran.fragments.ImagePagerQuran;
+
+import static androidx.viewpager.widget.PagerAdapter.POSITION_NONE;
 
 public class QuranPageAdapter extends FragmentStatePagerAdapter {
 

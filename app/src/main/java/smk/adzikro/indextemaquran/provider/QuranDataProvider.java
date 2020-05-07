@@ -10,13 +10,13 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.support.annotation.NonNull;
 import android.text.Html;
 import android.util.Log;
 
 
-import java.util.List;
+import androidx.annotation.NonNull;
 
+import java.util.List;
 import smk.adzikro.indextemaquran.BuildConfig;
 import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.constans.BaseQuranInfo;

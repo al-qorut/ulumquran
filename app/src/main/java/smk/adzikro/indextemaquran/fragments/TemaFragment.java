@@ -1,50 +1,26 @@
 package smk.adzikro.indextemaquran.fragments;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+
+import androidx.fragment.app.Fragment;
 
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import smk.adzikro.indextemaquran.R;
-import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
-import smk.adzikro.indextemaquran.db.ExtractDatabase;
-import smk.adzikro.indextemaquran.db.QuranApi;
-import smk.adzikro.indextemaquran.db.QuranDatabase;
 import smk.adzikro.indextemaquran.interfaces.TemaList;
 import smk.adzikro.indextemaquran.interfaces.TemaPresenter;
 import smk.adzikro.indextemaquran.object.Ayah;
-import smk.adzikro.indextemaquran.object.BundleTema;
 import smk.adzikro.indextemaquran.object.Tema;
 import smk.adzikro.indextemaquran.util.Fungsi;
 import smk.adzikro.indextemaquran.widgets.IconTreeItemHolder;

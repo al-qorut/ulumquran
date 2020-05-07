@@ -1,6 +1,7 @@
 package smk.adzikro.indextemaquran.util;
 
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.io.FileOutputStream;

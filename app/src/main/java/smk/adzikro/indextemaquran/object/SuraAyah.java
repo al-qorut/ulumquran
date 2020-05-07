@@ -2,7 +2,8 @@ package smk.adzikro.indextemaquran.object;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
 

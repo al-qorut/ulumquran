@@ -1,6 +1,7 @@
 package smk.adzikro.indextemaquran.object;
 
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by server on 1/1/18.
@@ -9,7 +10,8 @@ import android.support.annotation.NonNull;
 public class QuranText {
     public final int sura;
     public final int ayah;
-    @NonNull public final String text;
+    @NonNull
+    public final String text;
 
     public QuranText(int sura, int ayah, @NonNull String text) {
         this.sura = sura;

@@ -7,10 +7,11 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.v4.view.ViewCompat;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.core.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -58,7 +59,8 @@ public class AudioStatusBar extends LeftToRightLinearLayout {
 
   private int currentQari;
   private int currentRepeat = 0;
-  @DrawableRes private int itemBackground;
+  @DrawableRes
+  private int itemBackground;
   private boolean isRtl;
   private boolean isDualPageMode;
   private boolean hasErrorText;
@@ -237,7 +239,8 @@ public class AudioStatusBar extends LeftToRightLinearLayout {
   private static class QariAdapter extends BaseAdapter {
     @NonNull LayoutInflater mInflater;
     @NonNull private final List<QariItem> mItems;
-    @LayoutRes private final int mLayoutViewId;
+    @LayoutRes
+    private final int mLayoutViewId;
     @LayoutRes private final int mDropDownViewId;
 
     QariAdapter(@NonNull Context context,

@@ -18,6 +18,9 @@
         android:largeHeap="true"
         android:name=".QuranApplication"
         android:theme="@style/AppTheme.NoActionBar">
+                <meta-data
+                    android:name="com.google.android.gms.ads.APPLICATION_ID"
+                    android:value="ca-app-pub-3624492980147085~5159087251"/>
            <activity android:name=".activities.MainActivity">
 
         </activity>

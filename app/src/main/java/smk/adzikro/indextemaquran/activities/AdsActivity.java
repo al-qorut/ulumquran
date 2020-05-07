@@ -1,21 +1,15 @@
 package smk.adzikro.indextemaquran.activities;
 
-import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdLoader;
-import com.google.android.gms.ads.AdRequest;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.NativeAppInstallAd;
 import com.google.android.gms.ads.formats.NativeAppInstallAdView;

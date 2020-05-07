@@ -1,8 +1,9 @@
 package smk.adzikro.indextemaquran.widgets;
 
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.KeyEvent;
 
 public abstract class QuranActionBarActivity extends AppCompatActivity {

@@ -12,10 +12,11 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
-import android.support.v4.app.FragmentActivity;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.fragment.app.FragmentActivity;
 
 import smk.adzikro.indextemaquran.setting.RateMeMaybeFragment.RMMFragInterface;
 

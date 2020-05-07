@@ -3,10 +3,11 @@ package smk.adzikro.indextemaquran.provider;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.Display;
 import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
 
 import smk.adzikro.indextemaquran.setting.QuranSettings;
 import smk.adzikro.indextemaquran.constans.QuranConstants;

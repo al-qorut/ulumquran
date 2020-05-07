@@ -7,10 +7,6 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.SpannableString;
 import android.util.Log;
@@ -22,6 +18,11 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import smk.adzikro.indextemaquran.activities.ActivityQuranSource;
 import smk.adzikro.indextemaquran.activities.UlumQuranActivity;
@@ -115,6 +116,7 @@ public class SearchActivity extends QuranActionBarActivity
 
   @Override
   protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
     setIntent(intent);
     handleIntent(intent);
   }

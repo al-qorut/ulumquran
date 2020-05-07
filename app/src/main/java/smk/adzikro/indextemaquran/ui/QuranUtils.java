@@ -3,8 +3,9 @@ package smk.adzikro.indextemaquran.ui;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.text.TextUtilsCompat;
-import android.support.v4.view.ViewCompat;
+
+import androidx.core.text.TextUtilsCompat;
+import androidx.core.view.ViewCompat;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

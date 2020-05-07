@@ -1,11 +1,6 @@
 package smk.adzikro.indextemaquran.fragments;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MenuItem;
@@ -13,7 +8,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 import smk.adzikro.indextemaquran.R;

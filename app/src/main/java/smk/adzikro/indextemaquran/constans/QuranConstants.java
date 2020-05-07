@@ -1,6 +1,6 @@
 package smk.adzikro.indextemaquran.constans;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.Display;
 
 import smk.adzikro.indextemaquran.provider.QuranScreenInfo;

@@ -1,36 +1,23 @@
 package smk.adzikro.indextemaquran.activities;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import smk.adzikro.indextemaquran.R;
-import smk.adzikro.indextemaquran.adapter.QuranSourceAdapter;
-import smk.adzikro.indextemaquran.db.QuranDataLocal;
 
 /**
  * Created by server on 12/21/15.
  */
-public class settings extends AppCompatActivity{
+public class settings extends AppCompatActivity {
     public Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -5,9 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.core.content.ContextCompat;
 
 import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.widgets.AyahToolBar.PipPosition;

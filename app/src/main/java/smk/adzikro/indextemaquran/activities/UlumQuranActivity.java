@@ -14,17 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -38,17 +27,25 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-import com.google.android.gms.ads.AdListener;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 
 import smk.adzikro.indextemaquran.R;
@@ -75,7 +72,6 @@ import smk.adzikro.indextemaquran.ui.QuranDisplayHelper;
 import smk.adzikro.indextemaquran.ui.QuranUtils;
 import smk.adzikro.indextemaquran.util.AudioUtils;
 import smk.adzikro.indextemaquran.util.Fungsi;
-import smk.adzikro.indextemaquran.util.QuranFileUtils;
 import smk.adzikro.indextemaquran.widgets.AudioStatusBar;
 import smk.adzikro.indextemaquran.widgets.AyahToolBar;
 import smk.adzikro.indextemaquran.widgets.HighlightType;
@@ -83,9 +79,14 @@ import timber.log.Timber;
 
 import static smk.adzikro.indextemaquran.constans.Constants.PAGES_LAST;
 
-/**
- * Created by server on 11/30/16.
- */
+/*
+ git init
+ git remote add origin https://github.com/al-qorut/ulumquran.git
+ git pull origin master --allow-unrelated-histories
+ git add .
+ git commit -m “pesan”
+ git push origin master
+*/
 
 public class UlumQuranActivity extends AppCompatActivity
  implements AudioStatusBar.AudioBarListener,
@@ -439,7 +440,7 @@ public class UlumQuranActivity extends AppCompatActivity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.quran_menu, menu);
         final MenuItem item = menu.findItem(R.id.search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        final SearchView searchView = (SearchView) item.getActionView();
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setQueryHint(getString(R.string.search_hint));
         searchView.setSearchableInfo(searchManager.getSearchableInfo(
@@ -564,7 +565,7 @@ public class UlumQuranActivity extends AppCompatActivity
             startActivity(new Intent(UlumQuranActivity.this, settings.class));
             return true;
         } else if (itemId == R.id.qori) {
-            audioStatusBar.spinner.performClick();
+         //   audioStatusBar.spinner.performClick();
             return true;
         } else if (itemId == android.R.id.home) {
            // startActivity(new Intent(UlumQuranActivity.this, AdsActivity.class));

@@ -13,10 +13,12 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.MenuRes;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.PopupMenu;
+
+import androidx.annotation.MenuRes;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
+
 import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;

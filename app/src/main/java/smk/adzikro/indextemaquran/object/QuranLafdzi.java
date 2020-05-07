@@ -1,6 +1,7 @@
 package smk.adzikro.indextemaquran.object;
 
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by server on 1/6/18.

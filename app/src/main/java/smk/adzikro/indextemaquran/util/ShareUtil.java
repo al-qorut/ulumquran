@@ -5,7 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 import android.text.Html;
 import android.widget.Toast;
 

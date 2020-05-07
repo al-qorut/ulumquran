@@ -7,9 +7,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.PaintDrawable;
 import android.os.Build;
-import android.support.annotation.StringRes;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,6 +17,10 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.StringRes;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
 
 import smk.adzikro.indextemaquran.setting.QuranSettings;
 import smk.adzikro.indextemaquran.R;

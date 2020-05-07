@@ -3,10 +3,11 @@ package smk.adzikro.indextemaquran.util;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+
+import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;

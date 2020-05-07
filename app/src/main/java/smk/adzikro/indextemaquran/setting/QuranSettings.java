@@ -6,14 +6,14 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.Calendar;
 import java.util.Date;
 
 import smk.adzikro.indextemaquran.BuildConfig;
-import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.constans.Constants;
 import smk.adzikro.indextemaquran.constans.QuranFileConstants;
 import smk.adzikro.indextemaquran.services.QuranDownloadService;

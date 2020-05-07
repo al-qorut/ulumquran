@@ -14,18 +14,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,15 +34,11 @@ import java.util.List;
 
 import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.adapter.TemaListAdapter;
-import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
-import smk.adzikro.indextemaquran.constans.Constants;
 import smk.adzikro.indextemaquran.constans.QuranFileConstants;
 import smk.adzikro.indextemaquran.db.QuranDataLocal;
 import smk.adzikro.indextemaquran.object.Ayah;
 import smk.adzikro.indextemaquran.object.QuranSource;
-import smk.adzikro.indextemaquran.object.VerseRange;
 import smk.adzikro.indextemaquran.services.QuranDownloadService;
-import smk.adzikro.indextemaquran.services.utils.ServiceIntentHelper;
 
 
 /**

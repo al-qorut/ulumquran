@@ -1,21 +1,17 @@
 package smk.adzikro.indextemaquran.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import smk.adzikro.indextemaquran.R;
-import smk.adzikro.indextemaquran.interfaces.QuranListContrack;
 import smk.adzikro.indextemaquran.object.QuranLafdzi;
 import smk.adzikro.indextemaquran.setting.QuranSettings;
 import smk.adzikro.indextemaquran.util.Fungsi;
