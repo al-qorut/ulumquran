@@ -77,7 +77,7 @@ public class DatabaseHandler {
   private DatabaseHandler(Context context, String databaseName) throws SQLException {
     String base = QuranFileUtils.getQuranDatabaseDirectory(context);
    if(base == null) return;
-    String path = Fungsi.PATH_DATABASE()+databaseName;//base + File.separator + databaseName;
+    String path = Fungsi.PATH_DATABASES(context)+ File.separator + databaseName;
     Log.e(TAG,"opening database file: " + databaseName);
     try {
       database = SQLiteDatabase.openDatabase(path, null,
@@ -478,7 +478,7 @@ public class DatabaseHandler {
     String qtext = "select rowid as " + BaseColumns._ID + ", " + COL_SURA + ", " + COL_AYAH +
         ", " + whatTextToSelect + " from " + table + " where " + COL_TEXT +
         operator + " ? " + " " + limit;
-    Log.e(TAG,"search query: " + qtext + ", query: " + query);
+    Log.e(TAG,"search query: " + qtext + ", query: " + query +" what "+whatTextToSelect);
 
     try {
       return database.rawQuery(qtext, new String[]{ query });

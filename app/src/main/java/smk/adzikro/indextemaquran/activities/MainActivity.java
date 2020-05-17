@@ -1,6 +1,9 @@
 package smk.adzikro.indextemaquran.activities;
 
 import android.app.Dialog;
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.CountDownTimer;
@@ -21,14 +24,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
+//import com.google.android.gms.ads.AdRequest;
+//import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
@@ -42,6 +47,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import smk.adzikro.indextemaquran.R;
+import smk.adzikro.indextemaquran.SearchActivity;
 import smk.adzikro.indextemaquran.constans.BaseQuranData;
 import smk.adzikro.indextemaquran.constans.BaseQuranInfo;
 import smk.adzikro.indextemaquran.fragments.BookFragment;
@@ -59,7 +65,14 @@ import smk.adzikro.indextemaquran.util.Fungsi;
 import timber.log.Timber;
 
 import static smk.adzikro.indextemaquran.constans.Constants.TRANSLATION_DOWNLOAD_KEY;
-
+/*
+ git init
+ git remote add origin https://github.com/al-qorut/ulumquran.git
+ git pull origin master --allow-unrelated-histories
+ git add .
+ git commit -m “pesan”
+ git push origin master
+*/
 
 public class MainActivity extends AppCompatActivity implements
         RateMeMaybe.OnRMMUserChoiceListener,
@@ -73,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //===untuk free ada iklan
     private static final long APP_LENGTH_MILLISECONDS = 50000;
-    private InterstitialAd mInterstitialAd;
+//    private InterstitialAd mInterstitialAd;
     private CountDownTimer mCountDownTimer;
     private long mTimerMilliseconds;
     private boolean pertama=true;
@@ -111,9 +124,7 @@ public class MainActivity extends AppCompatActivity implements
         navigationView =findViewById(R.id.navigation_view);
         bottomNavigationView = findViewById(R.id.bottom);
         mSettings = QuranSettings.getInstance(this);
-        if(!mSettings.isIklas()){
-            iklan();
-        }
+
     }
 
 
@@ -183,13 +194,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed(){
        // startActivity(new Intent(MainActivity.this, AdsActivity.class));
-        if(!mSettings.isIklas()){
-            if(QuranUtils.haveInternet(this)) {
-                showInterstitial();
-            }else{
-                startActivity(new Intent(this, AdsActivity.class));
-            }
-        }
         finish();
         //super.onBackPressed();
     }
@@ -199,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements
         pagex = page;
         final Intent intent = new Intent(MainActivity.this, UlumQuranActivity.class);
         intent.putExtra("page", page);
-        if(!Fungsi.isFileImageExist() && Fungsi.getModeView(this)){
+        if(!Fungsi.isFileImageExist(this) && Fungsi.getModeView(this)){
             Toast.makeText(this, "Image tidak ada", Toast.LENGTH_SHORT).show();
             downloadImage();
         }else{
@@ -269,12 +273,23 @@ public class MainActivity extends AppCompatActivity implements
         });
         dialog.show();
     }
-
+    SearchView searchView;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+        MenuItem item = menu.findItem(R.id.action_cari);
+        searchView = (SearchView) item.getActionView();
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setQueryHint(getString(R.string.search_hint));
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(
+                     // new  ComponentName(this, SearchActivity.class)
+                        getComponentName()
+                )
+        );
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -311,84 +326,13 @@ public class MainActivity extends AppCompatActivity implements
     public void handleNegative() {
 
     }
-    private void iklan() {
-         mInterstitialAd = new InterstitialAd(MainActivity.this);
-         mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
-         startGame();
-    }
-
-    int tampilIklan=0;
-    public void showDialogIklan(String title, String tanya){
-        new AlertDialog.Builder(this)
-                .setTitle(title)
-                .setMessage(tanya)
-                .setCancelable(false)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton("Ya", (dialog, whichButton) -> {
-                    showInterstitial();
-                    startGame();
-                })
-                .setNegativeButton("Tidak", (dialogInterface, i) -> startGame()).show();
-    }
-    //====== iklan
-    private void startGame() {
-        // Request a new ad if one isn't already loaded, hide the button, and kick off the timer.
-        if (!mInterstitialAd.isLoading() && !mInterstitialAd.isLoaded()) {
-            AdRequest adRequest = new AdRequest.Builder().build();
-            mInterstitialAd.loadAd(adRequest);
-        }
-       // resumeGame(APP_LENGTH_MILLISECONDS);
-    }
-
-    private void resumeGame(long milliseconds) {
-        // Create a new timer for the correct length and start it.
-        //mAppIsInProgress = true;
-        mTimerMilliseconds = milliseconds;
-        createTimer(milliseconds);
-        mCountDownTimer.start();
-    }
-    public void showIklan(View view){
-        showInterstitial();
-    }
-    private void createTimer(final long milliseconds) {
-        if (mCountDownTimer != null) {
-            mCountDownTimer.cancel();
-        }
 
 
-        mCountDownTimer = new CountDownTimer(milliseconds, 50) {
-            @Override
-            public void onTick(long millisUnitFinished) {
-                mTimerMilliseconds = millisUnitFinished;
-            }
 
-            @Override
-            public void onFinish() {
-               // showInterstitial();
-                if(tampilIklan<1) {
-                    if(mInterstitialAd !=null) {
-                        if(!mSettings.isIklas()) {
-                            if(!mSettings.isDownloadImage())
-                            showDialogIklan("Iklan", getString(R.string.infak_iklan));
-                        }
-                    }
-                }
-            }
-        };
-    }
 
-    private void showInterstitial() {
-        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-        }
-    }
-    //===== iklan
     @Override
     public void onDestroy(){
-        mSettings.setIklanKlik(false);
-        if(mInterstitialAd!=null){
-            mInterstitialAd = null;
-        }
+
         super.onDestroy();
     }
     Handler handler = new Handler() {
@@ -422,11 +366,13 @@ public class MainActivity extends AppCompatActivity implements
 
         // actually start the download
         String url = "https://www.dropbox.com/s/5xgul9c98bcgzv3/quran.zip?dl=1"; //
-        String destination = Fungsi.PATH_IMAGES();
+        String destination = Fungsi.PATH_IMAGES(this);
         Timber.d("downloading %s to %s", url, destination);
         String notificationTitle = "Image Quran";
         Intent intent = ServiceIntentHelper.getDownloadIntent(this, url,
-                destination, notificationTitle, TRANSLATION_DOWNLOAD_KEY,
+                destination,
+                notificationTitle,
+                TRANSLATION_DOWNLOAD_KEY,
                 QuranDownloadService.DOWNLOAD_TYPE_PAGES);
         String filename = "quran.zip";
         if (url.endsWith("zip")) {
@@ -439,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void handleDownloadSuccess() {
         Toast.makeText(this, "Sucses", Toast.LENGTH_SHORT).show();
-        unpackZip(Fungsi.PATH_IMAGES(),"quran.zip");
+        unpackZip(Fungsi.PATH_IMAGES(this),"quran.zip");
     }
 
     @Override

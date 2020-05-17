@@ -28,10 +28,9 @@ import smk.adzikro.indextemaquran.util.Fungsi;
 public class QuranDataLocal extends SQLiteOpenHelper {
     private static final String TAG = QuranDataLocal.class.getSimpleName() ;
     private Context context;
-    private static final String NAMA_DATABASE=Fungsi.PATH_DATABASE()+"Translation.db";
 
     public QuranDataLocal(Context context) {
-        super(context, NAMA_DATABASE, null, 2);
+        super(context, Fungsi.PATH_DATABASES(context)+File.separator+"Translation.db", null, 2);
         this.context = context;
     }
 
@@ -48,13 +47,13 @@ public class QuranDataLocal extends SQLiteOpenHelper {
                 "type int, " +
                 "active int, " +
                 "languageCode text)");
-        insertData(db,"Tafseer Adzikro (Indonesia)","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.id.adzikro.db?raw=true","quran.id.adzikro.db",1,1001,0,"id");
-        insertData(db,"Tafseer Ibnu Katsir (Indonesia)","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.id.ibnukatir.db?raw=true","quran.id.ibnukatir.db",1,1002,0,"id");
-        insertData(db,"Arabic I'rab Al-Quran","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.ar.irab.db?raw=true","quran.ar.irab.db",1,1003,0,"ar");
-        insertData(db,"Arabic Sharf  Al-Quran","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.ar.sharf.db?raw=true","quran.ar.sharf.db",1,1004,0,"ar");
-        insertData(db,"Arabic Balagha Al-Quran","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.ar.balagha.db?raw=true","quran.ar.balagha.db",1,1005,0,"ar");
-        insertData(db,"Tafseer Jalalain (Indonesia)","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.id.jalalain.db?raw=true","quran.id.jalalayn.db",1,1006,0,"id");
-        insertData(db,"Tafseer Ibnu Katsir (English)","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.en.kathir.db?raw=true","quran.en.ibnukatir.db",1,1007,0,"en");
+        insertData(db,"Tafseer Adzikro (Indonesia)","","","https://www.dropbox.com/s/v35bglwwqn1s28w/quran.id.adzikro.db?dl=1","quran.id.adzikro.db",1,1001,0,"id");
+        insertData(db,"Tafseer Ibnu Katsir (Indonesia)","","","https://www.dropbox.com/s/nvi6x23sk0ae0ki/quran.id.ibnukatir.db?dl=1","quran.id.ibnukatir.db",1,1002,0,"id");
+        insertData(db,"Arabic I'rab Al-Quran","","","https://www.dropbox.com/s/5y295sny0mywnel/quran.ar.irab.db?dl=1","quran.ar.irab.db",1,1003,0,"ar");
+        insertData(db,"Arabic Sharf  Al-Quran","","","https://www.dropbox.com/s/sun13kgsssbudws/quran.ar.sharf.db?dl=1","quran.ar.sharf.db",1,1004,0,"ar");
+        insertData(db,"Arabic Balagha Al-Quran","","","https://www.dropbox.com/s/mu4wlsq3zav81ce/quran.ar.balagha.db?dl=1","quran.ar.balagha.db",1,1005,0,"ar");
+        insertData(db,"Tafseer Jalalain (Indonesia)","","","https://www.dropbox.com/s/pd5b0druad2n1a8/quran.id.jalalain.db?dl=1","quran.id.jalalayn.db",1,1006,0,"id");
+        insertData(db,"Tafseer Ibnu Katsir (English)","","","https://www.dropbox.com/s/wxhkhpsq0ecynr0/quran.en.kathir.db?dl=1","quran.en.ibnukatir.db",1,1007,0,"en");
       //  insertData(db,"Transliteration","","","", QuranFileConstants.LATIN_DATABASE,0,1007,1);
 
         try {
@@ -84,13 +83,13 @@ public class QuranDataLocal extends SQLiteOpenHelper {
                 "type int, " +
                 "active int, " +
                 "languageCode text)");
-        insertData(db,"Tafseer Adzikro (Indonesia)","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.id.adzikro.db?raw=true","quran.id.adzikro.db",1,1001,0,"id");
-        insertData(db,"Tafseer Ibnu Katsir (Indonesia)","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.id.ibnukatir.db?raw=true","quran.id.ibnukatir.db",1,1002,0,"id");
-        insertData(db,"Arabic I'rab Al-Quran","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.ar.irab.db?raw=true","quran.ar.irab.db",1,1003,0,"ar");
-        insertData(db,"Arabic Sharf  Al-Quran","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.ar.sharf.db?raw=true","quran.ar.sharf.db",1,1004,0,"ar");
-        insertData(db,"Arabic Balagha Al-Quran","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.ar.balagha.db?raw=true","quran.ar.balagha.db",1,1005,0,"ar");
-        insertData(db,"Tafseer Jalalain (Indonesia)","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.id.jalalain.db?raw=true","quran.id.jalalayn.db",1,1006,0,"id");
-        insertData(db,"Tafseer Ibnu Katsir (English)","","","https://github.com/al-qorut/ulumquran/blob/master/raw/quran.en.kathir.db?raw=true","quran.en.ibnukatir.db",1,1007,0,"en");
+        insertData(db,"Tafseer Adzikro (Indonesia)","","","https://www.dropbox.com/s/v35bglwwqn1s28w/quran.id.adzikro.db?dl=1","quran.id.adzikro.db",1,1001,0,"id");
+        insertData(db,"Tafseer Ibnu Katsir (Indonesia)","","","https://www.dropbox.com/s/nvi6x23sk0ae0ki/quran.id.ibnukatir.db?dl=1","quran.id.ibnukatir.db",1,1002,0,"id");
+        insertData(db,"Arabic I'rab Al-Quran","","","https://www.dropbox.com/s/5y295sny0mywnel/quran.ar.irab.db?dl=1","quran.ar.irab.db",1,1003,0,"ar");
+        insertData(db,"Arabic Sharf  Al-Quran","","","https://www.dropbox.com/s/sun13kgsssbudws/quran.ar.sharf.db?dl=1","quran.ar.sharf.db",1,1004,0,"ar");
+        insertData(db,"Arabic Balagha Al-Quran","","","https://www.dropbox.com/s/mu4wlsq3zav81ce/quran.ar.balagha.db?dl=1","quran.ar.balagha.db",1,1005,0,"ar");
+        insertData(db,"Tafseer Jalalain (Indonesia)","","","https://www.dropbox.com/s/pd5b0druad2n1a8/quran.id.jalalain.db?dl=1","quran.id.jalalayn.db",1,1006,0,"id");
+        insertData(db,"Tafseer Ibnu Katsir (English)","","","https://www.dropbox.com/s/wxhkhpsq0ecynr0/quran.en.kathir.db?dl=1","quran.en.ibnukatir.db",1,1007,0,"en");
         //  insertData(db,"Transliteration","","","", QuranFileConstants.LATIN_DATABASE,0,1007,1);
 
         try {
@@ -166,6 +165,8 @@ public class QuranDataLocal extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         String sql = "select * from quran where ada=1";
         Cursor cursor = db.rawQuery(sql,null);
+    //    Log.e(TAG, "aya teu "+cursor.getCount());
+
         try {
             if (cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {

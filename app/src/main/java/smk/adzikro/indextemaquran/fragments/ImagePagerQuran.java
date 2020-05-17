@@ -30,6 +30,8 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 
+import java.io.File;
+
 import smk.adzikro.indextemaquran.R;
 import smk.adzikro.indextemaquran.activities.UlumQuranActivity;
 import smk.adzikro.indextemaquran.constans.Constants;
@@ -77,9 +79,9 @@ public class ImagePagerQuran extends Fragment {
 		screenHeight = size.y;
 		screenWidth = size.x;
 		//Log.e(TAG, "layar w "+screenWidth+" h "+screenHeight);
-		path= Fungsi.getPathImage();
+		path= Fungsi.getPathImage(context);
 		page = getArguments().getInt("page");
-		String gb	="file://"+path+Constants.IMAGE_URL[page];
+		String gb	="file://"+path+ File.separator+Constants.IMAGE_URL[page];
 		Glide.with(context)
 				.load(gb)
 				.into(imageView);

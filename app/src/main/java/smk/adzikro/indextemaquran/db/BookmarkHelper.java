@@ -24,12 +24,14 @@ import smk.adzikro.indextemaquran.util.Fungsi;
 
 public class BookmarkHelper {
     private static int VERSI=2;
-    private static String DATABASE = Fungsi.PATH_DATABASE()+"bookmark.db";
-    //private static Context context;
+    private static String DATABASE;
+    private static Context context;
     private static SQLiteDatabase db;
 
     public BookmarkHelper(Context context) {
         BookmarkDatabase bookmarkDatabase = new BookmarkDatabase(context);
+        DATABASE = Fungsi.PATH_DATABASES(context)+"bookmark.db";
+        this.context = context;
         this.db = bookmarkDatabase.getWritableDatabase();
     }
 

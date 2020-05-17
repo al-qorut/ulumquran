@@ -38,7 +38,7 @@ ext {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -46,8 +46,8 @@ dependencies {
     implementation "com.google.android.material:material:${supportLibVersion}"
     implementation "androidx.core:core:1.2.0"
     implementation "androidx.media:media:${supportLibVersion}"
-
-    implementation 'com.google.android.gms:play-services-ads:19.1.0'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    //implementation 'com.google.android.gms:play-services-ads-lite:19.1.0'
     implementation 'com.jakewharton:butterknife:8.8.1'
     implementation 'com.jakewharton.timber:timber:4.5.1'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'

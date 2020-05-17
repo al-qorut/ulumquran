@@ -103,50 +103,50 @@ public class Fungsi {
     }
 
 
-    public static void createPolder(){
+    public static void createPolder(Context ctx){
         String PATH_DATABASE = "/data/data/smk.adzikro.indextemaquran/databases/";
-
-        File file = new File(Environment.getExternalStorageDirectory()
-                .getAbsolutePath().toString()+"/.adzikro");
-        if(!file.exists()) file.mkdir();
+        String path = ctx.getExternalFilesDir(null).toString()+File.separator;
+        File file = new File(path);// .getExternalStorageDirectory()+
+                //File.separator+"adzikro");
+               // .getAbsolutePath().toString()+"/adzikro");
         file = new File(PATH_DATABASE);
         if(!file.exists()) file.mkdir();
-        file = new File(Environment.getExternalStorageDirectory()
-                .getAbsolutePath().toString()+"/.adzikro/indexQuran");
+        file = new File(path+"databases");
         if(!file.exists()) file.mkdir();
-        file = new File(Environment.getExternalStorageDirectory()
-                .getAbsolutePath().toString()+"/.adzikro/indexQuran/database");
-        if(!file.exists()) file.mkdir();
-        file = new File(Environment.getExternalStorageDirectory()
-                .getAbsolutePath().toString()+"/.adzikro/indexQuran/images");
+        file = new File(path+"images");
         if(!file.exists()) file.mkdir();
     }
 
-    public static boolean isFileImageExist(){
+    public static boolean isFileImageExist(Context context){
         boolean ada = false;
-        File file = new File(PATH_IMAGES()+"page604.png");
+        File file = new File(PATH_IMAGES(context)+File.separator+"page604.png");
         if(file.exists()){
             ada = true;
         }else {
-            file = new File(PATH_OLD_IMAGES() + "page604.png");
+            file = new File(PATH_IMAGES() + "page604.png");
             if (file.exists()) {
                 ada = true;
             } else {
-                file = new File(PATH_QURAN_IMAGES_1260() + "page604.png");
+                file = new File(PATH_OLD_IMAGES() + "page604.png");
                 if (file.exists()) {
                     ada = true;
                 } else {
-                    file = new File(PATH_QURAN_IMAGES_1024() + "page604.png");
+                    file = new File(PATH_QURAN_IMAGES_1260() + "page604.png");
                     if (file.exists()) {
                         ada = true;
                     } else {
-                        file = new File(PATH_QURAN_IMAGES_800() + "page604.png");
+                        file = new File(PATH_QURAN_IMAGES_1024() + "page604.png");
                         if (file.exists()) {
                             ada = true;
-                        }else {
-                            file = new File(PATH_QURAN_IMAGES_480() + "page604.png");
+                        } else {
+                            file = new File(PATH_QURAN_IMAGES_800() + "page604.png");
                             if (file.exists()) {
                                 ada = true;
+                            } else {
+                                file = new File(PATH_QURAN_IMAGES_480() + "page604.png");
+                                if (file.exists()) {
+                                    ada = true;
+                                }
                             }
                         }
                     }
@@ -155,31 +155,36 @@ public class Fungsi {
         }
         return  ada;
     }
-    public static String getPathImage(){
+    public static String getPathImage(Context context){
         String path = "";
-        File file = new File(PATH_IMAGES()+"page604.png");
+        File file = new File(PATH_IMAGES(context)+File.separator+"page604.png");
         if(file.exists()){
-            path = PATH_IMAGES();
+            path = PATH_IMAGES(context);
         }else {
-            file = new File(PATH_OLD_IMAGES() + "page604.png");
+            file = new File(PATH_IMAGES() + "page604.png");
             if (file.exists()) {
-                path = PATH_OLD_IMAGES();
+                path = PATH_IMAGES();
             } else {
-                file = new File(PATH_QURAN_IMAGES_1260() + "page604.png");
+                file = new File(PATH_OLD_IMAGES() + "page604.png");
                 if (file.exists()) {
-                    path = PATH_QURAN_IMAGES_1260();
+                    path = PATH_OLD_IMAGES();
                 } else {
-                    file = new File(PATH_QURAN_IMAGES_1024() + "page604.png");
+                    file = new File(PATH_QURAN_IMAGES_1260() + "page604.png");
                     if (file.exists()) {
-                        path = PATH_QURAN_IMAGES_1024();
+                        path = PATH_QURAN_IMAGES_1260();
                     } else {
-                        file = new File(PATH_QURAN_IMAGES_800() + "page604.png");
+                        file = new File(PATH_QURAN_IMAGES_1024() + "page604.png");
                         if (file.exists()) {
-                            path = PATH_QURAN_IMAGES_800();
-                        }else {
-                            file = new File(PATH_QURAN_IMAGES_480() + "page604.png");
+                            path = PATH_QURAN_IMAGES_1024();
+                        } else {
+                            file = new File(PATH_QURAN_IMAGES_800() + "page604.png");
                             if (file.exists()) {
-                                path = PATH_QURAN_IMAGES_480();
+                                path = PATH_QURAN_IMAGES_800();
+                            } else {
+                                file = new File(PATH_QURAN_IMAGES_480() + "page604.png");
+                                if (file.exists()) {
+                                    path = PATH_QURAN_IMAGES_480();
+                                }
                             }
                         }
                     }
@@ -210,7 +215,7 @@ public class Fungsi {
                         WRITE_ESCDARD);
             }
         } else {
-            createPolder();
+           // createPolder();
             Log.e("Fungsi", "cek self fermision false");
             Log.e(TAG,"Load Service");
             Intent intent = new Intent(compat, QuranDownloadService.class);
@@ -220,14 +225,28 @@ public class Fungsi {
         }
     }
 
-    public static String PATH_DATABASE(){
-        return Environment.getExternalStorageDirectory()
-                .getAbsolutePath().toString()+"/.adzikro/indexQuran/databases/";
+    public static String PATH_DATABASES(Context ctx){
+        File file = new File(ctx.getExternalFilesDir(null)+File.separator+"databases");
+        if(!file.exists())
+            if(file.mkdir())
+         //       Log.e(TAG, "Sukeses biki polder");
+        Log.e(TAG,file.toString());
+        return file.toString();
+    }
+    public static String PATH_IMAGES(Context ctx){
+        File file = new File(ctx.getExternalFilesDir(null)+File.separator+"images");
+        if(!file.exists()) file.mkdir();
+        return file.toString();
     }
     public static String PATH_IMAGES(){
 
         return Environment.getExternalStorageDirectory()
                 .getAbsolutePath().toString()+"/.adzikro/indexQuran/images/";
+    }
+    public static String PATH_DATABASE(){
+
+        return Environment.getExternalStorageDirectory()
+                .getAbsolutePath().toString()+"/.adzikro/indexQuran/databases/";
     }
     public static String PATH_OLD_IMAGES(){
 
@@ -299,13 +318,12 @@ public class Fungsi {
         }
         return versi;
     }
-    public static Boolean getInstalasi(Context context) {
+    public static Boolean isPertama(Context context) {
         SharedPreferences set = context.getSharedPreferences(SETTING, context.MODE_PRIVATE);
-        Boolean install = set.getBoolean(getVersi(context), false);
+        Boolean install = set.getBoolean(getVersi(context), true);
         return install;
     }
-
-    public static void setInstalasi(Context context, Boolean selesai){
+    public static void setPertama(Context context, Boolean selesai){
         SharedPreferences.Editor editor = context.getSharedPreferences(SETTING, context.MODE_PRIVATE).edit();
         editor.putBoolean(getVersi(context), selesai);
         editor.commit();

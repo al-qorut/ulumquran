@@ -17,7 +17,7 @@ public class CreateDb extends SQLiteOpenHelper {
     public static final String TABLE_NAME ="verses";
 
     public CreateDb(Context context, String name) {
-        super(context, Fungsi.PATH_DATABASE()+name, null, 3);
+        super(context, Fungsi.PATH_DATABASES(context)+"/"+name, null, 3);
     }
 
     @Override

@@ -131,7 +131,7 @@ public class QuranDownloadService extends Service implements
     thread.start();
  //   Log.e(TAG,"onCreate");
     Context appContext = getApplicationContext();
-    mNotifier = new QuranDownloadNotifier(this);
+    mNotifier = new QuranDownloadNotifier(this, this);
     mWifiLock = ((WifiManager) appContext.getSystemService(Context.WIFI_SERVICE))
         .createWifiLock(WifiManager.WIFI_MODE_FULL, "downloadLock");
 
@@ -251,7 +251,7 @@ public class QuranDownloadService extends Service implements
       int type = intent.getIntExtra(EXTRA_DOWNLOAD_TYPE, 0);
       String notificationTitle =
           intent.getStringExtra(EXTRA_NOTIFICATION_NAME);
-    Log.e(TAG, "Tah "+url);
+   // Log.e(TAG, "Tah "+url);
       NotificationDetails details =
           new NotificationDetails(notificationTitle, key, type);
       // check if already downloaded, and if so, send broadcast

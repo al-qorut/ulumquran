@@ -50,7 +50,7 @@ public class QuranDatabase {
     public static final String TABLE_TEMA = "TEMA";
     public static final String TABLE_AYAT_TEMA = "AYAT_TEMA";
     private static String DB_PATH ;
-    private static final String NAMA_DATABASE = Fungsi.PATH_DATABASE()+ "index4";
+    private static String NAMA_DATABASE;
     private static final int VERSI_DATABASE = 4;
     public final QuranOpenHelper pembukaDatabase;
     private static SQLiteDatabase db;
@@ -62,6 +62,7 @@ public class QuranDatabase {
 
     public QuranDatabase(Context context) {
         this.bantuBukaDB =context;
+        NAMA_DATABASE = Fungsi.PATH_DATABASES(context)+ "/index4";
         pembukaDatabase = new QuranOpenHelper(context);
 
     }

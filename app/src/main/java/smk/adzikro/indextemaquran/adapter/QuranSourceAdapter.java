@@ -65,7 +65,7 @@ public class QuranSourceAdapter extends RecyclerView.Adapter<QuranSourceAdapter.
 
           //  holder.textTranslator.setText(pengarang);
           //  holder.textTranslator_asing.setText(asing);
-            File file = new File(Fungsi.PATH_DATABASE()+quranSource.getFile_name());
+            File file = new File(Fungsi.PATH_DATABASES(context)+"/"+quranSource.getFile_name());
             holder.imageView.setImageResource(R.drawable.ic_download);
             holder.checkBox.setChecked(false);
             holder.checkBox.setEnabled(false);

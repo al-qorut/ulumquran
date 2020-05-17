@@ -15,6 +15,7 @@ import android.util.Log;
 
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import java.util.List;
 import smk.adzikro.indextemaquran.BuildConfig;
@@ -55,6 +56,7 @@ public class QuranDataProvider extends ContentProvider {
 
   @Override
   public boolean onCreate() {
+    Log.e(TAG, "onCreate");
     translationsDBAdapter = new QuranDataLocal(getContext());
     return true;
   }
@@ -63,11 +65,12 @@ public class QuranDataProvider extends ContentProvider {
   public Cursor query(@NonNull Uri uri, String[] projection, String selection,
       String[] selectionArgs, String sortOrder) {
     Context context = getContext();
-
+   // Log.e(TAG, "onquery Uri "+uri.toString()+" select "+selection);
 
   //  Crashlytics.log("uri: " + uri.toString());
     switch (uriMatcher.match(uri)) {
       case SEARCH_SUGGEST: {
+     //   Log.e(TAG, "SEARCH_SUGEST Uri "+uri.toString());
         if (selectionArgs == null) {
           throw new IllegalArgumentException(
               "selectionArgs must be provided for the Uri: " + uri);
@@ -94,18 +97,21 @@ public class QuranDataProvider extends ContentProvider {
   }
 
   private List<QuranSource> getAvailableTranslations() {
+  //  Log.e(TAG, "getAvailableTranslations");
     return translationsDBAdapter.getTranslations();
   }
 
   private Cursor getSuggestions(String query) {
+  //  Log.e(TAG, "getSugestions "+query+" length "+query.length());
     if (query.length() < 3) {
       return null;
     }
 
     final boolean queryIsArabic = QuranUtils.doesStringContainArabic(query);
+  //  Log.e(TAG, "Query is Arabic "+queryIsArabic);
     final boolean haveArabic = queryIsArabic &&
         QuranFileUtils.hasTranslation(getContext(), QURAN_ARABIC_DATABASE);
-
+ //   Log.e(TAG, "have  Arabic "+haveArabic);
     List<QuranSource> translations = getAvailableTranslations();
     if (translations.size() == 0 && (queryIsArabic && !haveArabic)) {
       return null;
@@ -142,10 +148,11 @@ public class QuranDataProvider extends ContentProvider {
         }
         database = quran.file_name;
       }
-
+   //   Log.e(TAG, "I aya "+i+ "Query is Arabic "+queryIsArabic);
       Cursor suggestions = null;
       try {
         suggestions = search(query, database, false);
+       // Log.e(TAG, "suges "+query);
         if (suggestions != null && suggestions.moveToFirst()) {
           do {
             int sura = suggestions.getInt(1);
@@ -153,11 +160,10 @@ public class QuranDataProvider extends ContentProvider {
             String text = suggestions.getString(3);
             String foundText = context.getString(
                 R.string.found_in_sura, BaseQuranInfo.getSuraName(context, sura, false), ayah);
-
             gotResults = true;
             MatrixCursor.RowBuilder row = mc.newRow();
             int id = suggestions.getInt(0);
-
+         //   Log.e(TAG, "text "+text+" found "+foundText);
             row.add(id);
             row.add(Html.fromHtml(text));
             row.add(foundText);
@@ -174,7 +180,7 @@ public class QuranDataProvider extends ContentProvider {
 
   private Cursor search(String query, List<QuranSource> translations) {
     Timber.d("query: %s", query);
-
+    Log.e(TAG, "search "+query);
     final Context context = getContext();
     final boolean queryIsArabic = QuranUtils.doesStringContainArabic(query);
     final boolean haveArabic = queryIsArabic &&

@@ -5,6 +5,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
@@ -106,6 +107,7 @@ implements View.OnClickListener,
 
 
         cursor = db.rawQuery(sql,null);
+        Log.e(TAG, "data quran "+cursor.getCount());
         data.clear();
         try {
             if (cursor.getCount() > 0) {
@@ -115,10 +117,12 @@ implements View.OnClickListener,
                             cursor.getString(5),
                             cursor.getString(4));
                     q.setTranslator_asing(cursor.getString(3));
-                    File file = new File(Fungsi.PATH_DATABASE()+cursor.getString(5));
+                    File file = new File(Fungsi.PATH_DATABASES(this)+File.separator+cursor.getString(5));
                     if(file.exists()){
                         db.execSQL("update quran set ada=1 where _id="+cursor.getInt(0));
+                        Log.e(TAG, "file aya "+cursor.getString(5));
                     }
+                  //  Log.e(TAG, "aya teu "+cursor.getString(5));
                     q.setAda(cursor.getInt(6));
                     q.setType(cursor.getInt(7));
                     q.setActive(cursor.getInt(8));
@@ -136,7 +140,7 @@ implements View.OnClickListener,
     @Override
     public void onClick(View view) {
         int pos = recyclerView.getChildAdapterPosition(view);
-        File selectedItem = new File(Fungsi.PATH_DATABASE()+data.get(pos).getFile_name());
+        File selectedItem = new File(Fungsi.PATH_DATABASES(this)+File.separator+data.get(pos).getFile_name());
         if(selectedItem.exists()){
             CheckBox checkBox = view.findViewById(R.id.aktif);
             if(checkBox.isChecked()){
@@ -162,7 +166,7 @@ implements View.OnClickListener,
                 .setPositiveButton(R.string.remove_button,
                         (dialog, id) -> {
                            // Toast.makeText(this, translationRowData.getDisplayName()+" "+getString(R.string.download_successful),Toast.LENGTH_SHORT).show();
-                            File selectedItem = new File(Fungsi.PATH_DATABASE()+translationRowData.getFile_name());
+                            File selectedItem = new File(Fungsi.PATH_DATABASES(this)+translationRowData.getFile_name());
                             selectedItem.delete();
                             adapter.notifyDataSetChanged();
                         })
@@ -180,12 +184,12 @@ implements View.OnClickListener,
 
     @Override
     public void handleDownloadFailure(int errId) {
-        File selectedItem = new File(Fungsi.PATH_DATABASE()+downloadingItem.getFile_name());
+        File selectedItem = new File(Fungsi.PATH_DATABASES(this)+downloadingItem.getFile_name());
         if (downloadingItem != null && selectedItem.exists()) {
             try {
                 File f = new File(Fungsi.PATH_DATABASE(),
                         downloadingItem.getFile_name() + ".old");
-                File destFile = new File(Fungsi.PATH_DATABASE(), downloadingItem.getFile_name());
+                File destFile = new File(Fungsi.PATH_DATABASES(this), downloadingItem.getFile_name());
                 if (f.exists() && !destFile.exists()) {
                     f.renameTo(destFile);
                 } else {
@@ -199,7 +203,7 @@ implements View.OnClickListener,
     }
 
     private void downloadItem(QuranSource quranSource) {
-        File selectedItem = new File(Fungsi.PATH_DATABASE()+quranSource.getFile_name());
+        File selectedItem = new File(Fungsi.PATH_DATABASES(this)+quranSource.getFile_name());
         if (selectedItem.exists()) {
             return;
         }
@@ -218,7 +222,7 @@ implements View.OnClickListener,
         if (quranSource.getFile_url() == null) {
             return;
         }
-        String destination = Fungsi.PATH_DATABASE();
+        String destination = Fungsi.PATH_DATABASES(this);
         Timber.d("downloading %s to %s", url, destination);
 
         if (selectedItem.exists()) {

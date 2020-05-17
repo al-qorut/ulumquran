@@ -86,7 +86,8 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:gravity="center"
         android:textColor="@color/title_color"
         android:layout_gravity="center"/>
-    <TextView android:text="Jl. Tugulaksana 02/13 Desa Pagerwangi Kec. Lembang Kab. Bandung Barat 40392\n+6281573138275\nadzikro@gmail.com"
+    <TextView
+        android:text="@string/info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"

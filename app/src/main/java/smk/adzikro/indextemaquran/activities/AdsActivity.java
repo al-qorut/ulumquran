@@ -10,11 +10,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.ads.formats.NativeAd;
-import com.google.android.gms.ads.formats.NativeAppInstallAd;
-import com.google.android.gms.ads.formats.NativeAppInstallAdView;
-import com.google.android.gms.ads.formats.NativeContentAd;
-import com.google.android.gms.ads.formats.NativeContentAdView;
 
 import java.util.List;
 
@@ -47,76 +42,6 @@ public class AdsActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
-    private void populateAppInstallAdView(NativeAppInstallAd nativeAppInstallAd,
-                                          NativeAppInstallAdView adView) {
-        adView.setHeadlineView(adView.findViewById(R.id.appinstall_headline));
-        adView.setImageView(adView.findViewById(R.id.appinstall_image));
-        adView.setBodyView(adView.findViewById(R.id.appinstall_body));
-        adView.setCallToActionView(adView.findViewById(R.id.appinstall_call_to_action));
-        adView.setIconView(adView.findViewById(R.id.appinstall_app_icon));
-        adView.setPriceView(adView.findViewById(R.id.appinstall_price));
-        adView.setStarRatingView(adView.findViewById(R.id.appinstall_stars));
-        adView.setStoreView(adView.findViewById(R.id.appinstall_store));
-
-        ((TextView) adView.getHeadlineView()).setText(nativeAppInstallAd.getHeadline());
-        ((TextView) adView.getBodyView()).setText(nativeAppInstallAd.getBody());
-        ((TextView) adView.getPriceView()).setText(nativeAppInstallAd.getPrice());
-        ((TextView) adView.getStoreView()).setText(nativeAppInstallAd.getStore());
-        ((Button) adView.getCallToActionView()).setText(nativeAppInstallAd.getCallToAction());
-        ((ImageView) adView.getIconView()).setImageDrawable(nativeAppInstallAd.getIcon()
-                .getDrawable());
-        ((RatingBar) adView.getStarRatingView())
-                .setRating(nativeAppInstallAd.getStarRating().floatValue());
-
-        List<NativeAd.Image> images = nativeAppInstallAd.getImages();
-
-        if (images.size() > 0) {
-            ((ImageView) adView.getImageView())
-                    .setImageDrawable(images.get(0).getDrawable());
-        }
-
-        // Assign native ad object to the native view.
-        adView.setNativeAd(nativeAppInstallAd);
-    }
-
-    /**
-     * Populates a {@link NativeContentAdView} object with data from a given
-     * {@link NativeContentAd}.
-     *
-     * @param nativeContentAd the object containing the ad's assets
-     * @param adView          the view to be populated
-     */
-    private void populateContentAdView(NativeContentAd nativeContentAd,
-                                       NativeContentAdView adView) {
-        adView.setHeadlineView(adView.findViewById(R.id.contentad_headline));
-        adView.setImageView(adView.findViewById(R.id.contentad_image));
-        adView.setBodyView(adView.findViewById(R.id.contentad_body));
-        adView.setCallToActionView(adView.findViewById(R.id.contentad_call_to_action));
-        adView.setLogoView(adView.findViewById(R.id.contentad_logo));
-        adView.setAdvertiserView(adView.findViewById(R.id.contentad_advertiser));
-
-        ((TextView) adView.getHeadlineView()).setText(nativeContentAd.getHeadline());
-        ((TextView) adView.getBodyView()).setText(nativeContentAd.getBody());
-        ((TextView) adView.getCallToActionView()).setText(nativeContentAd.getCallToAction());
-        ((TextView) adView.getAdvertiserView()).setText(nativeContentAd.getAdvertiser());
-
-        List<NativeAd.Image> images = nativeContentAd.getImages();
-
-        if (images != null && images.size() > 0) {
-            ((ImageView) adView.getImageView())
-                    .setImageDrawable(images.get(0).getDrawable());
-        }
-
-        NativeAd.Image logoImage = nativeContentAd.getLogo();
-
-        if (logoImage != null) {
-            ((ImageView) adView.getLogoView())
-                    .setImageDrawable(logoImage.getDrawable());
-        }
-
-        // Assign native ad object to the native view.
-        adView.setNativeAd(nativeContentAd);
     }
 
     /**

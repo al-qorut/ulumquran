@@ -22,16 +22,5 @@
         <item>বাংলা</item>
     </string-array>
 
-    <integer-array name="image" translatable="false">
-        <item>@drawable/image01</item>
-        <item>@drawable/image02</item>
-        <item>@drawable/image03</item>
-        <item>@drawable/image04</item>
-        <item>@drawable/image05</item>
-        <item>@drawable/image06</item>
-        <item>@drawable/image07</item>
-        <item>@drawable/image08</item>
-        <item>@drawable/image09</item>
-        <item>@drawable/image10</item>
-    </integer-array>
+
 </resources>

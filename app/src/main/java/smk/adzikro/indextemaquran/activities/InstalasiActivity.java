@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -72,13 +74,8 @@ public class InstalasiActivity extends AppCompatActivity implements
     String TAG="InstalasiActivity";
     final private int WRITE_ESCDARD=1;
     QuranSettings settings;
-    private ViewPager viewPager;
-    private TypedArray mBannerArray;
-    private int numberOfBannerImage;
-    private View[] mBannerDotViews;
-    private LinearLayout mBannerDotsLayout;
-    private BannerAdapter adapter;
-    private Button finish;
+    Button finish;
+    ProgressBar progressBar;
 
     @SuppressLint("WrongConstant")
     @Override
@@ -89,109 +86,32 @@ public class InstalasiActivity extends AppCompatActivity implements
                 (WindowManager.LayoutParams.FLAG_FULLSCREEN,
                         WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_instalasi);
-     //   createDb();
-        pertama();
-        viewPager = findViewById(R.id.bannerViewPager);
-        finish =findViewById(R.id.finish);
-
-        mBannerArray = getResources().obtainTypedArray(R.array.image);
-        numberOfBannerImage = mBannerArray.length();
-        mBannerDotViews = new View[numberOfBannerImage];
-        mBannerDotsLayout = findViewById(R.id.bannerDotsLayout);
-        adapter = new BannerAdapter(this, mBannerArray);
-        viewPager.setAdapter(adapter);
-        for(int i=0; i < numberOfBannerImage; i++){
-            final View bannerDot = new View(this);
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            param.height = getResources().getDimensionPixelSize(R.dimen.stand10);
-            param.width= getResources().getDimensionPixelSize(R.dimen.stand10);
-            param.setMargins(getResources().getDimensionPixelSize(R.dimen.stand08),0,0,0);
-            bannerDot.setLayoutParams(param);
-            bannerDot.setBackgroundResource(R.drawable.shape_deselected_dot);
-            mBannerDotsLayout.addView(bannerDot);
-            mBannerDotViews[i] = bannerDot;
+        finish = findViewById(R.id.finish);
+        progressBar = findViewById(R.id.progress);
+        if(Fungsi.isPertama(InstalasiActivity.this)) {
+            new ExecuteSync().execute();
+        }else{
+            startActivity(new Intent(InstalasiActivity.this, MainActivity.class));
+            finish();
         }
-
-        AutoSwipeBaner();
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        finish.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                changeDotBG(position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-        int flags = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-        if (!false) {
-         flags |= View.SYSTEM_UI_FLAG_LOW_PROFILE
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN;
-        }
-        viewPager.setSystemUiVisibility(flags);
-        finish.setOnClickListener(view -> {
-            if(finish.getText().equals(R.string.next)){
-                int i=viewPager.getCurrentItem();
-                viewPager.setCurrentItem(i+1);
-            }else{
-                handler.sendMessage(Message.obtain(handler,3));
+            public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
+                new ExecuteSync().execute();
+              //  Fungsi.PATH_DATABASES(InstalasiActivity.this);
             }
         });
     }
-    private Timer swipeTimer;
-    private void AutoSwipeBaner(){
-        final Handler hand = new Handler();
-        final Runnable update = () -> {
-            int cuurentPage = viewPager.getCurrentItem();
-            if(aset_quran && tema && latin && aset_words){
-                finish.setText(R.string.next);
-                if(cuurentPage==numberOfBannerImage-1){
-                    finish.setText(R.string.finish);
-                    handler.sendMessage(Message.obtain(handler,3));
-                }
-            }
-            if(cuurentPage==numberOfBannerImage-1){
-                cuurentPage =-1;
-            }
 
-            viewPager.setCurrentItem(cuurentPage+1,true);
-
-        };
-        swipeTimer = new Timer();
-        swipeTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                hand.post(update);
-            }
-        },500,3000);
-    }
     @Override
     public void onDestroy(){
-        if(swipeTimer!=null){
-            swipeTimer=null;
-        }
         super.onDestroy();
     }
-    private void changeDotBG(int position){
 
-        for(int i = 0; i < numberOfBannerImage; i++){
-            if(position==i){
-                mBannerDotViews[i].setBackgroundResource(R.drawable.shape_selected_dot);
-            }else{
-                mBannerDotViews[i].setBackgroundResource(R.drawable.shape_deselected_dot);
-            }
-
-        }
-    }
     private void pertama(){
         settings = QuranSettings.getInstance(this);
-        if(Fungsi.getInstalasi(this)){
+        if(!Fungsi.isPertama(this)){
             startActivity(new Intent(InstalasiActivity.this,MainActivity.class));
             finish();
         }else {
@@ -224,8 +144,8 @@ public class InstalasiActivity extends AppCompatActivity implements
                 }
             } else {
                 Log.e(TAG, "cek self fermision false");
-                if (!Fungsi.getInstalasi(this)) {
-                    extratData();
+                if (!Fungsi.isPertama(this)) {
+                    new ExecuteSync().execute();
                 }
             }
 
@@ -263,12 +183,6 @@ public class InstalasiActivity extends AppCompatActivity implements
                     latin = true;
                     break;
                 case 3:
-                    if(swipeTimer!=null){
-                        swipeTimer=null;
-                    }
-                    startActivity(new Intent(InstalasiActivity.this,MainActivity.class));
-                    Fungsi.setInstalasi(InstalasiActivity.this,true);
-                    finish();
                     break;
                 case 4:
                     aset_words = true;
@@ -281,7 +195,7 @@ public class InstalasiActivity extends AppCompatActivity implements
         }
     };
     private void donwloadImage(){
-        if(!Fungsi.isFileImageExist()) {
+        if(!Fungsi.isFileImageExist(this)) {
             settings.setDowloadImage(true);
          //   new DownloadZipfromInternet().execute("https://www.dropbox.com/s/5xgul9c98bcgzv3/quran.zip?dl=1");
         }
@@ -292,7 +206,7 @@ public class InstalasiActivity extends AppCompatActivity implements
     boolean latin=false;
 
     private void extratData(){
-        Fungsi.createPolder();
+        Fungsi.createPolder(InstalasiActivity.this);
         copyAssets();
         copyTema();
         createTableLatin();
@@ -321,7 +235,7 @@ public class InstalasiActivity extends AppCompatActivity implements
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if(!Fungsi.getInstalasi(this)) {
+                    if(Fungsi.isPertama(this)) {
                        extratData();
                     }
                 } else {
@@ -355,12 +269,12 @@ public class InstalasiActivity extends AppCompatActivity implements
     }
 
     private void createTableLatin(){
-        File file = new File(Fungsi.PATH_DATABASE()+ QuranFileConstants.LATIN_DATABASE);
+        File file = new File(Fungsi.PATH_DATABASES(InstalasiActivity.this)+File.separator+QuranFileConstants.LATIN_DATABASE);
         if (file.exists()){
             handler.sendMessage(Message.obtain(handler,2));
             return;
         }
-       new Thread(() -> {
+           Log.e(TAG, "Craete Table Latin");
         Resources res = getResources();
         InputStream inputStream = null;
         BufferedReader buff = null;
@@ -388,20 +302,20 @@ public class InstalasiActivity extends AppCompatActivity implements
        db.setTransactionSuccessful();
        db.endTransaction();
        db.close();
+            Log.e(TAG, "Selsesai cretae Table Latin");
        handler.sendMessage(Message.obtain(handler,2));
    }catch (IOException e){
 
    }
-       }).start();
-    }
+  }
 
     private void copyTema() {
-        File file = new File(Fungsi.PATH_DATABASE()+ "index4");
+        File file = new File(Fungsi.PATH_DATABASES(InstalasiActivity.this)+ "/index4");
         if (file.exists()){
             handler.sendMessage(Message.obtain(handler,1));
             return;
         }
-        Runnable runnable = () -> {
+            Log.e(TAG, "Copy Tema");
             QuranDatabase dbx = new QuranDatabase(InstalasiActivity.this);
             SQLiteDatabase database = dbx.pembukaDatabase.getWritableDatabase();
             final Resources res = getResources();
@@ -429,8 +343,7 @@ public class InstalasiActivity extends AppCompatActivity implements
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        };
-        new Thread(runnable).start();
+            Log.e(TAG, "Selesai.. Copy Tema");
     }
 
 
@@ -450,16 +363,17 @@ public class InstalasiActivity extends AppCompatActivity implements
     }
 
     private void copyAssets() {
-        new Thread(() -> {
+        Fungsi.PATH_DATABASES(InstalasiActivity.this);
+            Log.e(TAG, "Copy Assets");
             AssetManager assetManager = getAssets();
             String[] files = null;
             try {
                 files = assetManager.list("dba");
             } catch (IOException e) {
-                Log.e("tag", e.getMessage());
+                Log.e(TAG, "Error IO copy dba "+e.getMessage());
             }
             for(String filename: files) {
-                File filex = new File(Fungsi.PATH_DATABASE()+filename);
+                File filex = new File(Fungsi.PATH_DATABASES(InstalasiActivity.this)+File.separator+filename);
                 if(filex.exists()){
                     if (filename.equals("words.db")) {
                         aset_words = true;
@@ -473,8 +387,8 @@ public class InstalasiActivity extends AppCompatActivity implements
                 OutputStream out = null;
                 try {
                     in = assetManager.open("dba/" + filename);
-                    out = new FileOutputStream(Fungsi.PATH_DATABASE() + filename);
-                    Log.e(TAG,"copy "+Fungsi.PATH_DATABASE() + filename);
+                    out = new FileOutputStream(Fungsi.PATH_DATABASES(InstalasiActivity.this) +File.separator+ filename);
+                    Log.e(TAG,"copy "+Fungsi.PATH_DATABASES(InstalasiActivity.this) +File.separator+ filename);
                     copyFile(in, out);
                     in.close();
                     out.flush();
@@ -484,17 +398,18 @@ public class InstalasiActivity extends AppCompatActivity implements
                     }
                     if (filename.equals("quran.db")) {
                         aset_quran = true;
-                        File file = new File(Fungsi.PATH_DATABASE()+"quran.db");
+                        File file = new File(Fungsi.PATH_DATABASES(InstalasiActivity.this)+File.separator+"quran.db");
                         if(file.exists()){
-                            file.renameTo(new File(Fungsi.PATH_DATABASE()+"quran.ar.db"));
+                            file.renameTo(new File(Fungsi.PATH_DATABASES(InstalasiActivity.this)+File.separator+"quran.ar.db"));
                         }
                     }
+                    Log.e(TAG, "Selesai Copy Assets");
                 } catch (Exception e) {
                     Log.e(TAG, "aya eror "+e.getMessage());
                 }
             }
 
-        }).start();
+
     }
     private void copyFile(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024];
@@ -579,5 +494,20 @@ public class InstalasiActivity extends AppCompatActivity implements
         }).start();
     }
 
+    class ExecuteSync extends AsyncTask<String, Void, String>{
 
+        @Override
+        protected String doInBackground(String... strings) {
+            extratData();
+            return "Execute";
+        }
+        @Override
+        protected void onPostExecute(String re){
+            Log.e(TAG, "Selesai semua ");
+            progressBar.setVisibility(View.GONE);
+            Fungsi.setPertama(InstalasiActivity.this, false);
+            startActivity(new Intent(InstalasiActivity.this, MainActivity.class ));
+            finish();
+      }
+    }
 }

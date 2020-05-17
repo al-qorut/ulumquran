@@ -101,7 +101,7 @@
     </style>
 
     <style name="SearchResult.Location">
-        <item name="android:textColor">#aaaaaa</item>
+        <item name="android:textColor">@color/colorAccent</item>
         <item name="android:textSize">14sp</item>
     </style>
 

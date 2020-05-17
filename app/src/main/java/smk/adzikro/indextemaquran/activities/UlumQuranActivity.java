@@ -41,8 +41,6 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -117,7 +115,7 @@ public class UlumQuranActivity extends AppCompatActivity
     private static final long DEFAULT_HIDE_AFTER_TIME = 2000;
     private AyahToolBar ayahToolBar;
     BookmarkHelper bookmarkHelper=null;
-    private InterstitialAd mInterstitialAd;
+  //  private InterstitialAd mInterstitialAd;
     private DefaultDownloadReceiver downloadReceiver;
 
 
@@ -161,9 +159,7 @@ public class UlumQuranActivity extends AppCompatActivity
         audioStatusBar.setAudioBarListener(this);
         mSettings = QuranSettings.getInstance(this);
 
-        if(!mSettings.isIklas()){
-            iklan();
-        }
+
         ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayShowHomeEnabled(true);
@@ -248,43 +244,7 @@ public class UlumQuranActivity extends AppCompatActivity
 
     }
 
-    private void iklan() {
-        mInterstitialAd = new InterstitialAd(this);
-        // Defined in res/values/strings.xml
-        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
-        startGame();
-    }
-    private void startGame() {
-        // Request a new ad if one isn't already loaded, hide the button, and kick off the timer.
-        if (!mInterstitialAd.isLoading() && !mInterstitialAd.isLoaded()) {
-            AdRequest adRequest = new AdRequest.Builder().build();
-            mInterstitialAd.loadAd(adRequest);
-        }
-    }
-    private void showInterstitial() {
-        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-        }
-    }
-    public void showDialogIklan(String title, String tanya){
-        new AlertDialog.Builder(this)
-                .setTitle(title)
-                .setMessage(tanya)
-                .setCancelable(false)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        showInterstitial();
-                        //resumeGame(APP_LENGTH_MILLISECONDS);
-                        startGame();
-                    }})
-                .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        startGame();
-                    }
-                }).show();
-    }
+
 
     private int getStatusBarHeight() {
         // thanks to https://github.com/jgilfelt/SystemBarTint for this
@@ -306,9 +266,7 @@ public class UlumQuranActivity extends AppCompatActivity
         if(bookmarkHelper!=null){
             bookmarkHelper = null;
         }
-        if(mInterstitialAd!=null){
-            mInterstitialAd = null;
-        }
+
         // remove broadcast receivers
         LocalBroadcastManager.getInstance(this).unregisterReceiver(audioReceiver);
         if (downloadReceiver != null) {
@@ -396,13 +354,7 @@ public class UlumQuranActivity extends AppCompatActivity
     }
     @Override
     public void onBackPressed(){
-        if(!mSettings.isIklas()){
-            if(QuranUtils.haveInternet(this)) {
-                showInterstitial();
-            }else{
-                startActivity(new Intent(UlumQuranActivity.this, AdsActivity.class));
-            }
-        }
+
         super.onBackPressed();
     }
     @Override
@@ -468,7 +420,7 @@ public class UlumQuranActivity extends AppCompatActivity
     }
 
     public void switchToQuran() {
-        if(!Fungsi.isFileImageExist()){
+        if(!Fungsi.isFileImageExist(this)){
             Fungsi.setModeView(this, true);
             finish();
         }else {
@@ -569,13 +521,7 @@ public class UlumQuranActivity extends AppCompatActivity
             return true;
         } else if (itemId == android.R.id.home) {
            // startActivity(new Intent(UlumQuranActivity.this, AdsActivity.class));
-            if(!mSettings.isIklas()){
-                if(QuranUtils.haveInternet(this)) {
-                    showInterstitial();
-                }else{
-                    startActivity(new Intent(UlumQuranActivity.this, AdsActivity.class));
-                }
-            }
+
             onBackPressed();
             return true;
         } else if (itemId == R.id.jump) {

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -458,7 +460,8 @@ public class QuranFileUtils {
   }
 
   public static boolean hasTranslation(Context context, String fileName) {
-    String path = getQuranDatabaseDirectory(context);
+    String path = Fungsi.PATH_DATABASES(context);// getQuranDatabaseDirectory(context);
+    Log.e("QuranUtils path ", path);
     if (path != null) {
       path += File.separator + fileName;
       return new File(path).exists();

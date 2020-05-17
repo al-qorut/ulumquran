@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
+import androidx.core.content.ContextCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
@@ -48,7 +49,7 @@ public class SearchActivity extends QuranActionBarActivity
   private Button buttonGetTranslations;
   private boolean downloadArabicSearchDb;
   private boolean isArabicSearch;
-  private String query;
+  static String query;
   private ResultAdapter adapter;
   private DefaultDownloadReceiver downloadReceiver;
 
@@ -124,6 +125,7 @@ public class SearchActivity extends QuranActionBarActivity
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     String query = args.getString(EXTRA_QUERY);
+    Log.e("Loader", query);
     this.query = query;
     return new CursorLoader(this, QuranDataProvider.SEARCH_URI,
         null, null, new String[]{ query }, null);
@@ -158,7 +160,6 @@ public class SearchActivity extends QuranActionBarActivity
         downloadArabicSearchDb = true;
       }
 
-      // Display the number of results
       int count = cursor.getCount();
       String countString = getResources().getQuantityString(
           R.plurals.search_results, count, query, count);
@@ -269,7 +270,8 @@ public class SearchActivity extends QuranActionBarActivity
   private void showResults(String query) {
     Bundle args = new Bundle();
     args.putString(EXTRA_QUERY, query);
-    getSupportLoaderManager().restartLoader(0, args, this);
+    LoaderManager.getInstance(this).restartLoader(0, args, this);
+    //getSupportLoaderManager().restartLoader(0, args, this);
   }
 
   private static class ResultAdapter extends CursorAdapter {
@@ -298,8 +300,13 @@ public class SearchActivity extends QuranActionBarActivity
       int sura = cursor.getInt(1);
       int ayah = cursor.getInt(2);
       String text = cursor.getString(3);
+      String warna = "<font color=\"" +
+              ContextCompat.getColor(context, R.color.translation_highlight) +
+              "\">"+query+"</font>";
+      //Log.e("SearchActivity", text );
+      String baru = text.replace(query,warna );
       String suraName = BaseQuranInfo.getSuraName(this.context, sura, false);
-      holder.text.setText(Html.fromHtml(text));
+      holder.text.setText(Html.fromHtml(baru));
       holder.metadata.setText(this.context.getString(R.string.found_in_sura, suraName, ayah));
     }
 

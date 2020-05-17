@@ -183,7 +183,7 @@ public class QuranApi {
                     q.setType(cursor.getInt(7));
                     q.setActive(cursor.getInt(8));
                     q.setId(cursor.getInt(0));
-                    File file = new File(Fungsi.PATH_DATABASE() + cursor.getString(5));
+                    File file = new File(Fungsi.PATH_DATABASES(context)+"/" + cursor.getString(5));
                     if (file.exists()) {
                         sources.add(q);
                     }
@@ -215,7 +215,7 @@ public class QuranApi {
                 ayah.setArab(arab);
                 ayahs.set(i,ayah);
             }
-            File file = new File(Fungsi.PATH_DATABASE()+setting.getActiveTranslation());
+            File file = new File(Fungsi.PATH_DATABASES(context)+setting.getActiveTranslation());
             if(file.exists()) {
                 mQuranHelper = DatabaseHandler.getDatabaseHandler(context, setting.getActiveTranslation());
                 for (int i=0; i<ayahs.size();i++){
@@ -234,7 +234,7 @@ public class QuranApi {
         Observable<Ayah> observable = Observable.create(e -> {
             mQuranHelper = DatabaseHandler.getDatabaseHandler(context, QuranFileConstants.ARABIC_DATABASE);
             String arab = mQuranHelper.getAyahText(ayah.sura, ayah.ayat, DatabaseHandler.TextType.ARABIC);
-            File file = new File(Fungsi.PATH_DATABASE()+setting.getActiveTranslation());
+            File file = new File(Fungsi.PATH_DATABASES(context)+setting.getActiveTranslation());
             String arti="";
             if(file.exists()) {
                 mQuranHelper = DatabaseHandler.getDatabaseHandler(context, setting.getActiveTranslation());

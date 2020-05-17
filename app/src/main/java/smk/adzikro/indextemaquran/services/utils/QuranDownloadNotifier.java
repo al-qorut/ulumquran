@@ -3,9 +3,11 @@ package smk.adzikro.indextemaquran.services.utils;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
@@ -13,10 +15,12 @@ import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import smk.adzikro.indextemaquran.R;
+import smk.adzikro.indextemaquran.activities.MainActivity;
 import smk.adzikro.indextemaquran.activities.UlumQuranActivity;
 
 
 public class QuranDownloadNotifier {
+  // error messages
   // error messages
   public static final int ERROR_DISK_SPACE = 1;
   public static final int ERROR_PERMISSIONS = 2;
@@ -29,14 +33,13 @@ public class QuranDownloadNotifier {
   private static final int DOWNLOADING_NOTIFICATION = 1;
   public static final int DOWNLOADING_COMPLETE_NOTIFICATION = 2;
   private static final int DOWNLOADING_ERROR_NOTIFICATION = 3;
-  private static final int DOWNLOADING_PROCESSING_NOTIFICATION = 4;
 
   private static final String NOTIFICATION_CHANNEL_ID = "quran_download_progress";
 
   public static class ProgressIntent {
     public static final String INTENT_NAME =
-        "smk.adzikro.indextemaquran.download.ProgressUpdate";
-    public static final String NAME = "notificationTitle";
+            "com.quran.labs.androidquran.download.ProgressUpdate";
+    static final String NAME = "notificationTitle";
     public static final String DOWNLOAD_KEY = "downloadKey";
     public static final String DOWNLOAD_TYPE = "downloadType";
     public static final String STATE = "state";
@@ -65,7 +68,7 @@ public class QuranDownloadNotifier {
     public int totalFiles;
     public int sura;
     public int ayah;
-    public boolean sendIndeterminate;
+    boolean sendIndeterminate;
     public boolean isGapless;
 
     public NotificationDetails(String title, String key, int type){
@@ -86,20 +89,23 @@ public class QuranDownloadNotifier {
   }
 
   private Context appContext;
+  private Service service;
   private NotificationManager notificationManager;
   private LocalBroadcastManager broadcastManager;
   private int notificationColor;
   private int lastProgress;
   private int lastMaximum;
+  private boolean isForeground;
 
-  public QuranDownloadNotifier(Context context) {
+  public QuranDownloadNotifier(Context context, Service service) {
     appContext = context.getApplicationContext();
     notificationManager = (NotificationManager) appContext
-        .getSystemService(Context.NOTIFICATION_SERVICE);
+            .getSystemService(Context.NOTIFICATION_SERVICE);
     broadcastManager = LocalBroadcastManager.getInstance(appContext);
     notificationColor = ContextCompat.getColor(appContext, R.color.notification_color);
     lastProgress = -1;
     lastMaximum = -1;
+    this.service = service;
 
     // setup Android O notification channels
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -113,11 +119,10 @@ public class QuranDownloadNotifier {
     lastProgress = -1;
     notificationManager.cancel(DOWNLOADING_ERROR_NOTIFICATION);
     notificationManager.cancel(DOWNLOADING_COMPLETE_NOTIFICATION);
-    notificationManager.cancel(DOWNLOADING_PROCESSING_NOTIFICATION);
   }
 
   public Intent notifyProgress(NotificationDetails details,
-      long downloadedSize, long totalSize){
+                               long downloadedSize, long totalSize){
 
     int max = 100;
     int progress = 0;
@@ -148,8 +153,8 @@ public class QuranDownloadNotifier {
     }
 
     showNotification(details.title,
-        appContext.getString(R.string.downloading_title),
-        DOWNLOADING_NOTIFICATION, true, max, progress, isIndeterminate);
+            appContext.getString(R.string.downloading_title),
+            DOWNLOADING_NOTIFICATION, true, max, progress, isIndeterminate, !isForeground);
 
     // send broadcast
     Intent progressIntent = new Intent(ProgressIntent.INTENT_NAME);
@@ -157,7 +162,7 @@ public class QuranDownloadNotifier {
     progressIntent.putExtra(ProgressIntent.DOWNLOAD_KEY, details.key);
     progressIntent.putExtra(ProgressIntent.DOWNLOAD_TYPE, details.type);
     progressIntent.putExtra(ProgressIntent.STATE,
-        ProgressIntent.STATE_DOWNLOADING);
+            ProgressIntent.STATE_DOWNLOADING);
     if (details.sura > 0) {
       progressIntent.putExtra(ProgressIntent.SURA, details.sura);
       progressIntent.putExtra(ProgressIntent.AYAH, details.ayah);
@@ -165,7 +170,7 @@ public class QuranDownloadNotifier {
 
     if (!isIndeterminate){
       progressIntent.putExtra(ProgressIntent.DOWNLOADED_SIZE,
-          downloadedSize);
+              downloadedSize);
       progressIntent.putExtra(ProgressIntent.TOTAL_SIZE, totalSize);
       progressIntent.putExtra(ProgressIntent.PROGRESS, progress);
     }
@@ -174,12 +179,11 @@ public class QuranDownloadNotifier {
   }
 
   public Intent notifyDownloadProcessing(
-      NotificationDetails details, int done, int total){
+          NotificationDetails details, int done, int total){
     String processingString =
-        appContext.getString(R.string.download_processing);
-    notificationManager.cancel(DOWNLOADING_NOTIFICATION);
+            appContext.getString(R.string.download_processing);
     showNotification(details.title, processingString,
-        DOWNLOADING_PROCESSING_NOTIFICATION, true);
+            DOWNLOADING_NOTIFICATION, true, !isForeground);
 
     // send broadcast
     Intent progressIntent = new Intent(ProgressIntent.INTENT_NAME);
@@ -187,7 +191,7 @@ public class QuranDownloadNotifier {
     progressIntent.putExtra(ProgressIntent.DOWNLOAD_KEY, details.key);
     progressIntent.putExtra(ProgressIntent.DOWNLOAD_TYPE, details.type);
     progressIntent.putExtra(ProgressIntent.STATE,
-        ProgressIntent.STATE_PROCESSING);
+            ProgressIntent.STATE_PROCESSING);
 
     if (total > 0){
       int progress = (int)((100.0 * done) / (1.0 * total));
@@ -202,13 +206,12 @@ public class QuranDownloadNotifier {
 
   public Intent notifyDownloadSuccessful(NotificationDetails details){
     String successString = appContext.getString(R.string.download_successful);
-    notificationManager.cancel(DOWNLOADING_NOTIFICATION);
-    notificationManager.cancel(DOWNLOADING_PROCESSING_NOTIFICATION);
     notificationManager.cancel(DOWNLOADING_ERROR_NOTIFICATION);
+
     lastMaximum = -1;
     lastProgress = -1;
     showNotification(details.title, successString,
-        DOWNLOADING_COMPLETE_NOTIFICATION, false);
+            DOWNLOADING_COMPLETE_NOTIFICATION, false, false);
     return broadcastDownloadSuccessful(details);
   }
 
@@ -217,15 +220,14 @@ public class QuranDownloadNotifier {
     Intent progressIntent = new Intent(ProgressIntent.INTENT_NAME);
     progressIntent.putExtra(ProgressIntent.NAME, details.title);
     progressIntent.putExtra(ProgressIntent.STATE,
-        ProgressIntent.STATE_SUCCESS);
+            ProgressIntent.STATE_SUCCESS);
     progressIntent.putExtra(ProgressIntent.DOWNLOAD_KEY, details.key);
     progressIntent.putExtra(ProgressIntent.DOWNLOAD_TYPE, details.type);
     broadcastManager.sendBroadcast(progressIntent);
     return progressIntent;
   }
 
-  public Intent notifyError(int errorCode, boolean isFatal,
-      NotificationDetails details){
+  public Intent notifyError(int errorCode, boolean isFatal, NotificationDetails details){
     int errorId;
     switch (errorCode){
       case ERROR_DISK_SPACE:
@@ -253,12 +255,16 @@ public class QuranDownloadNotifier {
     }
 
     String errorString = appContext.getString(errorId);
-    notificationManager.cancel(DOWNLOADING_NOTIFICATION);
+    if (isFatal) {
+      service.stopForeground(true);
+      isForeground = false;
+    }
+
     showNotification(details.title, errorString,
-        DOWNLOADING_ERROR_NOTIFICATION, false);
+            DOWNLOADING_ERROR_NOTIFICATION, false, false);
 
     String state = isFatal? ProgressIntent.STATE_ERROR :
-        ProgressIntent.STATE_ERROR_WILL_RETRY;
+            ProgressIntent.STATE_ERROR_WILL_RETRY;
 
     // send broadcast
     Intent progressIntent = new Intent(ProgressIntent.INTENT_NAME);
@@ -271,24 +277,33 @@ public class QuranDownloadNotifier {
     return progressIntent;
   }
 
-  private void showNotification(String titleString,
-      String statusString, int notificationId, boolean isOnGoing) {
-    showNotification(titleString, statusString, notificationId,
-        isOnGoing, 0, 0, false);
+  public void stopForeground() {
+    if (isForeground) {
+      service.stopForeground(true);
+      isForeground = false;
+    } else {
+      notificationManager.cancel(DOWNLOADING_NOTIFICATION);
+    }
   }
 
   private void showNotification(String titleString,
-      String statusString, int notificationId, boolean isOnGoing,
-      int maximum, int progress, boolean isIndeterminate) {
+                                String statusString, int notificationId, boolean isOnGoing, boolean shouldForeground) {
+    showNotification(titleString, statusString, notificationId,
+            isOnGoing, 0, 0, false, shouldForeground);
+  }
+
+  private void showNotification(String titleString,
+                                String statusString, int notificationId, boolean isOnGoing,
+                                int maximum, int progress, boolean isIndeterminate, boolean shouldForeground) {
     NotificationCompat.Builder builder =
-        new NotificationCompat.Builder(appContext, NOTIFICATION_CHANNEL_ID);
+            new NotificationCompat.Builder(appContext, NOTIFICATION_CHANNEL_ID);
     builder.setSmallIcon(R.drawable.ic_notification)
-        .setColor(notificationColor)
-        .setAutoCancel(true)
-        .setOngoing(isOnGoing)
-        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-        .setContentTitle(titleString)
-        .setContentText(statusString);
+            .setColor(notificationColor)
+            .setAutoCancel(true)
+            .setOngoing(isOnGoing)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setContentTitle(titleString)
+            .setContentText(statusString);
 
     boolean wantProgress = maximum > 0 && maximum >= progress;
     if (lastProgress == progress && lastMaximum == maximum) {
@@ -302,14 +317,19 @@ public class QuranDownloadNotifier {
       builder.setProgress(maximum, progress, isIndeterminate);
     }
 
-    Intent notificationIntent = new Intent(appContext, UlumQuranActivity.class);
+    Intent notificationIntent = new Intent(appContext, MainActivity.class);
     PendingIntent contentIntent = PendingIntent.getActivity(appContext, 0, notificationIntent, 0);
     builder.setContentIntent(contentIntent);
 
     try {
-      notificationManager.notify(notificationId, builder.build());
+      if (shouldForeground) {
+        service.startForeground(notificationId, builder.build());
+        isForeground = true;
+      } else {
+        notificationManager.notify(notificationId, builder.build());
+      }
     } catch (SecurityException se) {
-    //  Crashlytics.logException(se);
+      Log.e("QuranDownloadNotifier", se.getMessage());//Crashlytics.logException(se);
     }
   }
 
@@ -317,7 +337,7 @@ public class QuranDownloadNotifier {
   private void setupNotificationChannel() {
     final String channelName = appContext.getString(R.string.notification_channel_download);
     NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
-        channelName, NotificationManager.IMPORTANCE_LOW);
+            channelName, NotificationManager.IMPORTANCE_LOW);
     if (notificationManager.getNotificationChannel(channelName) == null) {
       notificationManager.createNotificationChannel(channel);
     }
